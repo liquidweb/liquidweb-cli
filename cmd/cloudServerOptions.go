@@ -192,6 +192,7 @@ Be sure to take a look at the flags section for specific flags to pass.`,
 					fmt.Printf("  configs:\n")
 					for _, cfgInfo := range info["configIds"].([]map[string]interface{}) {
 						fmt.Printf("    config_id: %d\n", cfgInfo["config_id"])
+						fmt.Printf("      description: %s\n", cfgInfo["description"])
 						fmt.Printf("      active: %d\n", cfgInfo["active"])
 						fmt.Printf("      available: %d\n", cfgInfo["available"])
 						fmt.Printf("      category: %s\n", cfgInfo["category"])
