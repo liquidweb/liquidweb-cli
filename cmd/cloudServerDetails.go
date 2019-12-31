@@ -21,8 +21,6 @@ import (
 
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
-	//"github.com/liquidweb/liquidweb-cli/instance"
-	//"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudServerDetailsCmd = &cobra.Command{

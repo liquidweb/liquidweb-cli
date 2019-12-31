@@ -24,17 +24,51 @@ import (
 var cloudServerDestroyCmd = &cobra.Command{
 	Use:   "destroy",
 	Short: "Destroy a Cloud Server",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Long: `Destroy a Cloud Server.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+Kills a server. It will refund for any remaining time that has been prepaid, charge any outstanding bandwidth
+charges, and then start the workflow to tear down the server.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Println("destroy called")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		jsonFlag, _ := cmd.Flags().GetBool("json")
+		commentFlag, _ := cmd.Flags().GetString("comment")
+		reasonFlag, _ := cmd.Flags().GetString("reason")
+
+		if uniqIdFlag == "" {
+			lwCliInst.Die(fmt.Errorf("--uniq-id is a required flag"))
+		}
+
+		destroyArgs := map[string]interface{}{
+			"uniq_id":              uniqIdFlag,
+			"cancellation_comment": commentFlag,
+		}
+
+		if reasonFlag != "" {
+			destroyArgs["cancellation_reason"] = reasonFlag
+		}
+
+		result, err := lwCliInst.LwApiClient.Call("bleed/server/destroy", destroyArgs)
+		if err != nil {
+			lwCliInst.Die(err)
+		}
+
+		if jsonFlag {
+			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(result)
+			if err != nil {
+				lwCliInst.Die(err)
+			}
+			fmt.Printf(pretty)
+		} else {
+			fmt.Printf("destroyed: %s\n", result.(map[string]interface{})["destroyed"])
+		}
+
 	},
 }
 
 func init() {
 	cloudServerCmd.AddCommand(cloudServerDestroyCmd)
+	cloudServerDestroyCmd.Flags().Bool("json", false, "output in json format")
+	cloudServerDestroyCmd.Flags().String("uniq_id", "", "uniq_id of server to destroy")
+	cloudServerDestroyCmd.Flags().String("comment", "initiated from liquidweb-cli", "comment related to the cancellation")
+	cloudServerDestroyCmd.Flags().String("reason", "", "reason for the cancellation (optional)")
 }
