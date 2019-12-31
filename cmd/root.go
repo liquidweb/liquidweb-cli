@@ -29,7 +29,6 @@ import (
 var cfgFile string
 var lwCliInst instance.Client
 
-// rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
 	Use:   "liquidweb-cli",
 	Short: "CLI interface for LiquidWeb",
@@ -46,8 +45,6 @@ Consult the various subcommands for specific features and
 capabilities.`,
 }
 
-// Execute adds all child commands to the root command and sets flags appropriately.
-// This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		fmt.Println(err)
@@ -61,7 +58,6 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.liquidweb-cli.yaml)")
 }
 
-// initConfig reads in config file and ENV variables if set.
 func initConfig() {
 	vp := viper.New()
 	if cfgFile != "" {
