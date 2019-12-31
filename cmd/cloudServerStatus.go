@@ -90,7 +90,7 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerStatusCmd)
 
 	cloudServerStatusCmd.Flags().Bool("json", false, "output in json format")
-	cloudServerStatusCmd.Flags().String("uniq_id", "", "only get the status of this uniq_id (defaults to all if not given)")
+	cloudServerStatusCmd.Flags().String("uniq_id", "", "only get the status of this uniq_id")
 }
 
 func _printCloudServerStatus(uniqId string, jsonOutput bool) {
