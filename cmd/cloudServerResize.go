@@ -62,7 +62,7 @@ this will be applied live without downtime to your Cloud Server.
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		diskspaceFlag, _ := cmd.Flags().GetInt64("diskspace")
-		configIdFlag, _ := cmd.Flags().GetInt64("newsize")
+		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 		memoryFlag, _ := cmd.Flags().GetInt64("memory")
 		parentFlag, _ := cmd.Flags().GetString("parent")
 		skipFsResizeFlag, _ := cmd.Flags().GetBool("skip-fs-resize")
@@ -96,10 +96,14 @@ this will be applied live without downtime to your Cloud Server.
 		}
 
 		var liveResize bool
+		var oneRebootResize bool
 		if privateParentFlag == "" {
+			// non private parent resize
 			if memoryFlag != -1 || diskspaceFlag != -1 || vcpuFlag != -1 {
 				lwCliInst.Die(fmt.Errorf("cannot pass --memory --diskspace or --vcpu when --private-parent is not given"))
 			}
+
+			// determine reboot expectation.
 		} else {
 			// private parent resize specific logic
 			if memoryFlag == -1 && diskspaceFlag == -1 && vcpuFlag == -1 {
@@ -251,8 +255,11 @@ this will be applied live without downtime to your Cloud Server.
 		if liveResize {
 			fmt.Printf("\nthis resize will be performed live without downtime.\n")
 		} else {
-			// resize up or down? Determine this for 1 or 2 reboot report
-			fmt.Printf("\nexpect one reboot during this process. Your server will be online as the disk is copied to the destination.\n")
+			rebootExpectation := "two"
+			if oneRebootResize {
+				rebootExpectation = "one"
+			}
+			fmt.Printf("\nexpect %s reboot during this process. Your server will be online as the disk is copied to the destination.\n", rebootExpectation)
 		}
 	},
 }
