@@ -54,7 +54,6 @@ the following flags are required:
 
   --diskspace
   --memory
-  --parent
   --vcpu
 
 If you resize a private parent child instance, and only up the memory or vcpu,
@@ -62,7 +61,6 @@ this will be applied live without downtime to your Cloud Server.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
-		jsonFlag, _ := cmd.Flags().GetBool("json")
 		diskspaceFlag, _ := cmd.Flags().GetInt64("diskspace")
 		configIdFlag, _ := cmd.Flags().GetInt64("newsize")
 		memoryFlag, _ := cmd.Flags().GetInt64("memory")
@@ -99,7 +97,7 @@ this will be applied live without downtime to your Cloud Server.
 
 		var liveResize bool
 		if privateParentFlag == "" {
-			if memoryFlag != -1 || diskspaceFlag != -1 || vcpuFlag == -1 {
+			if memoryFlag != -1 || diskspaceFlag != -1 || vcpuFlag != -1 {
 				lwCliInst.Die(fmt.Errorf("cannot pass --memory --diskspace or --vcpu when --private-parent is not given"))
 			}
 		} else {
@@ -243,26 +241,18 @@ this will be applied live without downtime to your Cloud Server.
 			}
 		}
 
-		result, err := lwCliInst.LwApiClient.Call("bleed/server/resize", resizeArgs)
+		_, err := lwCliInst.LwApiClient.Call("bleed/server/resize", resizeArgs)
 		if err != nil {
 			lwCliInst.Die(err)
 		}
 
-		if jsonFlag {
-			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(result)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-			fmt.Printf(pretty)
-		} else {
-			fmt.Printf("server resized started! You can check progress with 'cloud server status --uniq_id %s'\n\n", uniqIdFlag)
+		fmt.Printf("server resized started! You can check progress with 'cloud server status --uniq_id %s'\n\n", uniqIdFlag)
 
-			if liveResize {
-				fmt.Printf("\nthis resize will be performed live without downtime.\n")
-			} else {
-				// resize up or down? Determine this for 1 or 2 reboot report
-				fmt.Printf("\nexpect one reboot during this process. Your server will be online as the disk is copied to the destination.\n")
-			}
+		if liveResize {
+			fmt.Printf("\nthis resize will be performed live without downtime.\n")
+		} else {
+			// resize up or down? Determine this for 1 or 2 reboot report
+			fmt.Printf("\nexpect one reboot during this process. Your server will be online as the disk is copied to the destination.\n")
 		}
 	},
 }
@@ -271,7 +261,6 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerResizeCmd)
 
 	cloudServerResizeCmd.Flags().String("private-parent", "", "name or uniq_id of the private-parent. Must use when adding/removing resources to a Cloud Server on a private parent.")
-	cloudServerResizeCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerResizeCmd.Flags().String("uniq_id", "", "uniq_id of server to resize")
 	cloudServerResizeCmd.Flags().Int64("diskspace", -1, "desired diskspace (required when private-parent)")
 	cloudServerResizeCmd.Flags().Int64("memory", -1, "desired memory (required when private-parent)")
