@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"math/rand"
 	"os"
+	"reflect"
 	"time"
 
 	"github.com/mitchellh/mapstructure"
@@ -80,9 +81,7 @@ func (client *Client) CallLwApiInto(method string, methodArgs map[string]interfa
 		return
 	}
 
-	if err := CastFieldTypes(got, &obj); err != nil {
-		err = fmt.Errorf("%w %+v %s", errorTypes.LwApiUnexpectedResponseStructure, methodArgs, err)
-	}
+	err = CastFieldTypes(got, &obj)
 
 	return
 }
@@ -155,8 +154,18 @@ func (client *Client) AllPaginatedResults(args *AllPaginatedResultsArgs) (apiTyp
 	return mergedList, nil
 }
 
-func CastFieldTypes(source interface{}, dest interface{}) error {
-	return mapstructure.WeakDecode(source, &dest)
+func CastFieldTypes(source interface{}, dest interface{}) (err error) {
+	defer func() {
+		if paniced := recover(); paniced != nil {
+			err = fmt.Errorf("%w source [%+v] dest type [%s]: %+v", errorTypes.LwApiUnexpectedResponseStructure, source, reflect.TypeOf(dest).String(), paniced)
+		}
+	}()
+
+	if err = mapstructure.WeakDecode(source, &dest); err != nil {
+		err = fmt.Errorf("%w\nsource [%+v] dest type [%s] error: %+v", errorTypes.LwApiUnexpectedResponseStructure, source, reflect.TypeOf(dest).String(), err)
+	}
+
+	return
 }
 
 func RandomString(length int) string {
