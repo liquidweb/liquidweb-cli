@@ -91,7 +91,9 @@ this will be applied live without downtime to your Cloud Server.
 
 		// get details of existing configuration
 		var cloudServerDetails apiTypes.CloudServerDetails
-		if err := lwCliInst.CallLwApiInto("bleed/storm/server/details", map[string]interface{}{"uniq_id": uniqIdFlag}, &cloudServerDetails); err != nil {
+		if err := lwCliInst.CallLwApiInto("bleed/storm/server/details",
+			map[string]interface{}{"uniq_id": uniqIdFlag},
+			&cloudServerDetails); err != nil {
 			lwCliInst.Die(err)
 		}
 
@@ -113,7 +115,8 @@ this will be applied live without downtime to your Cloud Server.
 			//   resize up quick (skip-fs-resize) 1 reboot
 			//   resize down: 1 reboot
 			var configDetails apiTypes.CloudConfigDetails
-			if err := lwCliInst.CallLwApiInto("bleed/storm/config/details", map[string]interface{}{"id": configIdFlag}, &configDetails); err != nil {
+			if err := lwCliInst.CallLwApiInto("bleed/storm/config/details",
+				map[string]interface{}{"id": configIdFlag}, &configDetails); err != nil {
 				lwCliInst.Die(err)
 			}
 
@@ -127,7 +130,8 @@ this will be applied live without downtime to your Cloud Server.
 		} else {
 			// private parent resize specific logic
 			if memoryFlag == -1 && diskspaceFlag == -1 && vcpuFlag == -1 {
-				lwCliInst.Die(fmt.Errorf("resizes on private parents require at least least one of: --memory --diskspace --vcpu flags"))
+				lwCliInst.Die(fmt.Errorf(
+					"resizes on private parents require at least least one of: --memory --diskspace --vcpu flags"))
 			}
 
 			var privateParentUniqId string
@@ -136,10 +140,14 @@ this will be applied live without downtime to your Cloud Server.
 
 			// if privateParentFlag looks like a uniq_id, try it as a uniq_id first.
 			if len(privateParentFlag) == 6 && strings.ToUpper(privateParentFlag) == privateParentFlag {
-				if err := lwCliInst.CallLwApiInto("bleed/storm/private/parent/details", map[string]interface{}{"uniq_id": privateParentFlag}, &privateParentDetails); err == nil {
+				if err := lwCliInst.CallLwApiInto("bleed/storm/private/parent/details",
+					map[string]interface{}{"uniq_id": privateParentFlag},
+					&privateParentDetails); err == nil {
 					privateParentUniqId = privateParentFlag
 				} else {
-					privateParentDetailsErr = errors.New(fmt.Sprintf("failed fetching parent details treating given --private-parent arg as a uniq_id [%s]: %s", privateParentFlag, err))
+					privateParentDetailsErr = fmt.Errorf(
+						"failed fetching parent details treating given --private-parent arg as a uniq_id [%s]: %s",
+						privateParentFlag, err)
 				}
 			}
 
@@ -168,7 +176,8 @@ this will be applied live without downtime to your Cloud Server.
 							},
 							&privateParentDetails)
 						if err != nil {
-							privateParentDetailsErr = fmt.Errorf("failed fetching private parent details for discovered uniq_id [%s] error: %s %w",
+							privateParentDetailsErr = fmt.Errorf(
+								"failed fetching private parent details for discovered uniq_id [%s] error: %s %w",
 								privateParentDetails.UniqId, err, privateParentDetailsErr)
 							lwCliInst.Die(privateParentDetailsErr)
 						}
@@ -179,7 +188,8 @@ this will be applied live without downtime to your Cloud Server.
 			}
 
 			if privateParentUniqId == "" {
-				lwCliInst.Die(fmt.Errorf("failed deriving uniq_id from --private-parent [%s]: %s", privateParentFlag, privateParentDetailsErr))
+				lwCliInst.Die(fmt.Errorf("failed deriving uniq_id from --private-parent [%s]: %s",
+					privateParentFlag, privateParentDetailsErr))
 			}
 
 			var (
@@ -207,7 +217,7 @@ this will be applied live without downtime to your Cloud Server.
 			}
 			if !diskspaceChanging && !vcpuChanging && !memoryChanging {
 				lwCliInst.Die(fmt.Errorf(
-					"private parent resize, but your passed diskspace, memory, vcpu values match what the Cloud Server already has.. no need to resize"))
+					"private parent resize, but passed diskspace, memory, vcpu values match existing values"))
 			}
 
 			resizeArgs["newsize"] = 0                  // 0 indicates private parent resize
@@ -277,9 +287,12 @@ this will be applied live without downtime to your Cloud Server.
 			if twoRebootResize {
 				rebootExpectation = "two reboots"
 			}
-			fmt.Printf("\nexpect %s during this process. Your server will be online as the disk is copied to the destination.\n", rebootExpectation)
+			fmt.Printf(
+				"\nexpect %s during this process. Your server will be online as the disk is copied to the destination.\n",
+				rebootExpectation)
 			if twoRebootResize {
-				fmt.Printf("\tTIP: You could avoid the second reboot by passing --skip-fs-resize. See usage for additional details.\n")
+				fmt.Printf(
+					"\tTIP: Avoid the second reboot by passing --skip-fs-resize. See usage for additional details.\n")
 			}
 		}
 	},
@@ -288,12 +301,14 @@ this will be applied live without downtime to your Cloud Server.
 func init() {
 	cloudServerCmd.AddCommand(cloudServerResizeCmd)
 
-	cloudServerResizeCmd.Flags().String("private-parent", "", "name or uniq_id of the private-parent. Must use when adding/removing resources to a Cloud Server on a private parent.")
+	cloudServerResizeCmd.Flags().String("private-parent", "",
+		"name or uniq_id of the private-parent. Must use when adding/removing resources to a Cloud Server on a private parent.")
 	cloudServerResizeCmd.Flags().String("uniq_id", "", "uniq_id of server to resize")
 	cloudServerResizeCmd.Flags().Int64("diskspace", -1, "desired diskspace (required when private-parent)")
 	cloudServerResizeCmd.Flags().Int64("memory", -1, "desired memory (required when private-parent)")
 	cloudServerResizeCmd.Flags().String("parent", "", "name of private parent (required when private-parent)")
 	cloudServerResizeCmd.Flags().Bool("skip-fs-resize", false, "whether or not to skip the fs resize")
 	cloudServerResizeCmd.Flags().Int64("vcpu", -1, "desired vcpu count (required when private-parent)")
-	cloudServerResizeCmd.Flags().Int64("config_id", -1, "config_id of your desired config (dont use with private-parent) (see 'cloud server options --configs')")
+	cloudServerResizeCmd.Flags().Int64("config_id", -1,
+		"config_id of your desired config (dont use with private-parent) (see 'cloud server options --configs')")
 }
