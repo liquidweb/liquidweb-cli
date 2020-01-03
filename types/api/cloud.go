@@ -132,3 +132,7 @@ type CloudConfigDetails struct {
 	CpuCount          int64         `json:"cpu_count,omitempty" mapstructure:"cpu_count"`
 	CpuCores          int64         `json:"cpu_cores,omitempty" mapstructure:"cpu_cores"`
 }
+
+type CloudServerDestroyResponse struct {
+	Destroyed string `json:"destroyed" mapstructure:"destroyed"`
+}

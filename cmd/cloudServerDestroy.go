@@ -19,6 +19,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudServerDestroyCmd = &cobra.Command{
@@ -47,19 +49,19 @@ charges, and then start the workflow to tear down the server.`,
 			destroyArgs["cancellation_reason"] = reasonFlag
 		}
 
-		result, err := lwCliInst.LwApiClient.Call("bleed/server/destroy", destroyArgs)
-		if err != nil {
+		var destroyed apiTypes.CloudServerDestroyResponse
+		if err := lwCliInst.CallLwApiInto("bleed/server/destroy", destroyArgs, &destroyed); err != nil {
 			lwCliInst.Die(err)
 		}
 
 		if jsonFlag {
-			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(result)
+			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(destroyed)
 			if err != nil {
 				lwCliInst.Die(err)
 			}
 			fmt.Printf(pretty)
 		} else {
-			fmt.Printf("destroyed: %s\n", result.(map[string]interface{})["destroyed"])
+			fmt.Printf("destroyed: %s\n", destroyed.Destroyed)
 		}
 
 	},
