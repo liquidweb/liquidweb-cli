@@ -82,8 +82,7 @@ Be sure to take a look at the flags section for specific flags to pass.`,
 		zones := map[int]int{}
 		configIdsByZone := map[int][]map[string]interface{}{}
 		for _, item := range mergedConfigs.Items {
-			_, zoneAvailExists := item["zone_availability"]
-			if !zoneAvailExists {
+			if _, zoneAvailExists := item["zone_availability"]; !zoneAvailExists {
 				continue
 			}
 			for key, value := range item["zone_availability"].(map[string]interface{}) {
