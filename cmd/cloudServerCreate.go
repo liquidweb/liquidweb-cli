@@ -115,9 +115,10 @@ Requires various flags. Please see the flag section of help.`,
 			os.Exit(0)
 		}
 
+		resultUniqId := result.(map[string]interface{})["uniq_id"]
 		fmt.Printf(
 			"Cloud server with uniq_id [%s] creating. Check status with 'cloud server status --uniq_id %s'\n",
-			result.(map[string]interface{})["uniq_id"])
+			resultUniqId, resultUniqId)
 	},
 }
 
