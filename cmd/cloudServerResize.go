@@ -47,23 +47,32 @@ Skipping the filesystem resize is only possible when moving to a larger
 configuration. This option has no effect if moving to the same or smaller
 configuration.
 
-If this is a resize of a private parent child instance, pass --private-parent
-with a value of the name of the private parent. When passing --private-parent,
-the following flags are required:
+If this is a resize of a Cloud Server on a private parent, pass --private-parent
+with a value of either the name of the private parent, or the private parents
+uniq_id. When passing --private-parent, at least one of the following flags
+are required:
 
   --diskspace
   --memory
   --vcpu
 
-If you resize a private parent child instance, and only up the memory or vcpu,
-this will be applied live without downtime to your Cloud Server.
+Downtime Expectations:
+
+When resizing a Cloud Server on a private parent, you can add memory or vcpu(s)
+without downtime. If you change the diskspace however, then a reboot will be
+required.
+
+When resizing a Cloud Server that isn't on a private parent, there will be one
+reboot during the resize. The only case there will be two reboots is when
+going to a config with more diskspace, and --skip-fs-resize wasn't passed.
+
+During all resizes, the Cloud Server is online as the disk synchronizes.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		diskspaceFlag, _ := cmd.Flags().GetInt64("diskspace")
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 		memoryFlag, _ := cmd.Flags().GetInt64("memory")
-		parentFlag, _ := cmd.Flags().GetString("parent")
 		skipFsResizeFlag, _ := cmd.Flags().GetBool("skip-fs-resize")
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
@@ -236,9 +245,6 @@ this will be applied live without downtime to your Cloud Server.
 			if vcpuFlag != -1 {
 				resizeArgs["vcpu"] = vcpuFlag // desired vcpus
 			}
-			if parentFlag != "" {
-				resizeArgs["parent"] = privateParentFlag // name of the private parent
-			}
 
 			// determine if this will be a live resize
 			if _, exists := resizeArgs["memory"]; exists {
@@ -303,11 +309,10 @@ func init() {
 	cloudServerResizeCmd.Flags().String("private-parent", "",
 		"name or uniq_id of the private-parent. Must use when adding/removing resources to a Cloud Server on a private parent.")
 	cloudServerResizeCmd.Flags().String("uniq_id", "", "uniq_id of server to resize")
-	cloudServerResizeCmd.Flags().Int64("diskspace", -1, "desired diskspace (required when private-parent)")
-	cloudServerResizeCmd.Flags().Int64("memory", -1, "desired memory (required when private-parent)")
-	cloudServerResizeCmd.Flags().String("parent", "", "name of private parent (required when private-parent)")
+	cloudServerResizeCmd.Flags().Int64("diskspace", -1, "desired diskspace (when private-parent)")
+	cloudServerResizeCmd.Flags().Int64("memory", -1, "desired memory (when private-parent)")
 	cloudServerResizeCmd.Flags().Bool("skip-fs-resize", false, "whether or not to skip the fs resize")
-	cloudServerResizeCmd.Flags().Int64("vcpu", -1, "desired vcpu count (required when private-parent)")
+	cloudServerResizeCmd.Flags().Int64("vcpu", -1, "desired vcpu count (when private-parent)")
 	cloudServerResizeCmd.Flags().Int64("config_id", -1,
-		"config_id of your desired config (dont use with private-parent) (see 'cloud server options --configs')")
+		"config_id of your desired config (when !private-parent) (see 'cloud server options --configs')")
 }
