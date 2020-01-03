@@ -96,7 +96,9 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			}
 			contextNameString = cast.ToString(contextNameBytes)
 		}
-		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.contextname", contextNameString), contextNameString)
+		lwCliInst.Viper.Set(
+			fmt.Sprintf("liquidweb.api.contexts.%s.contextname",
+				contextNameString), contextNameString)
 
 		// username
 		fmt.Print("LiquidWeb username: ")
@@ -105,7 +107,8 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			return contexts, err
 		}
 		usernameString := cast.ToString(usernameBytes)
-		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.username", contextNameString), usernameString)
+		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.username",
+			contextNameString), usernameString)
 
 		// password
 		passwordBytes, err := term.ReadPassword("LiquidWeb password: ")
@@ -113,7 +116,8 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			return contexts, err
 		}
 		passwordString := cast.ToString(passwordBytes)
-		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.password", contextNameString), passwordString)
+		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.password",
+			contextNameString), passwordString)
 
 		// url
 		fmt.Printf("API URL (hit enter for default): ")
@@ -125,7 +129,8 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 		if urlString == "" {
 			urlString = "https://api.liquidweb.com"
 		}
-		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.url", contextNameString), urlString)
+		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.url",
+			contextNameString), urlString)
 
 		// insecure ssl validation
 		fmt.Printf("Insecure SSL Validation (yes/no) (hit enter for default): ")
@@ -138,7 +143,8 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 		if insecureString == "yes" {
 			insecure = true
 		}
-		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.insecure", contextNameString), insecure)
+		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.insecure",
+			contextNameString), insecure)
 
 		// timeout
 		fmt.Printf("API timeout (hit enter for default): ")
@@ -150,7 +156,8 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 		if timeoutInt == 0 {
 			timeoutInt = 30
 		}
-		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.timeout", contextNameString), timeoutInt)
+		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.timeout",
+			contextNameString), timeoutInt)
 
 		// make current context?
 		fmt.Printf("Make current context? (yes/no)")
