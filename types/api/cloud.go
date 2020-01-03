@@ -107,3 +107,28 @@ type CloudPrivateParentDetailsEntryZoneRegion struct {
 	Id   int64  `json:"id" mapstructure:"id"`
 	Name string `json:"name" mapstructure:"name"`
 }
+
+type CloudConfigDetails struct {
+	Id                int64         `json:"id" mapstructure:"id"`
+	Active            int64         `json:"active" mapstructure:"active"`
+	Available         int64         `json:"available" mapstructure:"available"`
+	Category          string        `json:"category" mapstructure:"category"`
+	Description       string        `json:"description" mapstructure:"description"`
+	Disk              int64         `json:"disk,omitempty" mapstructure:"disk"`
+	Featured          int64         `json:"featured" mapstructure:"featured"`
+	Memory            int64         `json:"memory,omitempty" mapstructure:"memory"`
+	Vcpu              int64         `json:"vcpu,omitempty" mapstructure:"vcpu"`
+	ZoneAvailability  []map[int]int `json:"zone_availability" mapstructure:"zone_availability"`
+	Retired           int64         `json:"retired,omitempty" mapstructure:"retired"`
+	RamTotal          int64         `json:"ram_total,omitempty" mapstructure:"ram_total"`
+	RamAvailable      int64         `json:"ram_available,omitempty" mapstructure:"ram_available"`
+	RaidLevel         int64         `json:"raid_level,omitempty" mapstructure:"raid_level"`
+	DiskType          int64         `json:"disk_type,omitempty" mapstructure:"disk_type"`
+	DiskTotal         int64         `json:"disk_total,omitempty" mapstructure:"disk_total"`
+	DiskCount         int64         `json:"disk_count,omitempty" mapstructure:"disk_count"`
+	CpuSpeed          int64         `json:"cpu_speed,omitempty" mapstructure:"cpu_speed"`
+	CpuModel          int64         `json:"cpu_model,omitempty" mapstructure:"cpu_model"`
+	CpuHyperthreading int64         `json:"cpu_hyperthreading,omitempty" mapstructure:"cpu_hyperthreading"`
+	CpuCount          int64         `json:"cpu_count,omitempty" mapstructure:"cpu_count"`
+	CpuCores          int64         `json:"cpu_cores,omitempty" mapstructure:"cpu_cores"`
+}

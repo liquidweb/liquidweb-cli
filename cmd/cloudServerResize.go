@@ -96,14 +96,34 @@ this will be applied live without downtime to your Cloud Server.
 		}
 
 		var liveResize bool
-		var oneRebootResize bool
+		var twoRebootResize bool
 		if privateParentFlag == "" {
 			// non private parent resize
 			if memoryFlag != -1 || diskspaceFlag != -1 || vcpuFlag != -1 {
 				lwCliInst.Die(fmt.Errorf("cannot pass --memory --diskspace or --vcpu when --private-parent is not given"))
 			}
 
+			// if already on the given config, nothing to do
+			if cloudServerDetails.ConfigId == configIdFlag {
+				lwCliInst.Die(fmt.Errorf("already on config_id [%d]; not initiating a resize", configIdFlag))
+			}
+
 			// determine reboot expectation.
+			//   resize up full: 2 reboot
+			//   resize up quick (skip-fs-resize) 1 reboot
+			//   resize down: 1 reboot
+			var configDetails apiTypes.CloudConfigDetails
+			if err := lwCliInst.CallLwApiInto("bleed/storm/config/details", map[string]interface{}{"id": configIdFlag}, &configDetails); err != nil {
+				lwCliInst.Die(err)
+			}
+
+			if configDetails.Disk >= cloudServerDetails.DiskSpace {
+				// disk space going up..
+				if !skipFsResizeFlag {
+					// .. and not skipping fs resize, will be 2 reboots.
+					twoRebootResize = true
+				}
+			}
 		} else {
 			// private parent resize specific logic
 			if memoryFlag == -1 && diskspaceFlag == -1 && vcpuFlag == -1 {
@@ -166,7 +186,10 @@ this will be applied live without downtime to your Cloud Server.
 				diskspaceChanging bool
 				vcpuChanging      bool
 				memoryChanging    bool
+				memoryCanLive     bool
+				vcpuCanLive       bool
 			)
+			// record what resources are changing
 			if diskspaceFlag != -1 {
 				if cloudServerDetails.DiskSpace != diskspaceFlag {
 					diskspaceChanging = true
@@ -208,12 +231,7 @@ this will be applied live without downtime to your Cloud Server.
 				resizeArgs["parent"] = privateParentFlag // name of the private parent
 			}
 
-			// determine if resize can be performed live.
-			var (
-				memoryCanLive bool
-				vcpuCanLive   bool
-			)
-
+			// determine if this will be a live resize
 			if _, exists := resizeArgs["memory"]; exists {
 				if memoryFlag >= cloudServerDetails.Memory {
 					// asking for more RAM
@@ -255,11 +273,14 @@ this will be applied live without downtime to your Cloud Server.
 		if liveResize {
 			fmt.Printf("\nthis resize will be performed live without downtime.\n")
 		} else {
-			rebootExpectation := "two"
-			if oneRebootResize {
-				rebootExpectation = "one"
+			rebootExpectation := "one reboot"
+			if twoRebootResize {
+				rebootExpectation = "two reboots"
 			}
-			fmt.Printf("\nexpect %s reboot during this process. Your server will be online as the disk is copied to the destination.\n", rebootExpectation)
+			fmt.Printf("\nexpect %s during this process. Your server will be online as the disk is copied to the destination.\n", rebootExpectation)
+			if twoRebootResize {
+				fmt.Printf("\tTIP: You could avoid the second reboot by passing --skip-fs-resize. See usage for additional details.\n")
+			}
 		}
 	},
 }
