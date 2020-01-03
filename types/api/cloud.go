@@ -163,3 +163,29 @@ type CloudServerStartResponse struct {
 type CloudPrivateParentDeleteResponse struct {
 	Deleted string `json:"deleted" mapstructure:"deleted"`
 }
+
+type CloudImageCreateResponse struct {
+	Created string `json:"created" mapstructure:"created"`
+}
+
+type CloudImageRestoreResponse struct {
+	Reimaged string `json"reimaged" mapstructure:"reimaged"`
+}
+
+type CloudImageDeleteResponse struct {
+	Deleted int64 `json:"deleted" mapstructure:"deleted"`
+}
+
+type CloudImageDetails struct {
+	Accnt               int64                    `json:"accnt" mapstructure:"accnt"`
+	Features            []map[string]interface{} `json:"features" mapstructure:"features"`
+	HvType              string                   `json:"hv_type" mapstructure:"hv_type"`
+	Id                  int64                    `json:"id" mapstructure:"id"`
+	Name                string                   `json:"name" mapstructure:"name"`
+	Size                float64                  `json:"size" mapstructure:"size"`
+	SourceHostname      string                   `json:"source_hostname" mapstructure:"source_hostname"`
+	SourceUniqId        string                   `json:"source_uniq_id" mapstructure:"source_uniq_id"`
+	Template            string                   `json:"template" mapstructure:"template"`
+	TemplateDescription string                   `json:"template_description" mapstructure:"template_description"`
+	TimeTaken           string                   `json:"time_taken" mapstructure:"time_taken"`
+}
