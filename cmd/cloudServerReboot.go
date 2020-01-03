@@ -39,7 +39,8 @@ To perform a forced a reboot, you must use --force`,
 		}
 
 		var resp apiTypes.CloudServerRebootResponse
-		if err := lwCliInst.CallLwApiInto("bleed/storm/server/reboot", map[string]interface{}{"uniq_id": uniqId, "force": force}, &resp); err != nil {
+		if err := lwCliInst.CallLwApiInto("bleed/storm/server/reboot", map[string]interface{}{
+			"uniq_id": uniqId, "force": force}, &resp); err != nil {
 			lwCliInst.Die(err)
 		}
 

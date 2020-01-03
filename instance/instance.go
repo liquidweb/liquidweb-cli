@@ -113,7 +113,7 @@ func (client *Client) AllPaginatedResults(args *AllPaginatedResultsArgs) (apiTyp
 
 	var list apiTypes.PaginatedList
 	if err := CastFieldTypes(got, &list); err != nil {
-		return apiTypes.MergedPaginatedList{}, fmt.Errorf("%w %s", errorTypes.LwApiUnexpectedResponseStructure, args.Method)
+		return apiTypes.MergedPaginatedList{}, err
 	}
 
 	mergedList := apiTypes.MergedPaginatedList{
@@ -134,7 +134,7 @@ func (client *Client) AllPaginatedResults(args *AllPaginatedResultsArgs) (apiTyp
 
 			var page apiTypes.PaginatedList
 			if err := CastFieldTypes(got, &page); err != nil {
-				return apiTypes.MergedPaginatedList{}, fmt.Errorf("%w %s", errorTypes.LwApiUnexpectedResponseStructure, args.Method)
+				return apiTypes.MergedPaginatedList{}, err
 			}
 
 			// append page to mergedList
