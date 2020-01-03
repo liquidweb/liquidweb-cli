@@ -37,7 +37,9 @@ func New(viper *viper.Viper) (Client, error) {
 
 	lwApiClient, err := lwCliInstApi.New(viper)
 	if err != nil {
-		return Client{}, fmt.Errorf("Failed creating an lwApi client. Error was:\n%s\nPlease check your liquidweb-cli config file for errors or ommissions\n", err)
+		return Client{}, fmt.Errorf(
+			"Failed creating an lwApi client. Error was:\n%s\nPlease check your liquidweb-cli config file for errors or ommissions\n",
+			err)
 	}
 
 	client := Client{
@@ -157,12 +159,16 @@ func (client *Client) AllPaginatedResults(args *AllPaginatedResultsArgs) (apiTyp
 func CastFieldTypes(source interface{}, dest interface{}) (err error) {
 	defer func() {
 		if paniced := recover(); paniced != nil {
-			err = fmt.Errorf("%w source [%+v] dest type [%s]: %+v", errorTypes.LwApiUnexpectedResponseStructure, source, reflect.TypeOf(dest).String(), paniced)
+			err = fmt.Errorf("%w source [%+v] dest type [%s]: %+v",
+				errorTypes.LwApiUnexpectedResponseStructure, source,
+				reflect.TypeOf(dest).String(), paniced)
 		}
 	}()
 
 	if err = mapstructure.WeakDecode(source, &dest); err != nil {
-		err = fmt.Errorf("%w\nsource [%+v] dest type [%s] error: %+v", errorTypes.LwApiUnexpectedResponseStructure, source, reflect.TypeOf(dest).String(), err)
+		err = fmt.Errorf("%w\nsource [%+v] dest type [%s] error: %+v",
+			errorTypes.LwApiUnexpectedResponseStructure, source,
+			reflect.TypeOf(dest).String(), err)
 	}
 
 	return
