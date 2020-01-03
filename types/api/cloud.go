@@ -140,3 +140,7 @@ type CloudServerDestroyResponse struct {
 type CloudServerShutdownResponse struct {
 	Shutdown string `json:"shutdown" mapstructure:"shutdown"`
 }
+
+type CloudServerStartResponse struct {
+	Started string `json:"started" mapstructure:"started"`
+}

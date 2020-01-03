@@ -19,6 +19,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudServerStartCmd = &cobra.Command{
@@ -39,8 +41,8 @@ Boot a server. If the server is already running, this will do nothing.`,
 			"uniq_id": uniqIdFlag,
 		}
 
-		result, err := lwCliInst.LwApiClient.Call("bleed/server/start", startArgs)
-		if err != nil {
+		var result apiTypes.CloudServerStartResponse
+		if err := lwCliInst.CallLwApiInto("bleed/server/start", startArgs, &result); err != nil {
 			lwCliInst.Die(err)
 		}
 
@@ -51,7 +53,7 @@ Boot a server. If the server is already running, this will do nothing.`,
 			}
 			fmt.Printf(pretty)
 		} else {
-			fmt.Printf("started: %s\n", result.(map[string]interface{})["started"])
+			fmt.Printf("started: %s\n", result.Started)
 		}
 
 	},
