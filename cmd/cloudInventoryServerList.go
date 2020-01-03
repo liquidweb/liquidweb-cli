@@ -82,6 +82,10 @@ var cloudInventoryServerListCmd = &cobra.Command{
 					fmt.Printf("\t%s: %+v\n", field, item[field])
 				}
 
+				if value, exists := item["parent"]; exists {
+					fmt.Printf("\tPrivateParent: %s\n", value)
+				}
+
 				serverCnt++
 			}
 		}

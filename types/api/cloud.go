@@ -159,3 +159,7 @@ type CloudServerShutdownResponse struct {
 type CloudServerStartResponse struct {
 	Started string `json:"started" mapstructure:"started"`
 }
+
+type CloudPrivateParentDeleteResponse struct {
+	Deleted string `json:"deleted" mapstructure:"deleted"`
+}
