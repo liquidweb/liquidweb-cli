@@ -136,3 +136,7 @@ type CloudConfigDetails struct {
 type CloudServerDestroyResponse struct {
 	Destroyed string `json:"destroyed" mapstructure:"destroyed"`
 }
+
+type CloudServerShutdownResponse struct {
+	Shutdown string `json:"shutdown" mapstructure:"shutdown"`
+}

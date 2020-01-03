@@ -19,6 +19,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudServerShutdownCmd = &cobra.Command{
@@ -40,8 +42,8 @@ will issue a halt command to the server and shutdown normally.`,
 			"uniq_id": uniqIdFlag,
 		}
 
-		result, err := lwCliInst.LwApiClient.Call("bleed/server/shutdown", shutdownArgs)
-		if err != nil {
+		var result apiTypes.CloudServerShutdownResponse
+		if err := lwCliInst.CallLwApiInto("bleed/server/shutdown", shutdownArgs, &result); err != nil {
 			lwCliInst.Die(err)
 		}
 
@@ -52,7 +54,7 @@ will issue a halt command to the server and shutdown normally.`,
 			}
 			fmt.Printf(pretty)
 		} else {
-			fmt.Printf("shutdown: %s\n", result.(map[string]interface{})["shutdown"])
+			fmt.Printf("shutdown: %s\n", result.Shutdown)
 		}
 
 	},
