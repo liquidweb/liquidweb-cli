@@ -17,11 +17,9 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
@@ -142,62 +140,9 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 					"resizes on private parents require at least least one of: --memory --diskspace --vcpu flags"))
 			}
 
-			var privateParentUniqId string
-			var privateParentDetails apiTypes.CloudPrivateParentDetails
-			var privateParentDetailsErr error
-
-			// if privateParentFlag looks like a uniq_id, try it as a uniq_id first.
-			if len(privateParentFlag) == 6 && strings.ToUpper(privateParentFlag) == privateParentFlag {
-				if err := lwCliInst.CallLwApiInto("bleed/storm/private/parent/details",
-					map[string]interface{}{"uniq_id": privateParentFlag},
-					&privateParentDetails); err == nil {
-					privateParentUniqId = privateParentFlag
-				} else {
-					privateParentDetailsErr = fmt.Errorf(
-						"failed fetching parent details treating given --private-parent arg as a uniq_id [%s]: %s",
-						privateParentFlag, err)
-				}
-			}
-
-			// if we havent found the pp details yet, try assuming privateParentFlag is the name of the pp
-			if privateParentUniqId == "" {
-				methodArgs := instance.AllPaginatedResultsArgs{
-					Method:         "bleed/storm/private/parent/list",
-					ResultsPerPage: 100,
-				}
-				results, err := lwCliInst.AllPaginatedResults(&methodArgs)
-				if err != nil {
-					lwCliInst.Die(err)
-				}
-
-				for _, item := range results.Items {
-					var privateParentDetails apiTypes.CloudPrivateParentDetails
-					if err := instance.CastFieldTypes(item, &privateParentDetails); err != nil {
-						lwCliInst.Die(err)
-					}
-
-					if privateParentDetails.Domain == privateParentFlag {
-						// found it get details
-						err := lwCliInst.CallLwApiInto("bleed/storm/private/parent/details",
-							map[string]interface{}{
-								"uniq_id": privateParentDetails.UniqId,
-							},
-							&privateParentDetails)
-						if err != nil {
-							privateParentDetailsErr = fmt.Errorf(
-								"failed fetching private parent details for discovered uniq_id [%s] error: %s %w",
-								privateParentDetails.UniqId, err, privateParentDetailsErr)
-							lwCliInst.Die(privateParentDetailsErr)
-						}
-						privateParentUniqId = privateParentDetails.UniqId
-						break // found the uniq_id so break
-					}
-				}
-			}
-
-			if privateParentUniqId == "" {
-				lwCliInst.Die(fmt.Errorf("failed deriving uniq_id from --private-parent [%s]: %s",
-					privateParentFlag, privateParentDetailsErr))
+			privateParentUniqId, err := derivePrivateParentUniqId(privateParentFlag)
+			if err != nil {
+				lwCliInst.Die(err)
 			}
 
 			var (

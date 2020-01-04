@@ -33,14 +33,21 @@ will be able to provision Cloud Servers on a Private Parent. In addition, with P
 Parents you have total control of how many instances can live on the Private Parent,
 as well as how many resources each Cloud Server gets.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		nameFlag, _ := cmd.Flags().GetString("name")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
+		if nameFlag == "" {
+			lwCliInst.Die(fmt.Errorf("flag --name is required"))
+		}
+
+		// if passed a private-parent flag, derive its uniq_id
+		var privateParentUniqId string
+		privateParentUniqId, err := derivePrivateParentUniqId(nameFlag)
+		if err != nil {
+			lwCliInst.Die(err)
 		}
 
 		apiArgs := map[string]interface{}{
-			"uniq_id": uniqIdFlag,
+			"uniq_id": privateParentUniqId,
 		}
 
 		var details apiTypes.CloudPrivateParentDetails
@@ -56,5 +63,5 @@ as well as how many resources each Cloud Server gets.`,
 func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentDetailsCmd)
 
-	cloudPrivateParentDetailsCmd.Flags().String("uniq_id", "", "uniq_id of the private parent to get details of")
+	cloudPrivateParentDetailsCmd.Flags().String("name", "", "name or uniq_id of the Private Parent")
 }
