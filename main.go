@@ -18,5 +18,5 @@ package main
 import "github.com/liquidweb/liquidweb-cli/cmd"
 
 func main() {
-  cmd.Execute()
+	cmd.Execute()
 }
