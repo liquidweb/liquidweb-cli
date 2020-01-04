@@ -176,6 +176,14 @@ type CloudImageDeleteResponse struct {
 	Deleted int64 `json:"deleted" mapstructure:"deleted"`
 }
 
+type CloudServerIsBlockStorageOptimized struct {
+	IsOptimized bool `json:"is_optimized" mapstructure:"is_optimized"`
+}
+
+type CloudServerIsBlockStorageOptimizedSetResponse struct {
+	Updated string `json:"updated" mapstructure:"updated"`
+}
+
 type CloudImageDetails struct {
 	Accnt               int64                    `json:"accnt" mapstructure:"accnt"`
 	Features            []map[string]interface{} `json:"features" mapstructure:"features"`
