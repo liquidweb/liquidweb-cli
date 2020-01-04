@@ -63,7 +63,7 @@ Enabling Cloud Block Storage will cause your Cloud Server to reboot.`,
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Enabled Cloud Block Storage Optimized; %s\n", details.Updated)
+		fmt.Printf("Enabled Cloud Block Storage Optimized; %+v\n", details)
 	},
 }
 
