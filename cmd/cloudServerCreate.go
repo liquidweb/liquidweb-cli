@@ -32,7 +32,28 @@ var cloudServerCreateCmd = &cobra.Command{
 	Short: "Create a Cloud Server",
 	Long: `Create a Cloud Server.
 
-Requires various flags. Please see the flag section of help.`,
+Requires various flags. Please see the flag section of help.
+
+Examples:
+
+# Create a Cloud Server on a Private Parent named "private"
+'cloud server create --private-parent private --memory 1024 --diskspace 40 --vcpu 2 --zone 40460 --template DEBIAN_10_UNMANAGED'
+
+# Create a Cloud Server on config_id 1
+'cloud server create --config_id 1 --template DEBIAN_10_UNMANAGED --zone 40460'
+
+# Create a Cloud Server from image id 111
+'cloud server create --image-id 111 --zone 40460 --config_id 1'
+
+# Create a Cloud Server from backup id 111
+'cloud server create --backup-id 111 --zone 40460 --config_id 1'
+
+These examples use default values for various flags, such as password, type, ssh-key, hostname, etc.
+
+For a list of Templates, Configs, and Region/Zones, see 'cloud server options --configs --templates --zones'
+For a list of images, see 'cloud inventory images list'
+For a list of backups, see 'cloud inventory backups list'
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		verboseFlag, _ := cmd.Flags().GetBool("verbose")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
@@ -53,6 +74,8 @@ Requires various flags. Please see the flag section of help.`,
 		memoryFlag, _ := cmd.Flags().GetInt("memory")
 		diskspaceFlag, _ := cmd.Flags().GetInt("diskspace")
 		vcpuFlag, _ := cmd.Flags().GetInt("vcpu")
+		backupIdFlag, _ := cmd.Flags().GetInt("backup-id")
+		imageIdFlag, _ := cmd.Flags().GetInt("image-id")
 
 		// sanity check flags
 		if zoneFlag == 0 {
@@ -61,9 +84,8 @@ Requires various flags. Please see the flag section of help.`,
 		if configIdFlag == 0 && privateParentFlag == "" {
 			lwCliInst.Die(fmt.Errorf("--config_id is a required flag without --private-parent"))
 		}
-		if templateFlag == "" {
-			// TODO: not required when creating from a backup or an image
-			lwCliInst.Die(fmt.Errorf("--template is a required flag"))
+		if templateFlag == "" && backupIdFlag == -1 && imageIdFlag == -1 {
+			lwCliInst.Die(fmt.Errorf("at least one of the following flags must be set --template --image-id --backup-id"))
 		}
 
 		var publicSshKeyContents string
@@ -92,13 +114,22 @@ Requires various flags. Please see the flag section of help.`,
 			"features": map[string]interface{}{
 				"Bandwidth": bandwidthFlag,
 				"ConfigId":  configIdFlag,
-				"Template":  templateFlag,
 				"ExtraIp": map[string]interface{}{
 					"value": ipsFlag,
 					"count": 0,
 				},
 				"LiquidWebBackupPlan": backupPlanFlag,
 			},
+		}
+
+		if templateFlag != "" {
+			createArgs["features"].(map[string]interface{})["Template"] = templateFlag
+		}
+		if backupIdFlag != -1 {
+			createArgs["backup_id"] = backupIdFlag
+		}
+		if imageIdFlag != -1 {
+			createArgs["image_id"] = imageIdFlag
 		}
 
 		if privateParentUniqId != "" {
@@ -175,15 +206,17 @@ func init() {
 	cloudServerCreateCmd.Flags().String("type", "SS.VPS", "some examples of types; SS.VPS, SS.VPS.WIN, SS.VM, SS.VM.WIN")
 	cloudServerCreateCmd.Flags().String("hostname", randomHostname, "hostname to set")
 	cloudServerCreateCmd.Flags().Int("ips", 1, "amount of IP addresses")
-	// TODO pool_ips
 	cloudServerCreateCmd.Flags().String("public-ssh-key", sshPubKeyFile,
 		"path to file containing the public ssh key you wish to be on the new Cloud Server")
 	cloudServerCreateCmd.Flags().Int("config_id", 0, "config_id to use")
 	cloudServerCreateCmd.Flags().String("backup-plan", "None", "Cloud Server backup plan to use")
 	cloudServerCreateCmd.Flags().Int("backup-plan-quota", 300, "Quota amount. Should only be used with '--backup-plan Quota'")
 	cloudServerCreateCmd.Flags().String("bandwidth", "SS.10000", "bandwidth package to use")
-	cloudServerCreateCmd.Flags().Int("zone", 0, "Cloud server zone to create in")
+	cloudServerCreateCmd.Flags().Int("zone", 0, "zone to create in")
 	cloudServerCreateCmd.Flags().String("password", randomPassword, "root or administrator password to set")
+
+	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of backup to create from (see 'cloud inventory backup list')")
+	cloudServerCreateCmd.Flags().Int("image-id", -1, "id of image to create from (see 'cloud inventory image list')")
 
 	// private parent specific
 	cloudServerCreateCmd.Flags().String("private-parent", "",
@@ -193,6 +226,6 @@ func init() {
 	cloudServerCreateCmd.Flags().Int("vcpu", -1, "vcpu value use with --private-parent")
 
 	// windows specific
-	cloudServerCreateCmd.Flags().String("antivirus", "", "antivirus string")
-	cloudServerCreateCmd.Flags().String("ms-sql", "", "ms_sql string")
+	cloudServerCreateCmd.Flags().String("antivirus", "", "use only with Windows Server")
+	cloudServerCreateCmd.Flags().String("ms-sql", "", "Microsoft SQL Server")
 }
