@@ -172,6 +172,10 @@ type CloudImageRestoreResponse struct {
 	Reimaged string `json"reimaged" mapstructure:"reimaged"`
 }
 
+type CloudBackupRestoreResponse struct {
+	Restored string `json:"restored" mapstructure:"restored"`
+}
+
 type CloudImageDeleteResponse struct {
 	Deleted int64 `json:"deleted" mapstructure:"deleted"`
 }

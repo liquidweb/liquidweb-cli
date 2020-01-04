@@ -31,6 +31,8 @@ var cloudInventoryBackupListCmd = &cobra.Command{
 	Long:  `List Cloud Backups on your account`,
 	Run: func(cmd *cobra.Command, args []string) {
 		jsonFlag, _ := cmd.Flags().GetBool("json")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+
 		methodArgs := instance.AllPaginatedResultsArgs{
 			Method:         "bleed/storm/backup/list",
 			ResultsPerPage: 100,
@@ -55,6 +57,11 @@ var cloudInventoryBackupListCmd = &cobra.Command{
 				lwCliInst.Die(err)
 			}
 
+			if uniqIdFlag != "" {
+				if details.UniqId != uniqIdFlag {
+					continue
+				}
+			}
 			_printCloudBackupDetailsFromDetailsStruct(&details)
 		}
 	},
@@ -76,4 +83,5 @@ func init() {
 	cloudInventoryBackupCmd.AddCommand(cloudInventoryBackupListCmd)
 
 	cloudInventoryBackupListCmd.Flags().Bool("json", false, "output in json format")
+	cloudInventoryBackupListCmd.Flags().String("uniq_id", "", "only fetch backups made from this uniq_id")
 }
