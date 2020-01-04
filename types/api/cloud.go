@@ -197,3 +197,15 @@ type CloudImageDetails struct {
 	TemplateDescription string                   `json:"template_description" mapstructure:"template_description"`
 	TimeTaken           string                   `json:"time_taken" mapstructure:"time_taken"`
 }
+
+type CloudBackupDetails struct {
+	Accnt     int64                    `json:"accnt" mapstructure:"accnt"`
+	Features  []map[string]interface{} `json:"features" mapstructure:"features"`
+	HvType    string                   `json:"hv_type" mapstructure:"hv_type"`
+	Id        int64                    `json:"id" mapstructure:"id"`
+	Name      string                   `json:"name" mapstructure:"name"`
+	Size      float64                  `json:"size" mapstructure:"size"`
+	Template  string                   `json:"template" mapstructure:"template"`
+	TimeTaken string                   `json:"time_taken" mapstructure:"time_taken"`
+	UniqId    string                   `json:"uniq_id" mapstructure:"uniq_id"`
+}
