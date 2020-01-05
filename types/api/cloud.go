@@ -188,6 +188,52 @@ type CloudServerIsBlockStorageOptimizedSetResponse struct {
 	Updated string `json:"updated" mapstructure:"updated"`
 }
 
+type CloudServerCloneResponse struct {
+	Accnt               int64                        `json:"accnt" mapstructure:"accnt"`
+	Active              int64                        `json:"active" mapstructure:"active"`
+	BackupEnabled       int64                        `json:"backup_enabled" mapstructure:"backup_enabled"`
+	BackupPlan          string                       `json:"backup_plan" mapstructure:"backup_plan"`
+	BackupQuota         int64                        `json:"backup_quota" mapstructure:"backup_quota"`
+	BackupSize          float64                      `json:"backup_size" mapstructure:"backup_size"`
+	BandwidthQuota      string                       `json:"bandwidth_quota" mapstructure:"bandwidth_quota"`
+	Categories          []interface{}                `json:"categories" mapstructure:"categories"`
+	ConfigDescription   string                       `json:"config_description" mapstructure:"config_description"`
+	ConfigId            int64                        `json:"config_id" mapstructure:"config_id"`
+	CreateDate          string                       `json:"create_date" mapstructure:"create_date"`
+	Description         string                       `json:"description" mapstructure:"description"`
+	Diskspace           int64                        `json:"diskspace" mapstructure:"diskspace"`
+	Domain              string                       `json:"domain" mapstructure:"domain"`
+	HvType              string                       `json:"hv_type" mapstructure:"hv_type"`
+	Instance            interface{}                  `json:"instance" mapstructure:"instance"`
+	Ip                  string                       `json:"ip" mapstructure:"ip"`
+	IpCount             int64                        `json:"ip_count" mapstructure:"ip_count"`
+	ManageLevel         string                       `json:"manage_level" mapstructure:"manage_level"`
+	Memory              int64                        `json:"memory" mapstructure:"memory"`
+	Parent              string                       `json:"parent" mapstructure:"parent"`
+	RegionId            int64                        `json:"region_id" mapstructure:"region_id"`
+	ShortDescription    string                       `json:"shortDescription" mapstructure:"shortDescription"`
+	Status              string                       `json:"status" mapstructure:"status"`
+	Template            string                       `json:"template" mapstructure:"template"`
+	TemplateDescription string                       `json:"template_description" mapstructure:"template_description"`
+	Type                string                       `json:"type" mapstructure:"type"`
+	UniqId              string                       `json:"uniq_id" mapstructure:"uniq_id"`
+	ValidSourceHvs      map[string]int64             `json:"valid_source_hvs" mapstructure:"valid_source_hvs"`
+	Vcpu                int64                        `json:"vcpu" mapstructure:"vcpu"`
+	Zone                CloudServerCloneResponseZone `json:"zone" mapstructure:"zone"`
+}
+
+type CloudServerCloneResponseZone struct {
+	Id     int64                              `json:"id" mapstructure:"id"`
+	Name   string                             `json:"name" mapstructure:"name"`
+	Region CloudServerCloneResponseZoneRegion `json:"region" mapstructure:"region"`
+}
+
+type CloudServerCloneResponseZoneRegion struct {
+	HostPrefix string `json:"host_prefix" mapstructure:"host_prefix"`
+	Id         int64  `json:"id" mapstructure:"id"`
+	Name       string `json:"name" mapstructure:"name"`
+}
+
 type CloudImageDetails struct {
 	Accnt               int64                    `json:"accnt" mapstructure:"accnt"`
 	Features            []map[string]interface{} `json:"features" mapstructure:"features"`
