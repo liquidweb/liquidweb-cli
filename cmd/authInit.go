@@ -154,7 +154,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 		}
 		timeoutInt := cast.ToInt(timeoutBytes)
 		if timeoutInt == 0 {
-			timeoutInt = 30
+			timeoutInt = 90
 		}
 		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.timeout",
 			contextNameString), timeoutInt)
