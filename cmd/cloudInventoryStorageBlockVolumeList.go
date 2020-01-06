@@ -24,7 +24,7 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
-var cloudInventoryStorageBlockListCmd = &cobra.Command{
+var cloudInventoryStorageBlockVolumeListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List Cloud Block Storage volumes on your account",
 	Long:  `List Cloud Block Storage volumes on your account`,
@@ -76,7 +76,7 @@ func _printCloudBlockStorageVolumeDetailsStruct(details *apiTypes.CloudBlockStor
 }
 
 func init() {
-	cloudInventoryStorageBlockCmd.AddCommand(cloudInventoryStorageBlockListCmd)
+	cloudInventoryStorageBlockVolumeCmd.AddCommand(cloudInventoryStorageBlockVolumeListCmd)
 
-	cloudInventoryStorageBlockListCmd.Flags().Bool("json", false, "output in json format")
+	cloudInventoryStorageBlockVolumeListCmd.Flags().Bool("json", false, "output in json format")
 }

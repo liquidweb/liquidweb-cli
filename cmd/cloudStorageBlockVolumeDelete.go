@@ -18,15 +18,14 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cobra"
-
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/spf13/cobra"
 )
 
-var cloudStorageBlockDetailsCmd = &cobra.Command{
-	Use:   "details",
-	Short: "Get details of a Cloud Block Storage volume",
-	Long: `Get details of a Cloud Block Storage volume.
+var cloudStorageBlockVolumeDeleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "Delete a Cloud Block Storage Volume",
+	Long: `Delete a Cloud Block Storage Volume.
 
 Block storage offers a method to attach additional storage to Cloud Server.
 Once attached, volumes appear as normal block devices, and can be used as such.
@@ -40,9 +39,8 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		}
 
 		apiArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
-
-		var details apiTypes.CloudBlockStorageVolumeDetails
-		err := lwCliInst.CallLwApiInto("bleed/storage/block/volume/details", apiArgs, &details)
+		var details apiTypes.CloudBlockStorageVolumeDelete
+		err := lwCliInst.CallLwApiInto("bleed/storage/block/volume/delete", apiArgs, &details)
 		if err != nil {
 			lwCliInst.Die(err)
 		}
@@ -54,15 +52,14 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 			}
 			fmt.Printf(pretty)
 		} else {
-			_printCloudBlockStorageVolumeDetailsStruct(&details)
-
+			fmt.Printf("Deleted Cloud Block Storage Volume: %s\n", details.Deleted)
 		}
 	},
 }
 
 func init() {
-	cloudStorageBlockCmd.AddCommand(cloudStorageBlockDetailsCmd)
+	cloudStorageBlockVolumeCmd.AddCommand(cloudStorageBlockVolumeDeleteCmd)
 
-	cloudStorageBlockDetailsCmd.Flags().Bool("json", false, "output in json format")
-	cloudStorageBlockDetailsCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Block Storage volume")
+	cloudStorageBlockVolumeDeleteCmd.Flags().Bool("json", false, "output in json format")
+	cloudStorageBlockVolumeDeleteCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Block Storage volume")
 }

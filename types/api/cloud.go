@@ -317,3 +317,7 @@ type CloudBlockStorageVolumeDetailsAttachedTo struct {
 	Device   string `json:"device" mapstructure:"device"`
 	Resource string `json:"resource" mapstructure:"resource"`
 }
+
+type CloudBlockStorageVolumeDelete struct {
+	Deleted string `json:"deleted" mapstructure:"deleted"`
+}
