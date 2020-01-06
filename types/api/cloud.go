@@ -301,3 +301,19 @@ type CloudNetworkPrivateGetIpResponse struct {
 type CloudNetworkPrivateIsAttachedResponse struct {
 	IsAttached bool `json:"is_attached" mapstructure:"is_attached"`
 }
+
+type CloudBlockStorageVolumeDetails struct {
+	AttachedTo       []CloudBlockStorageVolumeDetailsAttachedTo `json:"attachedTo" mapstructure:"attachedTo"`
+	CrossAttach      bool                                       `json:"cross_attach" mapstructure:"cross_attach"`
+	Domain           string                                     `json:"domain" mapstructure:"domain"`
+	Label            string                                     `json:"label" mapstructure:"label"`
+	Size             int64                                      `json:"size" mapstructure:"size"`
+	Status           string                                     `json:"status" mapstructure:"status"`
+	UniqId           string                                     `json:"uniq_id" mapstructure:"uniq_id"`
+	ZoneAvailability []int64                                    `json:"zoneAvailability" mapstructure:"zoneAvailability"`
+}
+
+type CloudBlockStorageVolumeDetailsAttachedTo struct {
+	Device   string `json:"device" mapstructure:"device"`
+	Resource string `json:"resource" mapstructure:"resource"`
+}
