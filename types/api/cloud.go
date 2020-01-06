@@ -283,3 +283,21 @@ type CloudNetworkVipAssetListAlsoWithZoneResponse struct {
 	UniqId   string                 `json:"uniq_id" mapstructure:"uniq_id"`
 	Zone     CloudServerDetailsZone `json:"zone" mapstructure:"zone"`
 }
+
+type CloudNetworkPrivateAttachResponse struct {
+	Attached string `json:"attached" mapstructure:"attached"`
+}
+
+type CloudNetworkPrivateDetachResponse struct {
+	Detached string `json:"detached" mapstructure:"detached"`
+}
+
+type CloudNetworkPrivateGetIpResponse struct {
+	UniqId string `json:"uniq_id" mapstructure:"uniq_id"`
+	Legacy bool   `json:"legacy" mapstructure:"legacy"`
+	Ip     string `json:"ip" mapstructure:"ip"`
+}
+
+type CloudNetworkPrivateIsAttachedResponse struct {
+	IsAttached bool `json:"is_attached" mapstructure:"is_attached"`
+}
