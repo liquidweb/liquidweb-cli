@@ -37,11 +37,7 @@ func New(viper *viper.Viper) (lwApiClient *lwApi.Client, err error) {
 			Password: &apiPassword,
 			Url:      viper.GetString(fmt.Sprintf("liquidweb.api.contexts.%s.url", currentContext)),
 			Insecure: viper.GetBool(fmt.Sprintf("liquidweb.api.contexts.%s.insecure", currentContext)),
-		}
-
-		cfgTimeout := viper.GetInt(fmt.Sprintf("liquidweb.api.contexts.%s.timeout", currentContext))
-		if cfgTimeout > 0 {
-			lwApiCfg.Timeout = cast.ToUint(cfgTimeout)
+			Timeout:  cast.ToUint(viper.GetInt(fmt.Sprintf("liquidweb.api.contexts.%s.timeout", currentContext))),
 		}
 
 		lwApiClient, err = lwApi.New(&lwApiCfg)
