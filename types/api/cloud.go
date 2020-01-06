@@ -272,3 +272,14 @@ type CloudNetworkVipDetails struct {
 type CloudNetworkVipDestroyResponse struct {
 	Destroyed string `json:"destroyed" mapstructure:"destroyed"`
 }
+
+type CloudNetworkVipAssetListAlsoWithZoneResponse struct {
+	Active   int64                  `json:"active" mapstructure:"active"`
+	Domain   string                 `json:"domain" mapstructure:"domain"`
+	Ip       string                 `json:"ip" mapstructure:"ip"`
+	RegionId int64                  `json:"region_id" mapstructure:"region_id"`
+	Status   string                 `json:"status" mapstructure:"status"`
+	Type     string                 `json:"type" mapstructure:"type"`
+	UniqId   string                 `json:"uniq_id" mapstructure:"uniq_id"`
+	Zone     CloudServerDetailsZone `json:"zone" mapstructure:"zone"`
+}

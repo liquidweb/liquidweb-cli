@@ -76,11 +76,11 @@ Heartbeat
 			lwCliInst.Die(err)
 		}
 
-		printCloudNetworkVipDetails(&details)
+		_printCloudNetworkVipDetails(&details)
 	},
 }
 
-func printCloudNetworkVipDetails(details *apiTypes.CloudNetworkVipDetails) {
+func _printCloudNetworkVipDetails(details *apiTypes.CloudNetworkVipDetails) {
 	fmt.Printf("VIP Details:\n")
 	fmt.Printf("\tActive: %d\n", details.Active)
 	fmt.Printf("\tActive Status: %s\n", details.ActiveStatus)
