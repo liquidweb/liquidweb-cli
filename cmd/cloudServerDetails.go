@@ -88,6 +88,16 @@ func _printCloudServerDetailsFromDetailsStruct(details *apiTypes.CloudServerDeta
 	fmt.Printf("\tManageLevel: %s\n", details.ManageLevel)
 	fmt.Printf("\tActive: %d\n", details.Active)
 	fmt.Printf("\tAccnt: %d\n", details.Accnt)
+
+	var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
+	err := lwCliInst.CallLwApiInto("bleed/network/private/isattached", map[string]interface{}{
+		"uniq_id": details.UniqId}, &attachedDetails)
+	if err != nil {
+		lwCliInst.Die(err)
+	}
+	if attachedDetails.IsAttached {
+		fmt.Printf("\tAttached To Private Network\n")
+	}
 }
 
 func init() {

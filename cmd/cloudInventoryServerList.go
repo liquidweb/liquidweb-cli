@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
+	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudInventoryServerListCmd = &cobra.Command{
@@ -48,43 +49,14 @@ var cloudInventoryServerListCmd = &cobra.Command{
 		} else {
 			serverCnt := 1
 			for _, item := range results.Items {
-				fmt.Printf("%d.) domain: %s / uniq_id: %s\n", serverCnt, item["domain"], item["uniq_id"])
 
-				if zoneInter, zoneExists := item["zone"]; zoneExists {
-					zone := zoneInter.(map[string]interface{})
-					if regionInter, regionExists := zone["region"]; regionExists {
-						region := regionInter.(map[string]interface{})
-						fmt.Printf("\tzone: %+v - %+v\n", region["name"], zone["name"])
-						fmt.Printf("\t\tzone_id: %+v\n", zone["id"])
-						fmt.Printf("\t\tregion_id: %+v\n", region["id"])
-					}
+				var details apiTypes.CloudServerDetails
+				if err := instance.CastFieldTypes(item, &details); err != nil {
+					lwCliInst.Die(err)
 				}
 
-				fields := []string{
-					"create_date",
-					"config_description",
-					"config_id",
-					"template",
-					"template_description",
-					"manage_level",
-					"type",
-					"backup_plan",
-					"backup_quota",
-					"backup_size",
-					"bandwidth_quota",
-					"diskspace",
-					"memory",
-					"vcpu",
-					"ip",
-					"ip_count",
-				}
-				for _, field := range fields {
-					fmt.Printf("\t%s: %+v\n", field, item[field])
-				}
-
-				if value, exists := item["parent"]; exists {
-					fmt.Printf("\tPrivateParent: %s\n", value)
-				}
+				fmt.Printf("%d.) ", serverCnt)
+				_printCloudServerDetailsFromDetailsStruct(&details)
 
 				serverCnt++
 			}
