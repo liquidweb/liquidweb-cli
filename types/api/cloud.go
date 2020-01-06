@@ -259,3 +259,16 @@ type CloudBackupDetails struct {
 	TimeTaken string                   `json:"time_taken" mapstructure:"time_taken"`
 	UniqId    string                   `json:"uniq_id" mapstructure:"uniq_id"`
 }
+
+type CloudNetworkVipDetails struct {
+	Active       int64    `json:"active" mapstructure:"active"`
+	ActiveStatus string   `json:"activeStatus" mapstructure:"activeStatus"`
+	Domain       string   `json:"domain" mapstructure:"domain"`
+	UniqId       string   `json:"uniq_id" mapstructure:"uniq_id"`
+	Ip           string   `json:"ip" mapstructure:"ip"`
+	PrivateIp    []string `json:"private_ip" mapstructure:"private_ip"`
+}
+
+type CloudNetworkVipDestroyResponse struct {
+	Destroyed string `json:"destroyed" mapstructure:"destroyed"`
+}

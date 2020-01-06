@@ -35,6 +35,7 @@ func New(viper *viper.Viper) (lwApiClient *lwApi.Client, err error) {
 			Password: &apiPassword,
 			Url:      viper.GetString(fmt.Sprintf("liquidweb.api.contexts.%s.url", currentContext)),
 			Insecure: viper.GetBool(fmt.Sprintf("liquidweb.api.contexts.%s.insecure", currentContext)),
+			Timeout:  90,
 		}
 
 		lwApiClient, err = lwApi.New(&lwApiCfg)
