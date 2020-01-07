@@ -39,13 +39,16 @@ var rootCmd = &cobra.Command{
 Command line interface for interacting with LiquidWeb services via
 LiquidWebs Public API.
 
-If this is your first time running, you will need to setup auth
-contexts. An auth context contains authenication data for accessing
-your LiquidWeb Account. To setup your first auth context, you can
-run 'auth init'. For further information on auth contexts, be sure
-to checkout 'help auth' for a list of capabilities.
+If this is your first time running, you will need to setup at least
+one auth context. An auth context contains authentication data for
+accessing your LiquidWeb account. As such one auth context represents
+one LiquidWeb account. You can have multiple auth contexts defined.
 
-Consult the various subcommands for specific features and
+To setup your first auth context, you run 'auth init'. For further
+information on auth contexts, be sure to checkout 'help auth' for a
+list of capabilities.
+
+As always, consult the various subcommands for specific features and
 capabilities.`,
 }
 
