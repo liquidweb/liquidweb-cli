@@ -39,3 +39,7 @@ type NetworkIpPoolDetailsAssignment struct {
 	Primary    bool   `json:"primary" mapstructure:"primary"`
 	ZoneId     int64  `json:"zone_id" mapstructure:"zone_id"`
 }
+
+type NetworkIpPoolDelete struct {
+	Deleted bool `json:"deleted" mapstructure:"deleted"`
+}
