@@ -23,8 +23,8 @@ import (
 
 var cloudInventoryNetworkVipCmd = &cobra.Command{
 	Use:   "vip",
-	Short: "Inventory specific actions specific to Virtual IP (VIP)",
-	Long: `Inventory specific actions specific to Virtual IP (VIP).
+	Short: "Central place to see all your Virtual IP (VIP) assets",
+	Long: `Central place to see all your Virtual IP (VIP) assets.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {

@@ -23,8 +23,8 @@ import (
 
 var cloudInventoryServerCmd = &cobra.Command{
 	Use:   "server",
-	Short: "Inventory specific actions specific to Cloud Servers",
-	Long: `Inventory specific actions specific to Cloud Servers.
+	Short: "Central place to see all your Cloud Server assets",
+	Long: `Central place to see all your Cloud Server assets.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {

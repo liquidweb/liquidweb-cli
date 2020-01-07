@@ -23,8 +23,8 @@ import (
 
 var cloudInventoryPrivateParentCmd = &cobra.Command{
 	Use:   "private-parent",
-	Short: "Inventory specific actions specific to Private Parents",
-	Long: `Inventory specific actions specific to Private Parents.
+	Short: "Central place to see all your Private Parent assets",
+	Long: `Central place to see all your Private Parent assets.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {

@@ -23,8 +23,8 @@ import (
 
 var cloudInventoryCmd = &cobra.Command{
 	Use:   "inventory",
-	Short: "Cloud Inventory specific operations",
-	Long: `Cloud Inventory specific operations.
+	Short: "Central place to see all your Cloud assets",
+	Long: `Central place to see all your Cloud assets.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {

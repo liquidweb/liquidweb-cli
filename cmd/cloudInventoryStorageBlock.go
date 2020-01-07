@@ -23,8 +23,8 @@ import (
 
 var cloudInventoryStorageBlockCmd = &cobra.Command{
 	Use:   "block",
-	Short: "Inventory specific actions specific to Cloud Block Storage",
-	Long: `Inventory specific actions specific to Cloud Block Storage.
+	Short: "Central place to see all your Cloud Block Storage assets",
+	Long: `Central place to see all your Cloud Block Storage assets.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {

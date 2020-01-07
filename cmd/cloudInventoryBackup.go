@@ -23,8 +23,8 @@ import (
 
 var cloudInventoryBackupCmd = &cobra.Command{
 	Use:   "backup",
-	Short: "Inventory specific actions specific to Cloud Backups",
-	Long: `Inventory specific actions specific to Cloud Backups.
+	Short: "Central place to see all your Cloud Backup assets",
+	Long: `Central place to see all your Cloud Backup assets.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {

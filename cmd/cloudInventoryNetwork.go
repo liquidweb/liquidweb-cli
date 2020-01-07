@@ -23,8 +23,8 @@ import (
 
 var cloudInventoryNetworkCmd = &cobra.Command{
 	Use:   "network",
-	Short: "Inventory specific actions specific to Network products for Cloud Servers",
-	Long: `Inventory specific actions specific to Network products for Cloud Servers.
+	Short: "Central place to see all your assets for Cloud Server Network products",
+	Long: `Central place to see all your assets for Cloud Server Network products.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {
