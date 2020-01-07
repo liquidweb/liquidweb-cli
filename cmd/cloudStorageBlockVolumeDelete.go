@@ -32,7 +32,6 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
-		jsonFlag, _ := cmd.Flags().GetBool("json")
 
 		if uniqIdFlag == "" {
 			lwCliInst.Die(fmt.Errorf("--uniq_id is a required flag"))
@@ -45,21 +44,12 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 			lwCliInst.Die(err)
 		}
 
-		if jsonFlag {
-			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(details)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-			fmt.Printf(pretty)
-		} else {
-			fmt.Printf("Deleted Cloud Block Storage Volume: %s\n", details.Deleted)
-		}
+		fmt.Printf("Deleted Cloud Block Storage Volume: %s\n", details.Deleted)
 	},
 }
 
 func init() {
 	cloudStorageBlockVolumeCmd.AddCommand(cloudStorageBlockVolumeDeleteCmd)
 
-	cloudStorageBlockVolumeDeleteCmd.Flags().Bool("json", false, "output in json format")
 	cloudStorageBlockVolumeDeleteCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Block Storage volume")
 }

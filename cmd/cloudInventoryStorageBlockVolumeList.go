@@ -68,8 +68,14 @@ func _printCloudBlockStorageVolumeDetailsStruct(details *apiTypes.CloudBlockStor
 	fmt.Printf("Volume: %s\n", details.Domain)
 	fmt.Printf("\tStatus: %s\n", details.Status)
 	fmt.Printf("\tUniqId: %s\n", details.UniqId)
-	fmt.Printf("\tattachedTo: %+v\n", details.AttachedTo)
-	fmt.Printf("\tCross Attached: %t\n", details.CrossAttach)
+	fmt.Printf("\tAttaches:\n")
+	for _, entry := range details.AttachedTo {
+		if entry.Resource != "" {
+			fmt.Printf("\t\tAttached to %s as device %s\n", entry.Resource, entry.Device)
+		}
+	}
+
+	fmt.Printf("\tCross Attach Enabled: %t\n", details.CrossAttach)
 	fmt.Printf("\tSize: %d\n", details.Size)
 	fmt.Printf("\tLabel: %s\n", details.Label)
 	fmt.Printf("\tZone Availability: %+v\n", details.ZoneAvailability)

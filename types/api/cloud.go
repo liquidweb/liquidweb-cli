@@ -321,3 +321,19 @@ type CloudBlockStorageVolumeDetailsAttachedTo struct {
 type CloudBlockStorageVolumeDelete struct {
 	Deleted string `json:"deleted" mapstructure:"deleted"`
 }
+
+type CloudBlockStorageVolumeAttach struct {
+	Attached string `json:"attached" mapstructure:"attached"`
+	To       string `json:"to" mapstructure:"to"`
+}
+
+type CloudBlockStorageVolumeDetach struct {
+	Detached     string `json:"detached" mapstructure:"detached"`
+	DetachedFrom string `json:"detached_from" mapstructure:"detached_from"`
+}
+
+type CloudBlockStorageVolumeResize struct {
+	NewSize int64  `json:"new_size" mapstructure:"new_size"`
+	OldSize int64  `json:"old_size" mapstructure:"old_size"`
+	UniqId  string `json:"uniq_id" mapstructure:"uniq_id"`
+}
