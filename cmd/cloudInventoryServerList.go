@@ -29,6 +29,9 @@ var cloudInventoryServerListCmd = &cobra.Command{
 	Short: "List Cloud Servers on your account",
 	Long:  `List Cloud Servers on your account`,
 	Run: func(cmd *cobra.Command, args []string) {
+		jsonFlag, _ := cmd.Flags().GetBool("json")
+		zoneFlag, _ := cmd.Flags().GetInt64("zone")
+
 		methodArgs := instance.AllPaginatedResultsArgs{
 			Method:         "bleed/storm/server/list",
 			ResultsPerPage: 100,
@@ -38,9 +41,7 @@ var cloudInventoryServerListCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		jsonOutput, _ := cmd.Flags().GetBool("json")
-		if jsonOutput {
-
+		if jsonFlag {
 			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(results)
 			if err != nil {
 				lwCliInst.Die(err)
@@ -55,6 +56,12 @@ var cloudInventoryServerListCmd = &cobra.Command{
 					lwCliInst.Die(err)
 				}
 
+				if zoneFlag != -1 {
+					if details.Zone.Id != zoneFlag {
+						continue
+					}
+				}
+
 				fmt.Printf("%d.) ", serverCnt)
 				_printCloudServerDetailsFromDetailsStruct(&details)
 
@@ -67,5 +74,6 @@ var cloudInventoryServerListCmd = &cobra.Command{
 func init() {
 	cloudInventoryServerCmd.AddCommand(cloudInventoryServerListCmd)
 
+	cloudInventoryServerListCmd.Flags().Int64("zone", -1, "list only in this zone")
 	cloudInventoryServerListCmd.Flags().Bool("json", false, "output in json format")
 }
