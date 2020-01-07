@@ -21,10 +21,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cloudInventoryNetworkVipCmd = &cobra.Command{
-	Use:   "vip",
-	Short: "Inventory specific actions specific to Virtual IP (VIP)",
-	Long: `Inventory specific actions specific to Virtual IP (VIP).
+var cloudInventoryNetworkCmd = &cobra.Command{
+	Use:   "network",
+	Short: "Inventory specific actions specific to Network products for Cloud Servers",
+	Long: `Inventory specific actions specific to Network products for Cloud Servers.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -34,5 +34,5 @@ For a full list of capabilities, please refer to the "Available Commands" sectio
 }
 
 func init() {
-	cloudInventoryNetworkCmd.AddCommand(cloudInventoryNetworkVipCmd)
+	cloudInventoryCmd.AddCommand(cloudInventoryNetworkCmd)
 }
