@@ -27,8 +27,8 @@ var networkIpPoolCreateCmdAddIpsFlag []string
 
 var networkIpPoolCreateCmd = &cobra.Command{
 	Use:   "create",
-	Short: "Create a IP Pool",
-	Long: `Create a IP Pool.
+	Short: "Create an IP Pool",
+	Long: `Create an IP Pool.
 
 An IP Pool is a range of nonintersecting, reusable IP addresses reserved to
 your account.`,
