@@ -36,7 +36,6 @@ type NetworkIpPoolDetailsAssignment struct {
 	Id         int64  `json:"id" mapstructure:"id"`
 	Netmask    string `json:"netmask" mapstructure:"netmask"`
 	Network    string `json:"network" mapstructure:"network"`
-	Primary    bool   `json:"primary" mapstructure:"primary"`
 	ZoneId     int64  `json:"zone_id" mapstructure:"zone_id"`
 }
 

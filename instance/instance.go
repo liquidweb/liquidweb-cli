@@ -83,6 +83,7 @@ func (client *Client) CallLwApiInto(method string, methodArgs map[string]interfa
 		return
 	}
 
+	//fmt.Printf("got: %+v\n", got)
 	err = CastFieldTypes(got, &obj)
 
 	return

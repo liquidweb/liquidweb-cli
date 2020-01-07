@@ -74,7 +74,6 @@ func _printNetworkIpPoolDetailsFromDetailsStruct(details *apiTypes.NetworkIpPool
 		fmt.Printf("\t\t\tNetmask: %s\n", assignment.Netmask)
 		fmt.Printf("\t\t\tNetwork: %s\n", assignment.Network)
 		fmt.Printf("\t\t\tId: %d\n", assignment.Id)
-		fmt.Printf("\t\t\tPrimary: %t\n", assignment.Primary)
 		fmt.Printf("\t\t\tZoneId: %d\n", assignment.ZoneId)
 	}
 }
