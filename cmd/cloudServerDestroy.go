@@ -23,54 +23,52 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
+var cloudServerDestroyCmdUniqIdFlag []string
+
 var cloudServerDestroyCmd = &cobra.Command{
 	Use:   "destroy",
 	Short: "Destroy a Cloud Server",
 	Long: `Destroy a Cloud Server.
 
-Kills a server. It will refund for any remaining time that has been prepaid, charge any outstanding bandwidth
-charges, and then start the workflow to tear down the server.`,
+Kills a server. It will refund for any remaining time that has been prepaid, charge
+any outstanding bandwidth charges, and then start the workflow to tear down the
+server.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
-		jsonFlag, _ := cmd.Flags().GetBool("json")
 		commentFlag, _ := cmd.Flags().GetString("comment")
 		reasonFlag, _ := cmd.Flags().GetString("reason")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("--uniq-id is a required flag"))
+		if len(cloudServerDestroyCmdUniqIdFlag) == 0 {
+			lwCliInst.Die(fmt.Errorf("--uniq_id is a required flag"))
 		}
 
-		destroyArgs := map[string]interface{}{
-			"uniq_id":              uniqIdFlag,
-			"cancellation_comment": commentFlag,
-		}
+		for _, uniqId := range cloudServerDestroyCmdUniqIdFlag {
+			destroyArgs := map[string]interface{}{
+				"uniq_id":              uniqId,
+				"cancellation_comment": commentFlag,
+			}
 
-		if reasonFlag != "" {
-			destroyArgs["cancellation_reason"] = reasonFlag
-		}
+			if reasonFlag != "" {
+				destroyArgs["cancellation_reason"] = reasonFlag
+			}
 
-		var destroyed apiTypes.CloudServerDestroyResponse
-		if err := lwCliInst.CallLwApiInto("bleed/server/destroy", destroyArgs, &destroyed); err != nil {
-			lwCliInst.Die(err)
-		}
-
-		if jsonFlag {
-			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(destroyed)
+			var destroyed apiTypes.CloudServerDestroyResponse
+			err := lwCliInst.CallLwApiInto("bleed/server/destroy", destroyArgs, &destroyed)
 			if err != nil {
 				lwCliInst.Die(err)
 			}
-			fmt.Printf(pretty)
-		} else {
+
 			fmt.Printf("destroyed: %s\n", destroyed.Destroyed)
 		}
-
 	},
 }
 
 func init() {
 	cloudServerCmd.AddCommand(cloudServerDestroyCmd)
-	cloudServerDestroyCmd.Flags().Bool("json", false, "output in json format")
-	cloudServerDestroyCmd.Flags().String("uniq_id", "", "uniq_id of server to destroy")
-	cloudServerDestroyCmd.Flags().String("comment", "initiated from liquidweb-cli", "comment related to the cancellation")
-	cloudServerDestroyCmd.Flags().String("reason", "", "reason for the cancellation (optional)")
+
+	cloudServerDestroyCmd.Flags().StringSliceVar(&cloudServerDestroyCmdUniqIdFlag, "uniq_id",
+		[]string{}, "uniq_ids separated by ',' of server(s) to destroy")
+	cloudServerDestroyCmd.Flags().String("comment", "initiated from liquidweb-cli",
+		"comment related to the cancellation")
+	cloudServerDestroyCmd.Flags().String("reason", "",
+		"reason for the cancellation (optional)")
 }
