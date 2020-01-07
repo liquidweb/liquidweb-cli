@@ -68,7 +68,12 @@ func _printCloudServerDetailsFromDetailsStruct(details *apiTypes.CloudServerDeta
 	fmt.Printf("\tIpCount: %d\n", details.IpCount)
 	fmt.Printf("\tRegion: %s (id %d) Zone: %s (id %d)\n", details.Zone.Region.Name,
 		details.Zone.Region.Id, details.Zone.Name, details.Zone.Id)
-	fmt.Printf("\tConfigId: %d\n", details.ConfigId)
+
+	if details.PrivateParent != "" {
+		fmt.Printf("\tPrivate Parent Child on Private Parent [%s]\n", details.PrivateParent)
+	} else {
+		fmt.Printf("\tConfigId: %d\n", details.ConfigId)
+	}
 	fmt.Printf("\tConfigDescription: %s\n", details.ConfigDescription)
 	fmt.Printf("\tVcpus: %d\n", details.Vcpu)
 	fmt.Printf("\tMemory: %d\n", details.Memory)

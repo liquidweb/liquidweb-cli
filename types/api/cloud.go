@@ -56,6 +56,7 @@ type CloudServerDetails struct {
 	Zone                CloudServerDetailsZone `json:"zone" mapstructure:"zone"`
 	ConfigDescription   string                 `json:"config_description" mapstructure:"config_description"`
 	TemplateDescription string                 `json:"template_description" mapstructure:"template_description"`
+	PrivateParent       string                 `json:"parent" mapstructure:"parent"`
 }
 
 type CloudServerDetailsZone struct {
