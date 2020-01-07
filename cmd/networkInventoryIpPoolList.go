@@ -64,17 +64,18 @@ func _printNetworkIpPoolDetailsFromDetailsStruct(details *apiTypes.NetworkIpPool
 	fmt.Printf("\tAccount: %d\n", details.Accnt)
 	fmt.Printf("\tAssignments:\n")
 	for _, assignment := range details.Assignments {
-		fmt.Printf("\t\tBeginRange: %s\n", assignment.BeginRange)
-		fmt.Printf("\t\tEndRange: %s\n", assignment.EndRange)
+		fmt.Printf("\t\tassignment:\n")
+		fmt.Printf("\t\t\tBeginRange: %s\n", assignment.BeginRange)
+		fmt.Printf("\t\t\tEndRange: %s\n", assignment.EndRange)
 		if assignment.Broadcast != "" {
-			fmt.Printf("\t\tBroadcast: %s\n", assignment.Broadcast)
+			fmt.Printf("\t\t\tBroadcast: %s\n", assignment.Broadcast)
 		}
-		fmt.Printf("\t\tGateway: %s\n", assignment.Gateway)
-		fmt.Printf("\t\tNetmask: %s\n", assignment.Netmask)
-		fmt.Printf("\t\tNetwork: %s\n", assignment.Network)
-		fmt.Printf("\t\tId: %d\n", assignment.Id)
-		fmt.Printf("\t\tPrimary: %t\n", assignment.Primary)
-		fmt.Printf("\t\tZoneId: %d\n", assignment.ZoneId)
+		fmt.Printf("\t\t\tGateway: %s\n", assignment.Gateway)
+		fmt.Printf("\t\t\tNetmask: %s\n", assignment.Netmask)
+		fmt.Printf("\t\t\tNetwork: %s\n", assignment.Network)
+		fmt.Printf("\t\t\tId: %d\n", assignment.Id)
+		fmt.Printf("\t\t\tPrimary: %t\n", assignment.Primary)
+		fmt.Printf("\t\t\tZoneId: %d\n", assignment.ZoneId)
 	}
 }
 
