@@ -18,13 +18,14 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
-	"os"
+	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
+	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudServerCreateCmd = &cobra.Command{
@@ -55,8 +56,6 @@ For a list of images, see 'cloud inventory images list'
 For a list of backups, see 'cloud inventory backups list'
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		verboseFlag, _ := cmd.Flags().GetBool("verbose")
-		jsonFlag, _ := cmd.Flags().GetBool("json")
 		templateFlag, _ := cmd.Flags().GetString("template")
 		typeFlag, _ := cmd.Flags().GetString("type")
 		hostnameFlag, _ := cmd.Flags().GetString("hostname")
@@ -67,7 +66,7 @@ For a list of backups, see 'cloud inventory backups list'
 		backupPlanQuotaFlag, _ := cmd.Flags().GetInt("backup-plan-quota")
 		bandwidthFlag, _ := cmd.Flags().GetString("bandwidth")
 		zoneFlag, _ := cmd.Flags().GetInt("zone")
-		antivirusFlag, _ := cmd.Flags().GetString("antivirus")
+		winavFlag, _ := cmd.Flags().GetString("winav")
 		msSqlFlag, _ := cmd.Flags().GetString("ms_sql")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
 		passwordFlag, _ := cmd.Flags().GetString("password")
@@ -122,14 +121,70 @@ For a list of backups, see 'cloud inventory backups list'
 			},
 		}
 
+		var isWindows bool
 		if templateFlag != "" {
 			createArgs["features"].(map[string]interface{})["Template"] = templateFlag
+			if strings.Contains(strings.ToUpper(templateFlag), "WINDOWS") {
+				isWindows = true
+			}
 		}
 		if backupIdFlag != -1 {
+			// check backup and see if its windows
+			apiArgs := map[string]interface{}{"id": backupIdFlag}
+			var details apiTypes.CloudBackupDetails
+			err := lwCliInst.CallLwApiInto("bleed/storm/backup/details", apiArgs, &details)
+			if err != nil {
+				lwCliInst.Die(err)
+			}
+			if strings.Contains(strings.ToUpper(details.Template), "WINDOWS") {
+				isWindows = true
+			}
 			createArgs["backup_id"] = backupIdFlag
 		}
 		if imageIdFlag != -1 {
+			// check image and see if its windows
+			apiArgs := map[string]interface{}{"id": imageIdFlag}
+			var details apiTypes.CloudImageDetails
+			err := lwCliInst.CallLwApiInto("bleed/storm/image/details", apiArgs, &details)
+			if err != nil {
+				lwCliInst.Die(err)
+			}
+			if strings.Contains(strings.ToUpper(details.Template), "WINDOWS") {
+				isWindows = true
+			}
 			createArgs["image_id"] = imageIdFlag
+		}
+
+		// windows servers need special arguments
+		if isWindows {
+			if winavFlag == "" {
+				winavFlag = "None"
+			}
+			createArgs["features"].(map[string]interface{})["WinAV"] = winavFlag
+			createArgs["features"].(map[string]interface{})["WindowsLicense"] = "Windows"
+			if typeFlag == "SS.VPS" {
+				createArgs["type"] = "SS.VPS.WIN"
+			}
+			if msSqlFlag == "" {
+				msSqlFlag = "None"
+			}
+			var coreCnt int
+			if vcpuFlag == -1 {
+				// standard config_id create, fetch configs core count and use it
+				var details apiTypes.CloudConfigDetails
+				if err := lwCliInst.CallLwApiInto("bleed/storm/config/details",
+					map[string]interface{}{"id": configIdFlag}, &details); err != nil {
+					lwCliInst.Die(err)
+				}
+				coreCnt = cast.ToInt(details.Vcpu)
+			} else {
+				// private parent, use vcpu flag
+				coreCnt = vcpuFlag
+			}
+			createArgs["features"].(map[string]interface{})["MsSQL"] = map[string]interface{}{
+				"value": msSqlFlag,
+				"count": coreCnt,
+			}
 		}
 
 		if privateParentUniqId != "" {
@@ -144,13 +199,6 @@ For a list of backups, see 'cloud inventory backups list'
 			createArgs["memory"] = memoryFlag
 		}
 
-		if antivirusFlag != "" {
-			createArgs["antivirus"] = antivirusFlag
-		}
-		if msSqlFlag != "" {
-			createArgs["ms_sql"] = msSqlFlag
-		}
-
 		if backupPlanFlag == "Quota" {
 			createArgs["features"].(map[string]interface{})["BackupQuota"] = backupPlanQuotaFlag
 		}
@@ -159,26 +207,9 @@ For a list of backups, see 'cloud inventory backups list'
 			createArgs["public_ssh_key"] = publicSshKeyContents
 		}
 
-		if verboseFlag {
-			pr, err := lwCliInst.JsonEncodeAndPrettyPrint(createArgs)
-			if err == nil {
-				fmt.Println("createArgs:")
-				fmt.Println(pr)
-			}
-		}
-
 		result, err := lwCliInst.LwApiClient.Call("bleed/server/create", createArgs)
 		if err != nil {
 			lwCliInst.Die(err)
-		}
-
-		if jsonFlag {
-			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(result)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-			fmt.Printf(pretty)
-			os.Exit(0)
 		}
 
 		resultUniqId := result.(map[string]interface{})["uniq_id"]
@@ -200,8 +231,6 @@ func init() {
 	randomHostname := fmt.Sprintf("%s.%s.io", instance.RandomString(4), instance.RandomString(10))
 	randomPassword := instance.RandomString(25)
 
-	cloudServerCreateCmd.Flags().Bool("verbose", false, "provide verbose output")
-	cloudServerCreateCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerCreateCmd.Flags().String("template", "", "name of the template to use")
 	cloudServerCreateCmd.Flags().String("type", "SS.VPS", "some examples of types; SS.VPS, SS.VPS.WIN, SS.VM, SS.VM.WIN")
 	cloudServerCreateCmd.Flags().String("hostname", randomHostname, "hostname to set")
@@ -226,6 +255,6 @@ func init() {
 	cloudServerCreateCmd.Flags().Int("vcpu", -1, "vcpu value use with --private-parent")
 
 	// windows specific
-	cloudServerCreateCmd.Flags().String("antivirus", "", "use only with Windows Server")
+	cloudServerCreateCmd.Flags().String("winav", "", "Use only with Windows Servers. Typically (None or NOD32) for value when set")
 	cloudServerCreateCmd.Flags().String("ms-sql", "", "Microsoft SQL Server")
 }

@@ -105,7 +105,7 @@ func _printCloudServerStatus(uniqId string, jsonOutput bool) {
 		}
 		fmt.Printf(pretty)
 	} else {
-		fmt.Printf("uniq_id: %s\n", uniqId)
+		fmt.Printf("UniqId: %s\n", uniqId)
 		fmt.Printf("\tstatus: %s\n", status.Status)
 		if len(status.Running) > 0 {
 			fmt.Printf("\tdetailed status: %s\n", status.DetailedStatus)
