@@ -28,6 +28,8 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
+var cloudServerCreateCmdPoolIpsFlag []string
+
 var cloudServerCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a Cloud Server",
@@ -106,7 +108,7 @@ For a list of backups, see 'cloud inventory backups list'
 		createArgs := map[string]interface{}{
 			"domain":   hostnameFlag,
 			"type":     typeFlag,
-			"pool_ips": []string{}, // TODO
+			"pool_ips": cloudServerCreateCmdPoolIpsFlag,
 			"new_ips":  ipsFlag,
 			"zone":     zoneFlag,
 			"password": passwordFlag,
@@ -231,7 +233,7 @@ func init() {
 	randomHostname := fmt.Sprintf("%s.%s.io", instance.RandomString(4), instance.RandomString(10))
 	randomPassword := instance.RandomString(25)
 
-	cloudServerCreateCmd.Flags().String("template", "", "name of the template to use")
+	cloudServerCreateCmd.Flags().String("template", "", "template to use (see 'cloud server options --templates')")
 	cloudServerCreateCmd.Flags().String("type", "SS.VPS", "some examples of types; SS.VPS, SS.VPS.WIN, SS.VM, SS.VM.WIN")
 	cloudServerCreateCmd.Flags().String("hostname", randomHostname, "hostname to set")
 	cloudServerCreateCmd.Flags().Int("ips", 1, "amount of IP addresses")
@@ -241,11 +243,14 @@ func init() {
 	cloudServerCreateCmd.Flags().String("backup-plan", "None", "Cloud Server backup plan to use")
 	cloudServerCreateCmd.Flags().Int("backup-plan-quota", 300, "Quota amount. Should only be used with '--backup-plan Quota'")
 	cloudServerCreateCmd.Flags().String("bandwidth", "SS.10000", "bandwidth package to use")
-	cloudServerCreateCmd.Flags().Int("zone", 0, "zone to create in")
+	cloudServerCreateCmd.Flags().Int("zone", 0, "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
 	cloudServerCreateCmd.Flags().String("password", randomPassword, "root or administrator password to set")
 
 	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of backup to create from (see 'cloud inventory backup list')")
 	cloudServerCreateCmd.Flags().Int("image-id", -1, "id of image to create from (see 'cloud inventory image list')")
+
+	cloudServerCreateCmd.Flags().StringSliceVar(&cloudServerCreateCmdPoolIpsFlag, "pool-ips", []string{},
+		"ips from your IP Pool separated by ',' to assign to the new Cloud Server")
 
 	// private parent specific
 	cloudServerCreateCmd.Flags().String("private-parent", "",
