@@ -29,6 +29,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/types/errors"
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 func New(viper *viper.Viper) (Client, error) {
@@ -49,7 +50,8 @@ func New(viper *viper.Viper) (Client, error) {
 }
 
 func (*Client) Die(err error) {
-	fmt.Printf("A fatal error has occurred:\n\t%s If you need assistance please contact support. ", err)
+	utils.PrintRed("A fatal error has occurred:\n\n")
+	fmt.Printf("%s\n\nIf you need assistance please contact support. ", err)
 	os.Exit(1)
 }
 
