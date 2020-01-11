@@ -64,7 +64,6 @@ If nothing is currently running, only the 'status' field will be returned with o
 	Run: func(cmd *cobra.Command, args []string) {
 
 		flagUniqId, _ := cmd.Flags().GetString("uniq_id")
-		jsonOutput, _ := cmd.Flags().GetBool("json")
 
 		if flagUniqId == "" {
 			// fetch status of all cloud servers on account
@@ -78,10 +77,15 @@ If nothing is currently running, only the 'status' field will be returned with o
 			}
 
 			for _, item := range results.Items {
-				_printCloudServerStatus(item["uniq_id"].(string), jsonOutput)
+				var details apiTypes.CloudServerDetails
+				if err := instance.CastFieldTypes(item, &details); err != nil {
+					lwCliInst.Die(err)
+				}
+
+				_printCloudServerStatus(details.UniqId, details.Domain)
 			}
 		} else {
-			_printCloudServerStatus(flagUniqId, jsonOutput)
+			_printCloudServerStatus(flagUniqId, "")
 		}
 	},
 }
@@ -89,28 +93,31 @@ If nothing is currently running, only the 'status' field will be returned with o
 func init() {
 	cloudServerCmd.AddCommand(cloudServerStatusCmd)
 
-	cloudServerStatusCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerStatusCmd.Flags().String("uniq_id", "", "only get the status of this uniq_id")
 }
 
-func _printCloudServerStatus(uniqId string, jsonOutput bool) {
+func _printCloudServerStatus(uniqId string, domain string) {
 	var status apiTypes.CloudServerStatus
-	if err := lwCliInst.CallLwApiInto("bleed/storm/server/status", map[string]interface{}{"uniq_id": uniqId}, &status); err != nil {
+	if err := lwCliInst.CallLwApiInto("bleed/storm/server/status", map[string]interface{}{"uniq_id": uniqId},
+		&status); err != nil {
 		lwCliInst.Die(err)
 	}
-	if jsonOutput {
-		pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(status)
-		if err != nil {
+
+	if domain == "" {
+		var details apiTypes.CloudServerDetails
+		if err := lwCliInst.CallLwApiInto("bleed/storm/server/details",
+			map[string]interface{}{"uniq_id": uniqId}, &details); err != nil {
 			lwCliInst.Die(err)
 		}
-		fmt.Printf(pretty)
-	} else {
-		fmt.Printf("UniqId: %s\n", uniqId)
-		fmt.Printf("\tstatus: %s\n", status.Status)
-		if len(status.Running) > 0 {
-			fmt.Printf("\tdetailed status: %s\n", status.DetailedStatus)
-			fmt.Printf("\trunning: %+v\n", status.Running)
-			fmt.Printf("\tprogress: %+v\n", status.Progress)
-		}
+		domain = details.Domain
+	}
+
+	fmt.Printf("UniqId: %s\n", uniqId)
+	fmt.Printf("\tdomain: %s\n", domain)
+	fmt.Printf("\tstatus: %s\n", status.Status)
+	if len(status.Running) > 0 {
+		fmt.Printf("\tdetailed status: %s\n", status.DetailedStatus)
+		fmt.Printf("\trunning: %+v\n", status.Running)
+		fmt.Printf("\tprogress: %+v\n", status.Progress)
 	}
 }
