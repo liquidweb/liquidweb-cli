@@ -24,6 +24,8 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
+var cloudServerCloneCmdPoolIpsFlag []string
+
 var cloudServerCloneCmd = &cobra.Command{
 	Use:   "clone",
 	Short: "Clone a Cloud Server",
@@ -100,6 +102,9 @@ Server is not on a Private Parent.`,
 		if configIdFlag != -1 {
 			cloneArgs["config_id"] = configIdFlag
 		}
+		if len(cloudServerCloneCmdPoolIpsFlag) > 0 {
+			cloneArgs["pool_ips"] = cloudServerCloneCmdPoolIpsFlag
+		}
 
 		var details apiTypes.CloudServerCloneResponse
 		if err := lwCliInst.CallLwApiInto("bleed/server/clone", cloneArgs, &details); err != nil {
@@ -123,7 +128,8 @@ func init() {
 	cloudServerCloneCmd.Flags().Int64("new_ips", 1, "amount of IP addresses for new Cloud Server")
 	cloudServerCloneCmd.Flags().String("hostname", fmt.Sprintf("%s.%s.io", instance.RandomString(4),
 		instance.RandomString(10)), "hostname for new Cloud Server")
-	// TODO pool_ips
+	cloudServerCloneCmd.Flags().StringSliceVar(&cloudServerCloneCmdPoolIpsFlag, "pool-ips", []string{},
+		"ips from your IP Pool separated by ',' to assign to the new Cloud Server")
 
 	// Private Parent
 	cloudServerCloneCmd.Flags().String("private-parent", "",
