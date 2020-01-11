@@ -17,11 +17,13 @@ package cmd
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var cloudServerStatusCmdUniqIdFlag []string
@@ -115,9 +117,13 @@ func _printCloudServerStatus(uniqId string, domain string) {
 		domain = details.Domain
 	}
 
-	fmt.Printf("UniqId: %s\n", uniqId)
+	utils.PrintTeal("UniqId: %s\n", uniqId)
 	fmt.Printf("\tdomain: %s\n", domain)
-	fmt.Printf("\tstatus: %s\n", status.Status)
+	if strings.ToUpper(status.Status) == "RUNNING" {
+		fmt.Printf("\tstatus: %s\n", status.Status)
+	} else {
+		utils.PrintYellow("\tstatus: %s\n", status.Status)
+	}
 	if len(status.Running) > 0 {
 		fmt.Printf("\tdetailed status: %s\n", status.DetailedStatus)
 		fmt.Printf("\trunning: %+v\n", status.Running)

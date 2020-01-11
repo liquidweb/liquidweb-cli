@@ -20,8 +20,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var cloudStorageBlockVolumeCreateCmd = &cobra.Command{
@@ -78,7 +78,7 @@ func init() {
 	cloudStorageBlockVolumeCreateCmd.Flags().Int64("size", -1, "size (gb) for Block Storage Volume")
 	cloudStorageBlockVolumeCreateCmd.Flags().Int64("zone", -1, "Zone id for Block Storage Volume")
 	cloudStorageBlockVolumeCreateCmd.Flags().Int64("region", -1, "Region id for Block Storage Volume")
-	cloudStorageBlockVolumeCreateCmd.Flags().String("name", fmt.Sprintf("bsv-%s", instance.RandomString(5)),
+	cloudStorageBlockVolumeCreateCmd.Flags().String("name", fmt.Sprintf("bsv-%s", utils.RandomString(5)),
 		"Name for Block Storage volume")
 	cloudStorageBlockVolumeCreateCmd.Flags().Bool("cross-attach", false, "Enable cross attach for Block Storage volume")
 	cloudStorageBlockVolumeCreateCmd.Flags().String("attach", "", "uniq_id to attach created Block Storage volume to")

@@ -20,8 +20,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var cloudNetworkVipCreateCmd = &cobra.Command{
@@ -86,7 +86,7 @@ Heartbeat
 
 func init() {
 	cloudNetworkVipCmd.AddCommand(cloudNetworkVipCreateCmd)
-	cloudNetworkVipCreateCmd.Flags().String("name", fmt.Sprintf("vip-%s", instance.RandomString(8)),
+	cloudNetworkVipCreateCmd.Flags().String("name", fmt.Sprintf("vip-%s", utils.RandomString(8)),
 		"name for the new VIP")
 	cloudNetworkVipCreateCmd.Flags().Int64("zone", -1,
 		"zone id to create VIP in (see: 'cloud server options --zones')")

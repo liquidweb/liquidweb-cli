@@ -20,8 +20,8 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var cloudServerCloneCmdPoolIpsFlag []string
@@ -126,8 +126,8 @@ func init() {
 	cloudServerCloneCmd.Flags().String("password", "", "root or administrator password for new Cloud Server")
 	cloudServerCloneCmd.Flags().Int64("zone", -1, "zone for new Cloud Server")
 	cloudServerCloneCmd.Flags().Int64("new_ips", 1, "amount of IP addresses for new Cloud Server")
-	cloudServerCloneCmd.Flags().String("hostname", fmt.Sprintf("%s.%s.io", instance.RandomString(4),
-		instance.RandomString(10)), "hostname for new Cloud Server")
+	cloudServerCloneCmd.Flags().String("hostname", fmt.Sprintf("%s.%s.io", utils.RandomString(4),
+		utils.RandomString(10)), "hostname for new Cloud Server")
 	cloudServerCloneCmd.Flags().StringSliceVar(&cloudServerCloneCmdPoolIpsFlag, "pool-ips", []string{},
 		"ips from your IP Pool separated by ',' to assign to the new Cloud Server")
 

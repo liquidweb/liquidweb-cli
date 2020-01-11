@@ -24,8 +24,8 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var cloudServerCreateCmdPoolIpsFlag []string
@@ -230,8 +230,8 @@ func init() {
 		sshPubKeyFile = fmt.Sprintf("%s/.ssh/id_rsa.pub", home)
 	}
 
-	randomHostname := fmt.Sprintf("%s.%s.io", instance.RandomString(4), instance.RandomString(10))
-	randomPassword := instance.RandomString(25)
+	randomHostname := fmt.Sprintf("%s.%s.io", utils.RandomString(4), utils.RandomString(10))
+	randomPassword := utils.RandomString(25)
 
 	cloudServerCreateCmd.Flags().String("template", "", "template to use (see 'cloud server options --templates')")
 	cloudServerCreateCmd.Flags().String("type", "SS.VPS", "some examples of types; SS.VPS, SS.VPS.WIN, SS.VM, SS.VM.WIN")
