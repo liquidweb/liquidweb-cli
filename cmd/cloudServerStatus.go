@@ -24,6 +24,8 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
+var cloudServerStatusCmdUniqIdFlag []string
+
 var cloudServerStatusCmd = &cobra.Command{
 	Use:   "status",
 	Short: "Get status of Cloud Server(s)",
@@ -63,9 +65,7 @@ If nothing is currently running, only the 'status' field will be returned with o
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 
-		flagUniqId, _ := cmd.Flags().GetString("uniq_id")
-
-		if flagUniqId == "" {
+		if len(cloudServerStatusCmdUniqIdFlag) == 0 {
 			// fetch status of all cloud servers on account
 			methodArgs := instance.AllPaginatedResultsArgs{
 				Method:         "bleed/storm/server/list",
@@ -85,7 +85,9 @@ If nothing is currently running, only the 'status' field will be returned with o
 				_printCloudServerStatus(details.UniqId, details.Domain)
 			}
 		} else {
-			_printCloudServerStatus(flagUniqId, "")
+			for _, uid := range cloudServerStatusCmdUniqIdFlag {
+				_printCloudServerStatus(uid, "")
+			}
 		}
 	},
 }
@@ -93,7 +95,8 @@ If nothing is currently running, only the 'status' field will be returned with o
 func init() {
 	cloudServerCmd.AddCommand(cloudServerStatusCmd)
 
-	cloudServerStatusCmd.Flags().String("uniq_id", "", "only get the status of this uniq_id")
+	cloudServerStatusCmd.Flags().StringSliceVar(&cloudServerStatusCmdUniqIdFlag, "uniq_id", []string{},
+		"uniq_id(s) to get status of. For multiple, must be ',' separated")
 }
 
 func _printCloudServerStatus(uniqId string, domain string) {
