@@ -25,6 +25,9 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
+var blockStorageVolumeList apiTypes.MergedPaginatedList
+var fetchedBlockStorageVolumes bool
+
 var cloudServerDetailsCmd = &cobra.Command{
 	Use:   "details",
 	Short: "Get details of a Cloud Server",
@@ -110,16 +113,20 @@ func _printCloudServerDetailsFromDetailsStruct(details *apiTypes.CloudServerDeta
 	}
 
 	// block storage
-	methodArgs := instance.AllPaginatedResultsArgs{
-		Method:         "bleed/storage/block/volume/list",
-		ResultsPerPage: 100,
-	}
-	results, err := lwCliInst.AllPaginatedResults(&methodArgs)
-	if err != nil {
-		lwCliInst.Die(err)
+	if !fetchedBlockStorageVolumes {
+		methodArgs := instance.AllPaginatedResultsArgs{
+			Method:         "bleed/storage/block/volume/list",
+			ResultsPerPage: 100,
+		}
+
+		blockStorageVolumeList, err = lwCliInst.AllPaginatedResults(&methodArgs)
+		if err != nil {
+			lwCliInst.Die(err)
+		}
+		fetchedBlockStorageVolumes = true
 	}
 	fmt.Printf("\tBlock Storage Volumes:\n")
-	for _, item := range results.Items {
+	for _, item := range blockStorageVolumeList.Items {
 		var blockStorageDetails apiTypes.CloudBlockStorageVolumeDetails
 		if err := instance.CastFieldTypes(item, &blockStorageDetails); err != nil {
 			lwCliInst.Die(err)
