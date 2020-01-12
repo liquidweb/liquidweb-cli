@@ -21,6 +21,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
@@ -94,15 +95,47 @@ func _printCloudServerDetailsFromDetailsStruct(details *apiTypes.CloudServerDeta
 	fmt.Printf("\tActive: %d\n", details.Active)
 	fmt.Printf("\tAccnt: %d\n", details.Accnt)
 
+	// private network
 	var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
 	err := lwCliInst.CallLwApiInto("bleed/network/private/isattached", map[string]interface{}{
 		"uniq_id": details.UniqId}, &attachedDetails)
 	if err != nil {
 		lwCliInst.Die(err)
 	}
+	fmt.Printf("\tPrivateNetwork: ")
 	if attachedDetails.IsAttached {
-		fmt.Printf("\tAttached To Private Network\n")
+		fmt.Printf("Attached\n")
+	} else {
+		fmt.Printf("None\n")
 	}
+
+	// block storage
+	methodArgs := instance.AllPaginatedResultsArgs{
+		Method:         "bleed/storage/block/volume/list",
+		ResultsPerPage: 100,
+	}
+	results, err := lwCliInst.AllPaginatedResults(&methodArgs)
+	if err != nil {
+		lwCliInst.Die(err)
+	}
+	fmt.Printf("\tBlock Storage Volumes:\n")
+	for _, item := range results.Items {
+		var blockStorageDetails apiTypes.CloudBlockStorageVolumeDetails
+		if err := instance.CastFieldTypes(item, &blockStorageDetails); err != nil {
+			lwCliInst.Die(err)
+		}
+
+		for _, entry := range blockStorageDetails.AttachedTo {
+			if entry.Resource == details.UniqId {
+				fmt.Printf("\t\tVolume: %s\n", blockStorageDetails.Domain)
+				fmt.Printf("\t\t\tUniqId: %s\n", blockStorageDetails.UniqId)
+				fmt.Printf("\t\t\tSize: %d\n", blockStorageDetails.Size)
+				fmt.Printf("\t\t\tStatus: %s\n", blockStorageDetails.Status)
+				fmt.Printf("\t\t\tCross Attach Enabled: %t\n", blockStorageDetails.CrossAttach)
+			}
+		}
+	}
+
 }
 
 func init() {
