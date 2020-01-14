@@ -42,3 +42,20 @@ type NetworkIpPoolDetailsAssignment struct {
 type NetworkIpPoolDelete struct {
 	Deleted bool `json:"deleted" mapstructure:"deleted"`
 }
+
+type NetworkIpAdd struct {
+	Adding string `json:"adding" mapstructure:"adding"`
+}
+
+type NetworkIpRemove struct {
+	Removing string `json:"removing" mapstructure:"removing"`
+}
+
+type NetworkAssignmentListEntry struct {
+	Broadcast string `json:"broadcast" mapstructure:"broadcast"`
+	Ip        string `json:"ip" mapstructure:"ip"`
+	Gateway   string `json:"gateway" mapstructure:"gateway"`
+	Id        int64  `json:"id" mapstructure:"id"`
+	Netmask   string `json:"netmask" mapstructure:"netmask"`
+	Network   string `json:"network" mapstructure:"network"`
+}
