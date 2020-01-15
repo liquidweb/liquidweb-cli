@@ -338,3 +338,39 @@ type CloudBlockStorageVolumeResize struct {
 	OldSize int64  `json:"old_size" mapstructure:"old_size"`
 	UniqId  string `json:"uniq_id" mapstructure:"uniq_id"`
 }
+
+type CloudObjectStoreDetails struct {
+	Accnt       int64                              `json:"accnt" mapstructure:"accnt"`
+	Caps        []CloudObjectStoreDetailsCapsEntry `json:"caps" mapstructure:"caps"`
+	DisplayName string                             `json:"display_name" mapstructure:"display_name"`
+	Host        string                             `json:"host" mapstructure:"host"`
+	Keys        []CloudObjectStoreKeyDetails       `json:"keys" mapstructure:"keys"`
+	MaxBuckets  int64                              `json:"max_buckets" mapstructure:"max_buckets"`
+	Suspended   bool                               `json:"suspended" mapstructure:"suspended"`
+	UniqId      string                             `json:"uniq_id" mapstructure:"uniq_id"`
+	UserId      string                             `json:"user_id" mapstructure:"user_id"`
+}
+
+type CloudObjectStoreKeyDetails struct {
+	AccessKey string `json:"access_key" mapstructure:"access_key"`
+	SecretKey string `json:"secret_key" mapstructure:"secret_key"`
+	User      string `json:"user" mapstructure:"user"`
+}
+
+type CloudObjectStoreDetailsCapsEntry struct {
+	Perm string `json:"perm" mapstructure:"perm"`
+	Type string `json:"type" mapstructure:"type"`
+}
+
+type CloudObjectStoreDelete struct {
+	Deleted string `json:"deleted" mapstructure:"deleted"`
+}
+
+type CloudObjectStoreDiskSpace struct {
+	Buckets []map[string]interface{} `json:"buckets" mapstructure:"buckets"`
+	Total   int64                    `json:"total" mapstructure:"total"`
+}
+
+type CloudObjectStoreDeleteKey struct {
+	Deleted string `json:"deleted" mapstructure:"deleted"`
+}
