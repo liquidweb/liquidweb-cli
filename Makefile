@@ -2,6 +2,9 @@ SHELL=/bin/bash
 
 GO_LINKER_SYMBOL := "main.version"
 
+default:
+	$(MAKE) build
+
 %:
     @:
 
