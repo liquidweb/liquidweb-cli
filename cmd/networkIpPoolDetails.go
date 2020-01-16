@@ -34,10 +34,6 @@ your account.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		freeOnlyFlag, _ := cmd.Flags().GetBool("free-only")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		apiArgs := map[string]interface{}{
 			"uniq_id":   uniqIdFlag,
 			"free_only": freeOnlyFlag,
@@ -57,4 +53,6 @@ func init() {
 
 	networkIpPoolDetailsCmd.Flags().String("uniq_id", "", "uniq_id of IP Pool")
 	networkIpPoolDetailsCmd.Flags().Bool("free-only", false, "return only unassigned IPs in the IP Pool")
+
+	networkIpPoolDetailsCmd.MarkFlagRequired("uniq_id")
 }

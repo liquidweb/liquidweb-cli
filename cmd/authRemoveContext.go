@@ -29,9 +29,6 @@ var authRemoveContextCmd = &cobra.Command{
 Use this if you've already setup contexts with "auth init".`,
 	Run: func(cmd *cobra.Command, args []string) {
 		contextFlag, _ := cmd.Flags().GetString("context")
-		if contextFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --context is required"))
-		}
 
 		if err := lwCliInst.RemoveContext(contextFlag); err != nil {
 			lwCliInst.Die(err)
@@ -45,4 +42,5 @@ func init() {
 	authCmd.AddCommand(authRemoveContextCmd)
 
 	authRemoveContextCmd.Flags().String("context", "", "name of context to remove")
+	authRemoveContextCmd.MarkFlagRequired("context")
 }

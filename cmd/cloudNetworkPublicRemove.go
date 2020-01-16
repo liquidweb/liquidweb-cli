@@ -42,14 +42,6 @@ Note that you cannot remove the Cloud Servers primary ip with this command.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		rebootFlag, _ := cmd.Flags().GetBool("reboot")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
-		if len(cloudNetworkPublicRemoveCmdIpsFlag) == 0 {
-			lwCliInst.Die(fmt.Errorf("flag --ips is required"))
-		}
-
 		apiArgs := map[string]interface{}{
 			"reboot":  rebootFlag,
 			"uniq_id": uniqIdFlag,
@@ -76,4 +68,6 @@ func init() {
 	cloudNetworkPublicRemoveCmd.Flags().StringSliceVar(&cloudNetworkPublicRemoveCmdIpsFlag, "ips", []string{},
 		"ips separated by ',' to remove from the Cloud Server")
 
+	cloudNetworkPublicRemoveCmd.MarkFlagRequired("uniq_id")
+	cloudNetworkPublicRemoveCmd.MarkFlagRequired("ips")
 }

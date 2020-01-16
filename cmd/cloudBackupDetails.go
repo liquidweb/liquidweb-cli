@@ -30,10 +30,6 @@ var cloudBackupDetailsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		backupIdFlag, _ := cmd.Flags().GetInt64("backup_id")
 
-		if backupIdFlag == -1 {
-			lwCliInst.Die(fmt.Errorf("flag --backup_id is required"))
-		}
-
 		apiArgs := map[string]interface{}{"id": backupIdFlag}
 
 		var details apiTypes.CloudBackupDetails
@@ -51,4 +47,5 @@ func init() {
 
 	cloudBackupDetailsCmd.Flags().Int64("backup_id", -1,
 		"id number of the backup (see 'cloud inventory backup list')")
+	cloudBackupDetailsCmd.MarkFlagRequired("backup_id")
 }

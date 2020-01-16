@@ -42,10 +42,6 @@ as-you-go, usage-based bandwidth charges.`,
 		bandwidthQuotaFlag, _ := cmd.Flags().GetInt64("bandwidth-quota")
 		backupQuotaFlag, _ := cmd.Flags().GetInt64("backup-quota")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		if backupPlanFlag == "Quota" {
 			if backupQuotaFlag == -1 {
 				lwCliInst.Die(fmt.Errorf("cannot enable Quota backups without --backup-quota"))
@@ -102,4 +98,6 @@ func init() {
 	cloudServerUpdateCmd.Flags().Bool("disable-backups", false, "disable backups")
 	cloudServerUpdateCmd.Flags().Int64("bandwidth-quota", -1,
 		"bandwidth quota (0 indicates as-you-go, usage-based bandwidth charges)")
+
+	cloudServerUpdateCmd.MarkFlagRequired("uniq_id")
 }

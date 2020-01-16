@@ -62,10 +62,6 @@ Heartbeat
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		apiArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,
 		}
@@ -83,4 +79,6 @@ Heartbeat
 func init() {
 	cloudNetworkVipCmd.AddCommand(cloudNetworkVipDetailsCmd)
 	cloudNetworkVipDetailsCmd.Flags().String("uniq_id", "", "uniq_id of VIP")
+
+	cloudNetworkVipDetailsCmd.MarkFlagRequired("uniq_id")
 }

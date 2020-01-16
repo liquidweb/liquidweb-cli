@@ -40,10 +40,6 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		crossAttachFlag, _ := cmd.Flags().GetBool("cross-attach")
 		attachFlag, _ := cmd.Flags().GetString("attach")
 
-		if sizeFlag == -1 {
-			lwCliInst.Die(fmt.Errorf("flag --size is required"))
-		}
-
 		apiArgs := map[string]interface{}{
 			"domain":       nameFlag,
 			"size":         sizeFlag,
@@ -81,4 +77,6 @@ func init() {
 		"Name for Block Storage volume")
 	cloudStorageBlockVolumeCreateCmd.Flags().Bool("cross-attach", false, "Enable cross attach for Block Storage volume")
 	cloudStorageBlockVolumeCreateCmd.Flags().String("attach", "", "uniq_id to attach created Block Storage volume to")
+
+	cloudStorageBlockVolumeCreateCmd.MarkFlagRequired("size")
 }

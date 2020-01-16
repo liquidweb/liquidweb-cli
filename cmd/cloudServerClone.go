@@ -58,10 +58,6 @@ Server is not on a Private Parent.`,
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 
 		// flag check
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("Flag --uniq_id is required"))
-		}
-
 		if privateParentFlag != "" && configIdFlag != -1 {
 			lwCliInst.Die(fmt.Errorf("cant pass both --config_id and --private-parent flags"))
 		}
@@ -141,4 +137,6 @@ func init() {
 	// Non Private Parent
 	cloudServerCloneCmd.Flags().Int64("config_id", -1,
 		"config_id for new Cloud Server (when !private-parent) (see: 'cloud server options --configs')")
+
+	cloudServerCloneCmd.MarkFlagRequired("uniq_id")
 }

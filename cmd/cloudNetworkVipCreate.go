@@ -64,10 +64,6 @@ Heartbeat
 		nameFlag, _ := cmd.Flags().GetString("name")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 
-		if zoneFlag == -1 {
-			lwCliInst.Die(fmt.Errorf("flag --zone is required"))
-		}
-
 		apiArgs := map[string]interface{}{
 			"domain": nameFlag,
 			"zone":   zoneFlag,
@@ -90,4 +86,6 @@ func init() {
 		"name for the new VIP")
 	cloudNetworkVipCreateCmd.Flags().Int64("zone", -1,
 		"zone id to create VIP in (see: 'cloud server options --zones')")
+
+	cloudNetworkVipCreateCmd.MarkFlagRequired("zone")
 }

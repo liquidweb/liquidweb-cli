@@ -37,10 +37,6 @@ your account.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		if len(networkIpPoolUpdateCmdAddIpsFlag) == 0 && len(networkIpPoolUpdateCmdRemoveIpsFlag) == 0 &&
 			newIpsFlag == -1 {
 			lwCliInst.Die(fmt.Errorf(
@@ -80,4 +76,6 @@ func init() {
 		[]string{}, "ips separated by ',' to add to IP Pool")
 	networkIpPoolUpdateCmd.Flags().Int64("new-ips", -1, "amount of new IPs to assign to the IP Pool")
 	networkIpPoolUpdateCmd.Flags().String("uniq_id", "", "uniq_id of IP Pool")
+
+	networkIpPoolUpdateCmd.MarkFlagRequired("uniq_id")
 }

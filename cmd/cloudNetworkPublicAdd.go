@@ -40,10 +40,6 @@ will be up to the administrator to configure the IP address(es) within the serve
 		rebootFlag, _ := cmd.Flags().GetBool("reboot")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		if newIpsFlag == 0 && len(cloudNetworkPublicAddCmdPoolIpsFlag) == 0 {
 			lwCliInst.Die(fmt.Errorf("at least one of --new-ips --pool-ips must be given"))
 		}
@@ -78,4 +74,5 @@ func init() {
 	cloudNetworkPublicAddCmd.Flags().StringSliceVar(&cloudNetworkPublicAddCmdPoolIpsFlag, "pool-ips", []string{},
 		"ips from your IP Pool separated by ',' to assign to the Cloud Server")
 
+	cloudNetworkPublicAddCmd.MarkFlagRequired("uniq_id")
 }

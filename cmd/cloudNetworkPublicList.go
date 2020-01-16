@@ -33,10 +33,6 @@ var cloudNetworkPublicListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		methodArgs := instance.AllPaginatedResultsArgs{
 			Method:         "bleed/network/ip/list",
 			ResultsPerPage: 100,
@@ -66,4 +62,5 @@ var cloudNetworkPublicListCmd = &cobra.Command{
 func init() {
 	cloudNetworkPublicCmd.AddCommand(cloudNetworkPublicListCmd)
 	cloudNetworkPublicListCmd.Flags().String("uniq_id", "", "uniq_id of the Cloud Server")
+	cloudNetworkPublicListCmd.MarkFlagRequired("uniq_id")
 }

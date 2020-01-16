@@ -39,10 +39,6 @@ Enabling Cloud Block Storage will cause your Cloud Server to reboot.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		var optimized apiTypes.CloudServerIsBlockStorageOptimized
 		if err := lwCliInst.CallLwApiInto("bleed/storm/server/issbsoptimized",
 			map[string]interface{}{"uniq_id": uniqIdFlag}, &optimized); err != nil {
@@ -71,4 +67,5 @@ func init() {
 	cloudServerBlockStorageOptimizedCmd.AddCommand(cloudServerBlockStorageOptimizedEnableCmd)
 	cloudServerBlockStorageOptimizedEnableCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Server")
 
+	cloudServerBlockStorageOptimizedEnableCmd.MarkFlagRequired("uniq_id")
 }

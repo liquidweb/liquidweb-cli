@@ -30,10 +30,6 @@ var cloudStorageObjectDeleteCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		apiArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
 
 		var details apiTypes.CloudObjectStoreDelete
@@ -51,4 +47,5 @@ func init() {
 	cloudStorageObjectDeleteCmd.Flags().String("uniq_id", "",
 		"uniq_id of object store to delete (see 'cloud inventory storage object list')")
 
+	cloudStorageObjectDeleteCmd.MarkFlagRequired("uniq_id")
 }

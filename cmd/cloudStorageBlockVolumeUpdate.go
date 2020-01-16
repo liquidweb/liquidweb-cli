@@ -37,13 +37,6 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		enableCrossAttachFlag, _ := cmd.Flags().GetBool("enable-cross-attach")
 		disableCrossAttachFlag, _ := cmd.Flags().GetBool("disable-cross-attach")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(
-				fmt.Errorf(
-					"flag --uniq_id is required",
-				))
-		}
-
 		if enableCrossAttachFlag && disableCrossAttachFlag {
 			lwCliInst.Die(fmt.Errorf("cant both enable and disab"))
 		}
@@ -85,4 +78,5 @@ func init() {
 	cloudStorageBlockVolumeUpdateCmd.Flags().Bool("disable-cross-attach", false,
 		"disable cross attach for Cloud Block Storage Volume")
 
+	cloudStorageBlockVolumeUpdateCmd.MarkFlagRequired("uniq_id")
 }

@@ -35,10 +35,6 @@ as well as how many resources each Cloud Server gets.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		nameFlag, _ := cmd.Flags().GetString("name")
 
-		if nameFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --name is required"))
-		}
-
 		// if passed a private-parent flag, derive its uniq_id
 		var privateParentUniqId string
 		privateParentUniqId, err := derivePrivateParentUniqId(nameFlag)
@@ -64,4 +60,5 @@ func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentDetailsCmd)
 
 	cloudPrivateParentDetailsCmd.Flags().String("name", "", "name or uniq_id of the Private Parent")
+	cloudPrivateParentDetailsCmd.MarkFlagRequired("name")
 }

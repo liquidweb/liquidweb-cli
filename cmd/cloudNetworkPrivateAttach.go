@@ -40,10 +40,6 @@ and cost-savings.
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		apiArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
 
 		var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
@@ -69,4 +65,5 @@ and cost-savings.
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateAttachCmd)
 	cloudNetworkPrivateAttachCmd.Flags().String("uniq_id", "", "uniq_id of the Cloud Server")
+	cloudNetworkPrivateAttachCmd.MarkFlagRequired("uniq_id")
 }

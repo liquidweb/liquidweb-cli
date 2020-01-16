@@ -81,10 +81,6 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 			skipFsResizeInt = 1
 		}
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		if configIdFlag == -1 && privateParentFlag == "" {
 			lwCliInst.Die(fmt.Errorf("flag --config_id required when --private-parent is not given"))
 		}
@@ -260,4 +256,6 @@ func init() {
 	cloudServerResizeCmd.Flags().Int64("vcpu", -1, "desired vcpu count (when private-parent)")
 	cloudServerResizeCmd.Flags().Int64("config_id", -1,
 		"config_id of your desired config (when !private-parent) (see 'cloud server options --configs')")
+
+	cloudServerResizeCmd.MarkFlagRequired("uniq_id")
 }

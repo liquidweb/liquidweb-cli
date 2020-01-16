@@ -33,10 +33,6 @@ your account.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		apiArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,
 		}
@@ -55,4 +51,5 @@ func init() {
 
 	networkIpPoolDeleteCmd.Flags().String("uniq_id", "", "uniq_id of IP Pool")
 
+	networkIpPoolDeleteCmd.MarkFlagRequired("uniq_id")
 }

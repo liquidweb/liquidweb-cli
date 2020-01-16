@@ -30,10 +30,6 @@ var cloudStorageObjectDetailsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --uniq_id is required"))
-		}
-
 		var details apiTypes.CloudObjectStoreDetails
 		apiArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,
@@ -50,4 +46,5 @@ func init() {
 	cloudStorageObjectCmd.AddCommand(cloudStorageObjectDetailsCmd)
 	cloudStorageObjectDetailsCmd.Flags().String("uniq_id", "", "uniq_id of the object store")
 
+	cloudStorageObjectDetailsCmd.MarkFlagRequired("uniq_id")
 }

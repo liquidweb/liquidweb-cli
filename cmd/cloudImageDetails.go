@@ -30,10 +30,6 @@ var cloudImageDetailsCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		imageIdFlag, _ := cmd.Flags().GetInt64("image_id")
 
-		if imageIdFlag == -1 {
-			lwCliInst.Die(fmt.Errorf("flag --image_id is required"))
-		}
-
 		apiArgs := map[string]interface{}{"id": imageIdFlag}
 
 		var details apiTypes.CloudImageDetails
@@ -51,4 +47,5 @@ func init() {
 
 	cloudImageDetailsCmd.Flags().Int64("image_id", -1,
 		"id number of the image (see 'cloud inventory image list')")
+	cloudImageDetailsCmd.MarkFlagRequired("image_id")
 }
