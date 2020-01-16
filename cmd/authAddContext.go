@@ -29,7 +29,7 @@ var authAddContextCmd = &cobra.Command{
 Use this if you've already setup contexts with "auth init".`,
 	Run: func(cmd *cobra.Command, args []string) {
 		requiredStrFlags := []string{
-			"context-name",
+			"context",
 			"username",
 			"password",
 		}
@@ -51,7 +51,7 @@ Use this if you've already setup contexts with "auth init".`,
 		if err != nil {
 			lwCliInst.Die(err)
 		}
-		contextName, err := cmd.Flags().GetString("context-name")
+		contextName, err := cmd.Flags().GetString("context")
 		if err != nil {
 			lwCliInst.Die(err)
 		}
@@ -88,7 +88,7 @@ Use this if you've already setup contexts with "auth init".`,
 func init() {
 	authCmd.AddCommand(authAddContextCmd)
 
-	authAddContextCmd.Flags().String("context-name", "", "name of context")
+	authAddContextCmd.Flags().String("context", "", "name for new context")
 	authAddContextCmd.Flags().String("username", "", "username to authenticate with")
 	authAddContextCmd.Flags().String("password", "", "password for given username")
 	authAddContextCmd.Flags().Bool("insecure", false, "whether or not to perform SSL validation on api url")

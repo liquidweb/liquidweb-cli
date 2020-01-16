@@ -77,13 +77,53 @@ func (*Client) JsonPrettyPrint(inJson string) (string, error) {
 	return outJson.String(), nil
 }
 
+func (client *Client) RemoveContext(context string) error {
+	// this function should be deleted and Unset in viper used instead once
+	// https://github.com/spf13/viper/pull/519
+	// is merged or similar functionality is added.
+	if context == "" {
+		return fmt.Errorf("context cannot be empty")
+	}
+
+	currentContext := client.Viper.GetString("liquidweb.api.current_context")
+	if context == currentContext {
+		return fmt.Errorf("cannot remove context currently set as current context")
+	}
+
+	contexts := client.Viper.GetStringMap("liquidweb.api.contexts")
+	if _, exists := contexts[context]; !exists {
+		return fmt.Errorf("context %s doesnt exist, cannot remove", context)
+	}
+
+	// save current config into a map, then delete requested context
+	cfgMap := client.Viper.AllSettings()
+	delete(cfgMap["liquidweb"].(map[string]interface{})["api"].(map[string]interface{})["contexts"].(map[string]interface{}), context)
+
+	// json encode modified map
+	encodedCfg, err := json.MarshalIndent(cfgMap, "", " ")
+	if err != nil {
+		return err
+	}
+
+	// read newly encoded config back into viper
+	if err := client.Viper.ReadConfig(bytes.NewBuffer(encodedCfg)); err != nil {
+		return err
+	}
+
+	// write the new viper configuration to file
+	if err := client.Viper.WriteConfig(); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func (client *Client) CallLwApiInto(method string, methodArgs map[string]interface{}, obj interface{}) (err error) {
 	got, err := client.LwApiClient.Call(method, methodArgs)
 	if err != nil {
 		return
 	}
 
-	//fmt.Printf("got: %+v\n", got)
 	err = CastFieldTypes(got, &obj)
 
 	return
