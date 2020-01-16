@@ -38,7 +38,7 @@ var cloudImageDeleteCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Deleted: %d\n", details.Deleted)
+		fmt.Printf("Deleted image %d\n", details.Deleted)
 	},
 }
 
