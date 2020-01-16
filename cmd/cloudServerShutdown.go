@@ -34,10 +34,6 @@ will issue a halt command to the server and shutdown normally.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("--uniq-id is a required flag"))
-		}
-
 		shutdownArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,
 		}
@@ -64,4 +60,6 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerShutdownCmd)
 	cloudServerShutdownCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerShutdownCmd.Flags().String("uniq_id", "", "uniq_id of server to shutdown")
+
+	cloudServerShutdownCmd.MarkFlagRequired("uniq_id")
 }

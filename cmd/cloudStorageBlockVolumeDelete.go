@@ -33,10 +33,6 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("--uniq_id is a required flag"))
-		}
-
 		apiArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
 		var details apiTypes.CloudBlockStorageVolumeDelete
 		err := lwCliInst.CallLwApiInto("bleed/storage/block/volume/delete", apiArgs, &details)
@@ -52,4 +48,6 @@ func init() {
 	cloudStorageBlockVolumeCmd.AddCommand(cloudStorageBlockVolumeDeleteCmd)
 
 	cloudStorageBlockVolumeDeleteCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Block Storage volume")
+
+	cloudStorageBlockVolumeDeleteCmd.MarkFlagRequired("uniq_id")
 }

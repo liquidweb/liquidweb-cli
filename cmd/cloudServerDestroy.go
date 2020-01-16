@@ -37,10 +37,6 @@ server.`,
 		commentFlag, _ := cmd.Flags().GetString("comment")
 		reasonFlag, _ := cmd.Flags().GetString("reason")
 
-		if len(cloudServerDestroyCmdUniqIdFlag) == 0 {
-			lwCliInst.Die(fmt.Errorf("--uniq_id is a required flag"))
-		}
-
 		for _, uniqId := range cloudServerDestroyCmdUniqIdFlag {
 			destroyArgs := map[string]interface{}{
 				"uniq_id":              uniqId,
@@ -71,4 +67,6 @@ func init() {
 		"comment related to the cancellation")
 	cloudServerDestroyCmd.Flags().String("reason", "",
 		"reason for the cancellation (optional)")
+
+	cloudServerDestroyCmd.MarkFlagRequired("uniq_id")
 }

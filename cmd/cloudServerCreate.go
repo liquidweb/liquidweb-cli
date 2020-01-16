@@ -79,9 +79,6 @@ For a list of backups, see 'cloud inventory backups list'
 		imageIdFlag, _ := cmd.Flags().GetInt("image-id")
 
 		// sanity check flags
-		if zoneFlag == 0 {
-			lwCliInst.Die(fmt.Errorf("--zone is a required flag"))
-		}
 		if configIdFlag == 0 && privateParentFlag == "" {
 			lwCliInst.Die(fmt.Errorf("--config_id is a required flag without --private-parent"))
 		}
@@ -262,4 +259,6 @@ func init() {
 	// windows specific
 	cloudServerCreateCmd.Flags().String("winav", "", "Use only with Windows Servers. Typically (None or NOD32) for value when set")
 	cloudServerCreateCmd.Flags().String("ms-sql", "", "Microsoft SQL Server")
+
+	cloudServerCreateCmd.MarkFlagRequired("zone")
 }

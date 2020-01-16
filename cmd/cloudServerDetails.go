@@ -42,10 +42,6 @@ https://cart.liquidweb.com/storm/api/docs/bleed/Storm/Server.html#method_details
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("--uniq_id is a required flag"))
-		}
-
 		var details apiTypes.CloudServerDetails
 		if err := lwCliInst.CallLwApiInto("bleed/storm/server/details",
 			map[string]interface{}{"uniq_id": uniqIdFlag}, &details); err != nil {
@@ -120,4 +116,6 @@ func init() {
 
 	cloudServerDetailsCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerDetailsCmd.Flags().String("uniq_id", "", "get details of this uniq_id")
+
+	cloudServerDetailsCmd.MarkFlagRequired("uniq_id")
 }

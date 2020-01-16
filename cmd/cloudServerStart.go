@@ -33,10 +33,6 @@ Boot a server. If the server is already running, this will do nothing.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
-		if uniqIdFlag == "" {
-			lwCliInst.Die(fmt.Errorf("--uniq-id is a required flag"))
-		}
-
 		startArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,
 		}
@@ -63,4 +59,6 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerStartCmd)
 	cloudServerStartCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerStartCmd.Flags().String("uniq_id", "", "uniq_id of server to start")
+
+	cloudServerStartCmd.MarkFlagRequired("uniq_id")
 }
