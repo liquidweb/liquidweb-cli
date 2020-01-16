@@ -28,45 +28,12 @@ var authAddContextCmd = &cobra.Command{
 
 Use this if you've already setup contexts with "auth init".`,
 	Run: func(cmd *cobra.Command, args []string) {
-		requiredStrFlags := []string{
-			"context",
-			"username",
-			"password",
-		}
-		for _, requiredStrFlag := range requiredStrFlags {
-			val, err := cmd.Flags().GetString(requiredStrFlag)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-			if val == "" {
-				lwCliInst.Die(fmt.Errorf("required flag [%s] was not provided", requiredStrFlag))
-			}
-
-		}
-		username, err := cmd.Flags().GetString("username")
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		password, err := cmd.Flags().GetString("password")
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		contextName, err := cmd.Flags().GetString("context")
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		url, err := cmd.Flags().GetString("api-url")
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		insecure, err := cmd.Flags().GetBool("insecure")
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		timeout, err := cmd.Flags().GetInt("timeout")
-		if err != nil {
-			lwCliInst.Die(err)
-		}
+		username, _ := cmd.Flags().GetString("username")
+		password, _ := cmd.Flags().GetString("password")
+		contextName, _ := cmd.Flags().GetString("context")
+		url, _ := cmd.Flags().GetString("api-url")
+		insecure, _ := cmd.Flags().GetBool("insecure")
+		timeout, _ := cmd.Flags().GetInt("timeout")
 
 		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s", contextName), map[string]interface{}{
 			"contextname": contextName,
@@ -94,4 +61,8 @@ func init() {
 	authAddContextCmd.Flags().Bool("insecure", false, "whether or not to perform SSL validation on api url")
 	authAddContextCmd.Flags().String("api-url", "https://api.liquidweb.com", "API URL to use")
 	authAddContextCmd.Flags().Int("timeout", 30, "timeout value when communicating with api-url")
+
+	authAddContextCmd.MarkFlagRequired("uniq_id")
+	authAddContextCmd.MarkFlagRequired("username")
+	authAddContextCmd.MarkFlagRequired("password")
 }
