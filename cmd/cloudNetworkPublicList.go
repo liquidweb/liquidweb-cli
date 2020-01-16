@@ -22,7 +22,6 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var cloudNetworkPublicListCmdPoolIpsFlag []string
@@ -59,18 +58,9 @@ var cloudNetworkPublicListCmd = &cobra.Command{
 				lwCliInst.Die(err)
 			}
 
-			_printNetAssignmentDetails(&details)
+			fmt.Printf(details.String())
 		}
 	},
-}
-
-func _printNetAssignmentDetails(details *apiTypes.NetworkAssignmentListEntry) {
-	utils.PrintTeal("\tIP: %s\n", details.Ip)
-	fmt.Printf("\t\tId: %d\n", details.Id)
-	fmt.Printf("\t\tGateway: %s\n", details.Gateway)
-	fmt.Printf("\t\tBroadcast: %s\n", details.Broadcast)
-	fmt.Printf("\t\tNetmask: %s\n", details.Netmask)
-	fmt.Printf("\t\tNetwork: %s\n", details.Network)
 }
 
 func init() {

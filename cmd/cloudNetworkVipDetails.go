@@ -76,18 +76,8 @@ Heartbeat
 			lwCliInst.Die(err)
 		}
 
-		_printCloudNetworkVipDetails(&details)
+		fmt.Printf(details.String())
 	},
-}
-
-func _printCloudNetworkVipDetails(details *apiTypes.CloudNetworkVipDetails) {
-	fmt.Printf("VIP Details:\n")
-	fmt.Printf("\tActive: %d\n", details.Active)
-	fmt.Printf("\tActive Status: %s\n", details.ActiveStatus)
-	fmt.Printf("\tName: %s\n", details.Domain)
-	fmt.Printf("\tUniqId: %s\n", details.UniqId)
-	fmt.Printf("\tIP: %s\n", details.Ip)
-	fmt.Printf("\tPrivate IP: %+v\n", details.PrivateIp)
 }
 
 func init() {

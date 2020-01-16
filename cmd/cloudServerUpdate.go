@@ -88,7 +88,7 @@ as-you-go, usage-based bandwidth charges.`,
 			lwCliInst.Die(err)
 		}
 
-		_printCloudServerDetailsFromDetailsStruct(&details)
+		_printExtendedCloudServerDetails(&details)
 	},
 }
 

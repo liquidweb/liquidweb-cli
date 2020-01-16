@@ -53,29 +53,9 @@ var networkInventoryIpPoolListCmd = &cobra.Command{
 				lwCliInst.Die(err)
 			}
 
-			_printNetworkIpPoolDetailsFromDetailsStruct(&details)
+			fmt.Printf(details.String())
 		}
 	},
-}
-
-func _printNetworkIpPoolDetailsFromDetailsStruct(details *apiTypes.NetworkIpPoolDetails) {
-	fmt.Printf("IP Pool id [%d] uniq_id [%s]\n", details.Id, details.UniqId)
-	fmt.Printf("\tZoneId: %d\n", details.ZoneId)
-	fmt.Printf("\tAccount: %d\n", details.Accnt)
-	fmt.Printf("\tAssignments:\n")
-	for _, assignment := range details.Assignments {
-		fmt.Printf("\t\tassignment:\n")
-		fmt.Printf("\t\t\tBeginRange: %s\n", assignment.BeginRange)
-		fmt.Printf("\t\t\tEndRange: %s\n", assignment.EndRange)
-		if assignment.Broadcast != "" {
-			fmt.Printf("\t\t\tBroadcast: %s\n", assignment.Broadcast)
-		}
-		fmt.Printf("\t\t\tGateway: %s\n", assignment.Gateway)
-		fmt.Printf("\t\t\tNetmask: %s\n", assignment.Netmask)
-		fmt.Printf("\t\t\tNetwork: %s\n", assignment.Network)
-		fmt.Printf("\t\t\tId: %d\n", assignment.Id)
-		fmt.Printf("\t\t\tZoneId: %d\n", assignment.ZoneId)
-	}
 }
 
 func init() {

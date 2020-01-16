@@ -54,7 +54,7 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 			}
 			fmt.Printf(pretty)
 		} else {
-			_printCloudBlockStorageVolumeDetailsStruct(&details)
+			fmt.Printf(details.String())
 
 		}
 	},

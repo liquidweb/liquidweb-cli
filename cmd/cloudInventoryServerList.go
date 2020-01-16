@@ -63,8 +63,7 @@ var cloudInventoryServerListCmd = &cobra.Command{
 				}
 
 				fmt.Printf("%d.) ", serverCnt)
-				_printCloudServerDetailsFromDetailsStruct(&details)
-
+				_printExtendedCloudServerDetails(&details)
 				serverCnt++
 			}
 		}

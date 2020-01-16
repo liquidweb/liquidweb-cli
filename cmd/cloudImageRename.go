@@ -43,7 +43,7 @@ var cloudImageRenameCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		_printCloudImageDetailsFromDetailsStruct(&details)
+		fmt.Printf(details.String())
 	},
 }
 

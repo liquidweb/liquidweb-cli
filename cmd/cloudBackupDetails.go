@@ -42,7 +42,7 @@ var cloudBackupDetailsCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		_printCloudBackupDetailsFromDetailsStruct(&details)
+		fmt.Printf(details.String())
 	},
 }
 

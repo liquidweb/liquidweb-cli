@@ -67,7 +67,7 @@ your account.`,
 			lwCliInst.Die(err)
 		}
 
-		_printNetworkIpPoolDetailsFromDetailsStruct(&details)
+		fmt.Printf(details.String())
 	},
 }
 

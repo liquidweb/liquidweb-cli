@@ -42,7 +42,7 @@ var cloudStorageObjectDetailsCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		_printCloudObjectStorageDetailsStruct(&details, uniqIdFlag)
+		fmt.Printf(details.String())
 	},
 }
 

@@ -55,30 +55,11 @@ var cloudInventoryStorageBlockVolumeListCmd = &cobra.Command{
 					lwCliInst.Die(err)
 				}
 
-				fmt.Printf("%d.) ", cnt)
-				_printCloudBlockStorageVolumeDetailsStruct(&details)
-
+				fmt.Printf("%d.) %s", cnt, details.String())
 				cnt++
 			}
 		}
 	},
-}
-
-func _printCloudBlockStorageVolumeDetailsStruct(details *apiTypes.CloudBlockStorageVolumeDetails) {
-	fmt.Printf("Volume: %s\n", details.Domain)
-	fmt.Printf("\tStatus: %s\n", details.Status)
-	fmt.Printf("\tUniqId: %s\n", details.UniqId)
-	fmt.Printf("\tAttaches:\n")
-	for _, entry := range details.AttachedTo {
-		if entry.Resource != "" {
-			fmt.Printf("\t\tAttached to %s as device %s\n", entry.Resource, entry.Device)
-		}
-	}
-
-	fmt.Printf("\tCross Attach Enabled: %t\n", details.CrossAttach)
-	fmt.Printf("\tSize: %d\n", details.Size)
-	fmt.Printf("\tLabel: %s\n", details.Label)
-	fmt.Printf("\tZone Availability: %+v\n", details.ZoneAvailability)
 }
 
 func init() {

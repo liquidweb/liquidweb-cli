@@ -55,36 +55,9 @@ var cloudInventoryPrivateParentListCmd = &cobra.Command{
 				lwCliInst.Die(err)
 			}
 
-			_printPrivateParentDetailsFromDetailsStruct(&details)
+			fmt.Printf(details.String())
 		}
 	},
-}
-
-func _printPrivateParentDetailsFromDetailsStruct(details *apiTypes.CloudPrivateParentDetails) {
-	fmt.Printf("Private Parent: %s\n", details.Domain)
-	fmt.Printf("\tUniqId: %s\n", details.UniqId)
-	fmt.Printf("\tStatus: %s\n", details.Status)
-	fmt.Printf("\tConfigId: %d\n", details.ConfigId)
-	fmt.Printf("\tConfigDescription: %s\n", details.ConfigDescription)
-	fmt.Printf("\tVcpus: %d\n", details.Vcpu)
-
-	// resources
-	fmt.Printf("\tResource Usage:\n")
-	// diskspace
-	fmt.Printf("\t\tDiskSpace:\n")
-	fmt.Printf("\t\t\t%d out of %d used; free %d\n", details.Resources.DiskSpace.Used,
-		details.Resources.DiskSpace.Total, details.Resources.DiskSpace.Free)
-	// memory
-	fmt.Printf("\t\tMemory:\n")
-	fmt.Printf("\t\t\t%d out of %d used; free %d\n", details.Resources.Memory.Used,
-		details.Resources.Memory.Total, details.Resources.Memory.Free)
-
-	fmt.Printf("\tRegion %s (id %d) - %s (id %d)\n", details.Zone.Region.Name, details.Zone.Region.Id,
-		details.Zone.Description, details.Zone.Id)
-
-	fmt.Printf("\tHypervisor: %s\n", details.Zone.HvType)
-	fmt.Printf("\tCreateDate: %s\n", details.CreateDate)
-	fmt.Printf("\tLicenseState: %s\n", details.LicenseState)
 }
 
 func init() {

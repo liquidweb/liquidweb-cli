@@ -55,27 +55,9 @@ var cloudInventoryImageListCmd = &cobra.Command{
 				lwCliInst.Die(err)
 			}
 
-			_printCloudImageDetailsFromDetailsStruct(&details)
+			fmt.Printf(details.String())
 		}
 	},
-}
-
-func _printCloudImageDetailsFromDetailsStruct(details *apiTypes.CloudImageDetails) {
-	fmt.Printf("Cloud Image: %s\n", details.Name)
-	fmt.Printf("\tId: %d\n", details.Id)
-	fmt.Printf("\tsize: %.2f\n", details.Size)
-	if details.SourceHostname != "" {
-		fmt.Printf("\tSource Hostname: %s\n", details.SourceHostname)
-	}
-	if details.SourceUniqId != "" {
-		fmt.Printf("\tSource UniqId: %s\n", details.SourceUniqId)
-	}
-	fmt.Printf("\tTemplate: %s\n", details.Template)
-	fmt.Printf("\tTemplate Description: %s\n", details.TemplateDescription)
-	fmt.Printf("\tTime Taken: %s\n", details.TimeTaken)
-	fmt.Printf("\tHypervisor: %s\n", details.HvType)
-	fmt.Printf("\tFeatures: %+v\n", details.Features)
-	fmt.Printf("\tAccount: %d\n", details.Accnt)
 }
 
 func init() {

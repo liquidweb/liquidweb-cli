@@ -62,21 +62,10 @@ var cloudInventoryBackupListCmd = &cobra.Command{
 					continue
 				}
 			}
-			_printCloudBackupDetailsFromDetailsStruct(&details)
+
+			fmt.Printf(details.String())
 		}
 	},
-}
-
-func _printCloudBackupDetailsFromDetailsStruct(details *apiTypes.CloudBackupDetails) {
-	fmt.Printf("Cloud Backup Id: %d\n", details.Id)
-	fmt.Printf("\tUniqId: %s\n", details.UniqId)
-	fmt.Printf("\tName: %s\n", details.Name)
-	fmt.Printf("\tsize: %.2f\n", details.Size)
-	fmt.Printf("\tTemplate: %s\n", details.Template)
-	fmt.Printf("\tTime Taken: %s\n", details.TimeTaken)
-	fmt.Printf("\tHypervisor: %s\n", details.HvType)
-	fmt.Printf("\tFeatures: %+v\n", details.Features)
-	fmt.Printf("\tAccount: %d\n", details.Accnt)
 }
 
 func init() {

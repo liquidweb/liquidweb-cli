@@ -56,7 +56,7 @@ as well as how many resources each Cloud Server gets.`,
 			lwCliInst.Die(err)
 		}
 
-		_printPrivateParentDetailsFromDetailsStruct(&details)
+		fmt.Printf(details.String())
 	},
 }
 

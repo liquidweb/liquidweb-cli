@@ -16,6 +16,8 @@ limitations under the License.
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
@@ -32,7 +34,7 @@ var cloudStorageObjectCreateCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		_printCloudObjectStorageDetailsStruct(&details, "")
+		fmt.Printf(details.String())
 	},
 }
 

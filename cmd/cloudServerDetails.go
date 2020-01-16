@@ -61,42 +61,12 @@ https://cart.liquidweb.com/storm/api/docs/bleed/Storm/Server.html#method_details
 			os.Exit(0)
 		}
 
-		_printCloudServerDetailsFromDetailsStruct(&details)
+		_printExtendedCloudServerDetails(&details)
 	},
 }
 
-func _printCloudServerDetailsFromDetailsStruct(details *apiTypes.CloudServerDetails) {
-	fmt.Printf("Domain: %s UniqId: %s\n", details.Domain, details.UniqId)
-
-	fmt.Printf("\tIp: %s\n", details.Ip)
-	fmt.Printf("\tIpCount: %d\n", details.IpCount)
-	fmt.Printf("\tRegion: %s (id %d) Zone: %s (id %d)\n", details.Zone.Region.Name,
-		details.Zone.Region.Id, details.Zone.Name, details.Zone.Id)
-
-	if details.PrivateParent != "" {
-		fmt.Printf("\tPrivate Parent Child on Private Parent [%s]\n", details.PrivateParent)
-	} else {
-		fmt.Printf("\tConfigId: %d\n", details.ConfigId)
-	}
-	fmt.Printf("\tConfigDescription: %s\n", details.ConfigDescription)
-	fmt.Printf("\tVcpus: %d\n", details.Vcpu)
-	fmt.Printf("\tMemory: %d\n", details.Memory)
-	fmt.Printf("\tDiskSpace: %d\n", details.DiskSpace)
-	fmt.Printf("\tTemplate: %s\n", details.Template)
-	fmt.Printf("\tTemplateDescription: %s\n", details.TemplateDescription)
-	fmt.Printf("\tType: %s\n", details.Type)
-	fmt.Printf("\tBackupEnabled: %d\n", details.BackupEnabled)
-	if details.BackupEnabled == 1 {
-		fmt.Printf("\tBackupPlan: %s\n", details.BackupPlan)
-		fmt.Printf("\tBackupSize: %.0f\n", details.BackupSize)
-		if details.BackupQuota != 0 {
-			fmt.Printf("\tBackupQuota: %d\n", details.BackupQuota)
-		}
-	}
-	fmt.Printf("\tBandwidthQuota: %s\n", details.BandwidthQuota)
-	fmt.Printf("\tManageLevel: %s\n", details.ManageLevel)
-	fmt.Printf("\tActive: %d\n", details.Active)
-	fmt.Printf("\tAccnt: %d\n", details.Accnt)
+func _printExtendedCloudServerDetails(details *apiTypes.CloudServerDetails) {
+	fmt.Printf(details.String())
 
 	// private network
 	var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
