@@ -33,3 +33,18 @@ Flags:
 
 Use "liquidweb-cli [command] --help" for more information about a command.
 ```
+## Building from source
+
+You can build liquidweb-cli from source by running `make build` from the root of this repository. The resulting program will be located at `./_exe/liquidweb-cli`.
+
+## First Time Setup
+The first time you use liquidweb-cli, you will need to setup an auth context. An auth context holds authentication related data for a specific LiquidWeb account. You can follow a guided questionnaire to add your auth contexts if you pass arguments `auth init` to liquidweb-cli. By default contexts are stored in `~/.liquidweb-cli.yaml` or `%APPDATA%/.liquidweb-cli.yaml` on Windows.
+
+## Adding auth contexts later
+If you end up wanting to add a auth context later on, you can do so with `auth add-context`. You can find the usage documentation in `help auth add-context`.
+
+## Removing auth contexts later
+If you end up wanting to remove a auth context later on, you can do so with `auth remove-context`. You can find the usage documentation in `help auth remove-context`.
+
+## LiquidWeb Cloud
+The Cloud features you can use in manage.liquidweb.com on your Cloud Servers you can do with this command line tool. See `help cloud` for a full list of features and capabilities.
