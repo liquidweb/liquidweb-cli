@@ -63,7 +63,7 @@ var cloudInventoryBackupListCmd = &cobra.Command{
 				}
 			}
 
-			fmt.Printf(details.String())
+			fmt.Print(details)
 		}
 	},
 }

@@ -55,7 +55,7 @@ var cloudInventoryImageListCmd = &cobra.Command{
 				lwCliInst.Die(err)
 			}
 
-			fmt.Printf(details.String())
+			fmt.Print(details)
 		}
 	},
 }

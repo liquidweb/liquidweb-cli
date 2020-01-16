@@ -55,7 +55,7 @@ var cloudInventoryStorageBlockVolumeListCmd = &cobra.Command{
 					lwCliInst.Die(err)
 				}
 
-				fmt.Printf("%d.) %s", cnt, details.String())
+				fmt.Printf("%d.) %s", cnt, details)
 				cnt++
 			}
 		}

@@ -51,7 +51,7 @@ as well as how many resources each Cloud Server gets.`,
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Renamed!\n%s", details.String())
+		fmt.Printf("Renamed!\n%s", details)
 	},
 }
 

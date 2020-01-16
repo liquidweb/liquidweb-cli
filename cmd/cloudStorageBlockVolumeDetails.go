@@ -54,7 +54,7 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 			}
 			fmt.Printf(pretty)
 		} else {
-			fmt.Printf(details.String())
+			fmt.Print(details)
 
 		}
 	},

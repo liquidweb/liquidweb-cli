@@ -66,7 +66,7 @@ https://cart.liquidweb.com/storm/api/docs/bleed/Storm/Server.html#method_details
 }
 
 func _printExtendedCloudServerDetails(details *apiTypes.CloudServerDetails) {
-	fmt.Printf(details.String())
+	fmt.Print(details)
 
 	// private network
 	var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse

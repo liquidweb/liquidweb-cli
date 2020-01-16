@@ -63,7 +63,7 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Created Cloud Block Storage Volume\n%s", details.String())
+		fmt.Printf("Created Cloud Block Storage Volume\n%s", details)
 	},
 }
 

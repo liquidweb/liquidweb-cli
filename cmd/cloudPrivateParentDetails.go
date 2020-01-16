@@ -52,7 +52,7 @@ as well as how many resources each Cloud Server gets.`,
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf(details.String())
+		fmt.Print(details)
 	},
 }
 

@@ -62,7 +62,7 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Updated Block Storage Volume %s\n%s", details.UniqId, details.String())
+		fmt.Printf("Updated Block Storage Volume %s\n%s", details.UniqId, details)
 	},
 }
 

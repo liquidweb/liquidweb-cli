@@ -58,7 +58,7 @@ your account.`,
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf(details.String())
+		fmt.Print(details)
 	},
 }
 
