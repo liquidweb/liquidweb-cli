@@ -37,7 +37,7 @@ var rootCmd = &cobra.Command{
 	Long: `CLI interface for LiquidWeb.
 
 Command line interface for interacting with LiquidWeb services via
-LiquidWebs Public API.
+LiquidWeb's Public API.
 
 If this is your first time running, you will need to setup at least
 one auth context. An auth context contains authentication data for

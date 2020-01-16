@@ -23,8 +23,8 @@ import (
 
 var cloudCmd = &cobra.Command{
 	Use:   "cloud",
-	Short: "Interact with LiquidWebs Cloud platform.",
-	Long: `Command line interface to LiquidWebs Cloud platform.
+	Short: "Interact with LiquidWeb's Cloud platform.",
+	Long: `Command line interface to LiquidWeb's Cloud platform.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {

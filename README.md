@@ -4,7 +4,7 @@ Official command line interface for the LiquidWeb API
 CLI interface for LiquidWeb.
 
 Command line interface for interacting with LiquidWeb services via
-LiquidWebs Public API.
+LiquidWeb's Public API.
 
 If this is your first time running, you will need to setup at least
 one auth context. An auth context contains authentication data for
@@ -23,8 +23,9 @@ Usage:
 
 Available Commands:
   auth        authentication actions
-  cloud       Interact with LiquidWebs Cloud platform.
+  cloud       Interact with LiquidWeb's Cloud platform.
   help        Help about any command
+  network     network actions
 
 Flags:
       --config string   config file (default is $HOME/.liquidweb-cli.yaml)
