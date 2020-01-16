@@ -31,10 +31,6 @@ var cloudStorageObjectDeleteKeyCmd = &cobra.Command{
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		accessKeyFlag, _ := cmd.Flags().GetString("access-key")
 
-		if uniqIdFlag == "" || accessKeyFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flags --uniq_id --access-key are required"))
-		}
-
 		apiArgs := map[string]interface{}{
 			"uniq_id":    uniqIdFlag,
 			"access_key": accessKeyFlag,
@@ -54,4 +50,7 @@ func init() {
 	cloudStorageObjectCmd.AddCommand(cloudStorageObjectDeleteKeyCmd)
 	cloudStorageObjectDeleteKeyCmd.Flags().String("uniq_id", "", "uniq_id of Object Store")
 	cloudStorageObjectDeleteKeyCmd.Flags().String("access-key", "", "the access key to remove from the Object Store")
+
+	cloudStorageObjectDeleteKeyCmd.MarkFlagRequired("uniq_id")
+	cloudStorageObjectDeleteKeyCmd.MarkFlagRequired("access-key")
 }

@@ -31,10 +31,6 @@ var cloudImageCreateCmd = &cobra.Command{
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 
-		if uniqIdFlag == "" || nameFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flags --uniq_id --name are required"))
-		}
-
 		apiArgs := map[string]interface{}{"name": nameFlag, "uniq_id": uniqIdFlag}
 
 		var details apiTypes.CloudImageCreateResponse
@@ -54,4 +50,6 @@ func init() {
 	cloudImageCreateCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Server")
 	cloudImageCreateCmd.Flags().String("name", "", "name for the Cloud Image")
 
+	cloudImageCreateCmd.MarkFlagRequired("uniq_id")
+	cloudImageCreateCmd.MarkFlagRequired("name")
 }

@@ -35,13 +35,6 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		detachFromFlag, _ := cmd.Flags().GetString("detach-from")
 
-		if uniqIdFlag == "" || detachFromFlag == "" {
-			lwCliInst.Die(
-				fmt.Errorf(
-					"flags --uniq_id --detach-from are required flags",
-				))
-		}
-
 		apiArgs := map[string]interface{}{
 			"uniq_id":     uniqIdFlag,
 			"detach_from": detachFromFlag,
@@ -66,4 +59,7 @@ func init() {
 		"uniq_id of Cloud Block Storage Volume")
 	cloudStorageBlockVolumeDetachCmd.Flags().String("detach-from", "",
 		"uniq_id of Cloud Server to detach from")
+
+	cloudStorageBlockVolumeDetachCmd.MarkFlagRequired("uniq_id")
+	cloudStorageBlockVolumeDetachCmd.MarkFlagRequired("detach-from")
 }

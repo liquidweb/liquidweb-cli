@@ -32,10 +32,6 @@ var cloudBackupRestoreCmd = &cobra.Command{
 		rebuildFsFlag, _ := cmd.Flags().GetBool("rebuild-fs")
 		backupIdFlag, _ := cmd.Flags().GetInt64("backup_id")
 
-		if uniqIdFlag == "" || backupIdFlag == -1 {
-			lwCliInst.Die(fmt.Errorf("flags --uniq_id --backup_id are required"))
-		}
-
 		apiArgs := map[string]interface{}{"id": backupIdFlag, "uniq_id": uniqIdFlag}
 		if rebuildFsFlag {
 			apiArgs["force"] = 1
@@ -58,4 +54,7 @@ func init() {
 	cloudBackupRestoreCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Server")
 	cloudBackupRestoreCmd.Flags().Int64("backup_id", -1, "id of the Cloud Backup")
 	cloudBackupRestoreCmd.Flags().Bool("rebuild-fs", false, "rebuild filesystem before restoring")
+
+	cloudBackupRestoreCmd.MarkFlagRequired("uniq_id")
+	cloudBackupRestoreCmd.MarkFlagRequired("backup_id")
 }

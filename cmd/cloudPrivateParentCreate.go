@@ -40,10 +40,6 @@ of configs, check 'cloud server options --configs'.`,
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 
-		if nameFlag == "" || configIdFlag == -1 || zoneFlag == -1 {
-			lwCliInst.Die(fmt.Errorf("flags --name --config_id --zone are required"))
-		}
-
 		apiArgs := map[string]interface{}{
 			"domain":    nameFlag,
 			"config_id": configIdFlag,
@@ -67,4 +63,8 @@ func init() {
 	cloudPrivateParentCreateCmd.Flags().Int64("config_id", -1, "config_id (category must be bare-metal or bare-metal-r)")
 	cloudPrivateParentCreateCmd.Flags().String("name", "", "name for your Private Parent")
 	cloudPrivateParentCreateCmd.Flags().Int64("zone", -1, "id number of the zone to provision the Private Parent in ('cloud server options --zones')")
+
+	cloudPrivateParentCreateCmd.MarkFlagRequired("config_id")
+	cloudPrivateParentCreateCmd.MarkFlagRequired("zone")
+	cloudPrivateParentCreateCmd.MarkFlagRequired("name")
 }

@@ -35,13 +35,6 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		newSizeFlag, _ := cmd.Flags().GetInt64("new-size")
 
-		if uniqIdFlag == "" || newSizeFlag == -1 {
-			lwCliInst.Die(
-				fmt.Errorf(
-					"flags --uniq_id --new-size are required flags",
-				))
-		}
-
 		apiArgs := map[string]interface{}{
 			"uniq_id":  uniqIdFlag,
 			"new_size": newSizeFlag,
@@ -66,4 +59,7 @@ func init() {
 		"uniq_id of Cloud Block Storage Volume")
 	cloudStorageBlockVolumeResizeCmd.Flags().Int64("new-size", -1,
 		"size (gb) to resize the volume to")
+
+	cloudStorageBlockVolumeResizeCmd.MarkFlagRequired("uniq_id")
+	cloudStorageBlockVolumeResizeCmd.MarkFlagRequired("new-size")
 }

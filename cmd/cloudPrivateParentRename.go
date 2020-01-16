@@ -36,10 +36,6 @@ as well as how many resources each Cloud Server gets.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 
-		if uniqIdFlag == "" || nameFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flags --name --uniq_id are required"))
-		}
-
 		apiArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,
 			"domain":  nameFlag,
@@ -60,4 +56,7 @@ func init() {
 
 	cloudPrivateParentRenameCmd.Flags().String("uniq_id", "", "uniq_id of the Private Parent")
 	cloudPrivateParentRenameCmd.Flags().String("name", "", "name to give the Private Parent")
+
+	cloudPrivateParentRenameCmd.MarkFlagRequired("uniq_id")
+	cloudPrivateParentRenameCmd.MarkFlagRequired("name")
 }

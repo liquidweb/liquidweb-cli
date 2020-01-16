@@ -31,10 +31,6 @@ var cloudImageRenameCmd = &cobra.Command{
 		imageIdFlag, _ := cmd.Flags().GetInt64("image_id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 
-		if imageIdFlag == -1 || nameFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flags --image_id --name are required"))
-		}
-
 		apiArgs := map[string]interface{}{"id": imageIdFlag, "name": nameFlag}
 
 		var details apiTypes.CloudImageDetails
@@ -53,4 +49,7 @@ func init() {
 	cloudImageRenameCmd.Flags().Int64("image_id", -1,
 		"id number of the image (see 'cloud inventory image list')")
 	cloudImageRenameCmd.Flags().String("name", "", "new name for the Cloud Image")
+
+	cloudImageRenameCmd.MarkFlagRequired("image_id")
+	cloudImageRenameCmd.MarkFlagRequired("name")
 }

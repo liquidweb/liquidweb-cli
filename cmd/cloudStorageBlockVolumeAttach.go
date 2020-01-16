@@ -35,13 +35,6 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		attachToFlag, _ := cmd.Flags().GetString("attach-to")
 
-		if uniqIdFlag == "" || attachToFlag == "" {
-			lwCliInst.Die(
-				fmt.Errorf(
-					"flags --uniq_id --attach-to are required flags",
-				))
-		}
-
 		apiArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,
 			"to":      attachToFlag,
@@ -66,4 +59,7 @@ func init() {
 		"uniq_id of Cloud Block Storage Volume")
 	cloudStorageBlockVolumeAttachCmd.Flags().String("attach-to", "",
 		"uniq_id of Cloud Server to attach to")
+
+	cloudStorageBlockVolumeAttachCmd.MarkFlagRequired("uniq_id")
+	cloudStorageBlockVolumeAttachCmd.MarkFlagRequired("attach-to")
 }
