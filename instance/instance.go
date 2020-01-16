@@ -51,7 +51,7 @@ func New(viper *viper.Viper) (Client, error) {
 
 func (*Client) Die(err error) {
 	utils.PrintRed("A fatal error has occurred:\n\n")
-	fmt.Printf("%s\n\nIf you need assistance please contact support. ", err)
+	fmt.Printf("%s\n\n", err)
 	os.Exit(1)
 }
 
