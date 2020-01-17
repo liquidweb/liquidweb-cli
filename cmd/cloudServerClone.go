@@ -40,7 +40,7 @@ Server where possible.
 
 ** Cloning to a Private Parent: **
 
---private-parent must be passed containg either the uniq_id of the Private Parent,
+--private-parent must be passed containing either the uniq_id of the Private Parent,
 or its name.
 
 The flags --diskspace --vcpu --memory must all be passed if the source Cloud
