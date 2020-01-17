@@ -18,6 +18,7 @@ package utils
 import (
 	"fmt"
 	"math/rand"
+	"os"
 	"time"
 )
 
@@ -31,6 +32,15 @@ func RandomString(length int) string {
 		b[i] = charset[seededRand.Intn(len(charset))]
 	}
 	return string(b)
+}
+
+func FileExists(file string) bool {
+	fileStat, err := os.Stat(file)
+	if os.IsNotExist(err) {
+		return false
+	}
+
+	return !fileStat.IsDir()
 }
 
 func PrintRed(m string, args ...interface{}) {

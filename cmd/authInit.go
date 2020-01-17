@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -27,6 +28,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/types/errors"
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var authInitCmd = &cobra.Command{
@@ -49,8 +51,18 @@ func init() {
 }
 
 func setAuthDataInteractively() error {
-	_, err := fetchAuthDataInteractively()
+	cfgFile, err := getExpectedConfigPath()
 	if err != nil {
+		lwCliInst.Die(err)
+	}
+	if utils.FileExists(cfgFile) {
+		if err := os.Remove(cfgFile); err != nil {
+			lwCliInst.Die(err)
+		}
+		lwCliInst.Viper.ReadConfig(bytes.NewBuffer([]byte{}))
+	}
+
+	if _, err := fetchAuthDataInteractively(); err != nil {
 		return err
 	}
 
@@ -196,23 +208,33 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 	return contexts, err
 }
 
-func writeEmptyConfig() error {
+func getExpectedConfigPath() (string, error) {
 	homedir, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+
+	cfgFile := fmt.Sprintf("%s/.liquidweb-cli.yaml", homedir)
+
+	return cfgFile, nil
+}
+
+func writeEmptyConfig() error {
+	cfgFile, err := getExpectedConfigPath()
 	if err != nil {
 		return err
 	}
 
-	cfgFile := fmt.Sprintf("%s/.liquidweb-cli.yaml", homedir)
 	fmt.Printf("using config file %s\n", cfgFile)
 	f, err := os.Create(cfgFile)
 	if err != nil {
 		return err
 	}
+	f.Close()
+
 	if err := os.Chmod(cfgFile, 0600); err != nil {
 		return err
 	}
-
-	f.Close()
 
 	return nil
 }

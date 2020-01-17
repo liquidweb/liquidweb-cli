@@ -17,8 +17,11 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
+
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var authAddContextCmd = &cobra.Command{
@@ -34,6 +37,26 @@ Use this if you've already setup contexts with "auth init".`,
 		url, _ := cmd.Flags().GetString("api-url")
 		insecure, _ := cmd.Flags().GetBool("insecure")
 		timeout, _ := cmd.Flags().GetInt("timeout")
+
+		file, err := getExpectedConfigPath()
+		if err != nil {
+			lwCliInst.Die(err)
+		}
+		if !utils.FileExists(file) {
+			f, err := os.Create(file)
+			if err != nil {
+				lwCliInst.Die(err)
+			}
+			f.Close()
+			if err := os.Chmod(file, 0600); err != nil {
+				lwCliInst.Die(err)
+			}
+		}
+
+		contexts := lwCliInst.Viper.GetStringMap("liquidweb.api.contexts")
+		if _, exists := contexts[contextName]; exists {
+			lwCliInst.Die(fmt.Errorf("context with name [%s] already exists", contextName))
+		}
 
 		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s", contextName), map[string]interface{}{
 			"contextname": contextName,
