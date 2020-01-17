@@ -34,10 +34,6 @@ To perform a forced a reboot, you must use --force`,
 		jsonOutput, _ := cmd.Flags().GetBool("json")
 		force, _ := cmd.Flags().GetBool("force")
 
-		if uniqId == "" {
-			lwCliInst.Die(fmt.Errorf("uniq_id of server to reboot must be given"))
-		}
-
 		var resp apiTypes.CloudServerRebootResponse
 		if err := lwCliInst.CallLwApiInto("bleed/storm/server/reboot", map[string]interface{}{
 			"uniq_id": uniqId, "force": force}, &resp); err != nil {
@@ -62,4 +58,6 @@ func init() {
 	cloudServerRebootCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerRebootCmd.Flags().Bool("force", false, "perform a forced reboot")
 	cloudServerRebootCmd.Flags().String("uniq_id", "", "uniq_id of server to reboot")
+
+	cloudServerRebootCmd.MarkFlagRequired("uniq_id")
 }
