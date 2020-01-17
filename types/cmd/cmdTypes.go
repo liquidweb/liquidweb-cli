@@ -16,10 +16,10 @@ limitations under the License.
 package cmdTypes
 
 type AuthContext struct {
-	ContextName string
-	Username    string
-	Password    string
-	Url         string
-	Insecure    bool
-	Timeout     int
+	ContextName string `json:"contextname" mapstructure:"contextname"`
+	Username    string `json:"username" mapstructure:"username"`
+	Password    string `json:"password" mapstructure:"password"`
+	Url         string `json:"url" mapstructure:"url"`
+	Insecure    bool   `json:"insecure" mapstructure:"insecure"`
+	Timeout     int    `json:"timeout" mapstructure:"timeout"`
 }
