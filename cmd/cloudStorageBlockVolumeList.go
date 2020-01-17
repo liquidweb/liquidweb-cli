@@ -18,23 +18,19 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
-var cloudInventoryStorageObjectListCmd = &cobra.Command{
+var cloudStorageBlockVolumeListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List Object Stores on your account",
-	Long:  `List Object Stores on your account`,
+	Short: "List Cloud Block Storage volumes on your account",
+	Long:  `List Cloud Block Storage volumes on your account`,
 	Run: func(cmd *cobra.Command, args []string) {
 		methodArgs := instance.AllPaginatedResultsArgs{
-			Method: "bleed/asset/list",
-			MethodArgs: map[string]interface{}{
-				"type": "SS.ObjectStore",
-			},
+			Method:         "bleed/storage/block/volume/list",
 			ResultsPerPage: 100,
 		}
 		results, err := lwCliInst.AllPaginatedResults(&methodArgs)
@@ -42,23 +38,32 @@ var cloudInventoryStorageObjectListCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		for _, item := range results.Items {
+		jsonOutput, _ := cmd.Flags().GetBool("json")
+		if jsonOutput {
 
-			itemUniqIdStr := cast.ToString(item["uniq_id"])
-
-			var details apiTypes.CloudObjectStoreDetails
-			apiArgs := map[string]interface{}{
-				"uniq_id": itemUniqIdStr,
-			}
-			if err := lwCliInst.CallLwApiInto("bleed/storage/objectstore/details", apiArgs, &details); err != nil {
+			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(results)
+			if err != nil {
 				lwCliInst.Die(err)
 			}
+			fmt.Printf(pretty)
+		} else {
+			cnt := 1
+			for _, item := range results.Items {
 
-			fmt.Print(details)
+				var details apiTypes.CloudBlockStorageVolumeDetails
+				if err := instance.CastFieldTypes(item, &details); err != nil {
+					lwCliInst.Die(err)
+				}
+
+				fmt.Printf("%d.) %s", cnt, details)
+				cnt++
+			}
 		}
 	},
 }
 
 func init() {
-	cloudInventoryStorageObjectCmd.AddCommand(cloudInventoryStorageObjectListCmd)
+	cloudStorageBlockVolumeCmd.AddCommand(cloudStorageBlockVolumeListCmd)
+
+	cloudStorageBlockVolumeListCmd.Flags().Bool("json", false, "output in json format")
 }

@@ -17,22 +17,24 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
-var cloudInventoryPrivateParentListCmd = &cobra.Command{
+var cloudStorageObjectListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List Private Parents on your account",
-	Long:  `List Private Parents on your account`,
+	Short: "List Object Stores on your account",
+	Long:  `List Object Stores on your account`,
 	Run: func(cmd *cobra.Command, args []string) {
-		jsonFlag, _ := cmd.Flags().GetBool("json")
 		methodArgs := instance.AllPaginatedResultsArgs{
-			Method:         "bleed/storm/private/parent/list",
+			Method: "bleed/asset/list",
+			MethodArgs: map[string]interface{}{
+				"type": "SS.ObjectStore",
+			},
 			ResultsPerPage: 100,
 		}
 		results, err := lwCliInst.AllPaginatedResults(&methodArgs)
@@ -40,18 +42,15 @@ var cloudInventoryPrivateParentListCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		if jsonFlag {
-			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(results)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-			fmt.Printf(pretty)
-			os.Exit(0)
-		}
-
 		for _, item := range results.Items {
-			var details apiTypes.CloudPrivateParentDetails
-			if err := instance.CastFieldTypes(item, &details); err != nil {
+
+			itemUniqIdStr := cast.ToString(item["uniq_id"])
+
+			var details apiTypes.CloudObjectStoreDetails
+			apiArgs := map[string]interface{}{
+				"uniq_id": itemUniqIdStr,
+			}
+			if err := lwCliInst.CallLwApiInto("bleed/storage/objectstore/details", apiArgs, &details); err != nil {
 				lwCliInst.Die(err)
 			}
 
@@ -61,7 +60,5 @@ var cloudInventoryPrivateParentListCmd = &cobra.Command{
 }
 
 func init() {
-	cloudInventoryPrivateParentCmd.AddCommand(cloudInventoryPrivateParentListCmd)
-
-	cloudInventoryPrivateParentListCmd.Flags().Bool("json", false, "output in json format")
+	cloudStorageObjectCmd.AddCommand(cloudStorageObjectListCmd)
 }

@@ -24,7 +24,7 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
-var cloudInventoryServerListCmd = &cobra.Command{
+var cloudServerListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List Cloud Servers on your account",
 	Long:  `List Cloud Servers on your account`,
@@ -71,8 +71,8 @@ var cloudInventoryServerListCmd = &cobra.Command{
 }
 
 func init() {
-	cloudInventoryServerCmd.AddCommand(cloudInventoryServerListCmd)
+	cloudServerCmd.AddCommand(cloudServerListCmd)
 
-	cloudInventoryServerListCmd.Flags().Int64("zone", -1, "list only in this zone")
-	cloudInventoryServerListCmd.Flags().Bool("json", false, "output in json format")
+	cloudServerListCmd.Flags().Int64("zone", -1, "list only in this zone")
+	cloudServerListCmd.Flags().Bool("json", false, "output in json format")
 }

@@ -25,7 +25,7 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
-var cloudInventoryNetworkVipListCmd = &cobra.Command{
+var cloudNetworkVipListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List all VIPs on your account",
 	Long:  `List all VIPs on your account`,
@@ -71,7 +71,7 @@ var cloudInventoryNetworkVipListCmd = &cobra.Command{
 }
 
 func init() {
-	cloudInventoryNetworkVipCmd.AddCommand(cloudInventoryNetworkVipListCmd)
+	cloudNetworkVipCmd.AddCommand(cloudNetworkVipListCmd)
 
-	cloudInventoryNetworkVipListCmd.Flags().Bool("json", false, "output in json format")
+	cloudNetworkVipListCmd.Flags().Bool("json", false, "output in json format")
 }
