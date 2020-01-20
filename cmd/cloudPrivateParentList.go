@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -24,13 +25,14 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
-var cloudInventoryStorageBlockVolumeListCmd = &cobra.Command{
+var cloudPrivateParentListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List Cloud Block Storage volumes on your account",
-	Long:  `List Cloud Block Storage volumes on your account`,
+	Short: "List Private Parents on your account",
+	Long:  `List Private Parents on your account`,
 	Run: func(cmd *cobra.Command, args []string) {
+		jsonFlag, _ := cmd.Flags().GetBool("json")
 		methodArgs := instance.AllPaginatedResultsArgs{
-			Method:         "bleed/storage/block/volume/list",
+			Method:         "bleed/storm/private/parent/list",
 			ResultsPerPage: 100,
 		}
 		results, err := lwCliInst.AllPaginatedResults(&methodArgs)
@@ -38,32 +40,28 @@ var cloudInventoryStorageBlockVolumeListCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		jsonOutput, _ := cmd.Flags().GetBool("json")
-		if jsonOutput {
-
+		if jsonFlag {
 			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(results)
 			if err != nil {
 				lwCliInst.Die(err)
 			}
 			fmt.Printf(pretty)
-		} else {
-			cnt := 1
-			for _, item := range results.Items {
+			os.Exit(0)
+		}
 
-				var details apiTypes.CloudBlockStorageVolumeDetails
-				if err := instance.CastFieldTypes(item, &details); err != nil {
-					lwCliInst.Die(err)
-				}
-
-				fmt.Printf("%d.) %s", cnt, details)
-				cnt++
+		for _, item := range results.Items {
+			var details apiTypes.CloudPrivateParentDetails
+			if err := instance.CastFieldTypes(item, &details); err != nil {
+				lwCliInst.Die(err)
 			}
+
+			fmt.Print(details)
 		}
 	},
 }
 
 func init() {
-	cloudInventoryStorageBlockVolumeCmd.AddCommand(cloudInventoryStorageBlockVolumeListCmd)
+	cloudPrivateParentCmd.AddCommand(cloudPrivateParentListCmd)
 
-	cloudInventoryStorageBlockVolumeListCmd.Flags().Bool("json", false, "output in json format")
+	cloudPrivateParentListCmd.Flags().Bool("json", false, "output in json format")
 }

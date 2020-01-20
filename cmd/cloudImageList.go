@@ -25,16 +25,14 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
-var cloudInventoryBackupListCmd = &cobra.Command{
+var cloudImageListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List Cloud Backups on your account",
-	Long:  `List Cloud Backups on your account`,
+	Short: "List Cloud Images on your account",
+	Long:  `List Cloud Images on your account`,
 	Run: func(cmd *cobra.Command, args []string) {
 		jsonFlag, _ := cmd.Flags().GetBool("json")
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
-
 		methodArgs := instance.AllPaginatedResultsArgs{
-			Method:         "bleed/storm/backup/list",
+			Method:         "bleed/storm/image/list",
 			ResultsPerPage: 100,
 		}
 		results, err := lwCliInst.AllPaginatedResults(&methodArgs)
@@ -52,15 +50,9 @@ var cloudInventoryBackupListCmd = &cobra.Command{
 		}
 
 		for _, item := range results.Items {
-			var details apiTypes.CloudBackupDetails
+			var details apiTypes.CloudImageDetails
 			if err := instance.CastFieldTypes(item, &details); err != nil {
 				lwCliInst.Die(err)
-			}
-
-			if uniqIdFlag != "" {
-				if details.UniqId != uniqIdFlag {
-					continue
-				}
 			}
 
 			fmt.Print(details)
@@ -69,8 +61,7 @@ var cloudInventoryBackupListCmd = &cobra.Command{
 }
 
 func init() {
-	cloudInventoryBackupCmd.AddCommand(cloudInventoryBackupListCmd)
+	cloudImageCmd.AddCommand(cloudImageListCmd)
 
-	cloudInventoryBackupListCmd.Flags().Bool("json", false, "output in json format")
-	cloudInventoryBackupListCmd.Flags().String("uniq_id", "", "only fetch backups made from this uniq_id")
+	cloudImageListCmd.Flags().Bool("json", false, "output in json format")
 }

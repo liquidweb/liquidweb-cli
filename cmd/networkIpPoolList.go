@@ -17,7 +17,6 @@ package cmd
 
 import (
 	"fmt"
-	//"os"
 
 	"github.com/spf13/cobra"
 
@@ -25,7 +24,7 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
-var networkInventoryIpPoolListCmd = &cobra.Command{
+var networkIpPoolListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List IP Pools on your account",
 	Long:  `List IP Pools on your account`,
@@ -59,5 +58,5 @@ var networkInventoryIpPoolListCmd = &cobra.Command{
 }
 
 func init() {
-	networkInventoryIpPoolCmd.AddCommand(networkInventoryIpPoolListCmd)
+	networkIpPoolCmd.AddCommand(networkIpPoolListCmd)
 }
