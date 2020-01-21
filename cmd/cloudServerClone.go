@@ -61,6 +61,9 @@ Server is not on a Private Parent.`,
 		if privateParentFlag != "" && configIdFlag != -1 {
 			lwCliInst.Die(fmt.Errorf("cant pass both --config_id and --private-parent flags"))
 		}
+		if privateParentFlag == "" && configIdFlag == -1 {
+			lwCliInst.Die(fmt.Errorf("must pass --config_id or --private-parent"))
+		}
 
 		var privateParentUniqId string
 		if privateParentFlag != "" {
