@@ -33,6 +33,9 @@ Flags:
 
 Use "liquidweb-cli [command] --help" for more information about a command.
 ```
+## Prebuilt binaries
+You can obtain prebuilt binaries on the [releases page](https://github.com/liquidweb/liquidweb-cli/releases)
+
 ## Building from source
 
 You can build liquidweb-cli from source by running `make build` from the root of this repository. The resulting program will be located at `./_exe/liquidweb-cli`.
