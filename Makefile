@@ -24,4 +24,7 @@ build:
 run:
 	go run main.go $(call args,)
 
+release-build:
+	goreleaser --snapshot --skip-publish --rm-dist
+
 .PHONY: clean static all build run

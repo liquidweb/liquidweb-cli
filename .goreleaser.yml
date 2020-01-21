@@ -1,0 +1,44 @@
+# Make sure to check the documentation at http://goreleaser.com
+before:
+  hooks:
+    - go mod tidy
+    - go generate ./...
+builds:
+- env:
+  - CGO_ENABLED=0
+  goos:
+    - freebsd
+    - windows
+    - linux
+    - darwin
+archives:
+- replacements:
+    darwin: Darwin
+    linux: Linux
+    windows: Windows
+    386: i386
+    amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+nfpms:
+  -
+    replacements:
+      amd64: x86_64
+      386: i386
+    vendor: "Liquid Web LLC"
+    license: "Apache 2"
+    homepage: "https://liquidweb.com"
+    description: "LiquidWeb command line client"
+    file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    formats:
+      - rpm
+      - deb
+    bindir: "/usr/local/bin"
