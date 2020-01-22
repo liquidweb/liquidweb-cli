@@ -79,6 +79,7 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
 		}
+		// must validate UniqId now because we call api methods with this uniq_id before below validate
 		if err := validate.Validate(validateFields); err != nil {
 			lwCliInst.Die(err)
 		}
@@ -118,6 +119,11 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 			// if already on the given config, nothing to do
 			if cloudServerDetails.ConfigId == configIdFlag {
 				lwCliInst.Die(fmt.Errorf("already on config_id [%d]; not initiating a resize", configIdFlag))
+			}
+
+			validateFields[configIdFlag] = "PositiveInt64"
+			if err := validate.Validate(validateFields); err != nil {
+				lwCliInst.Die(err)
 			}
 
 			// determine reboot expectation.
@@ -179,6 +185,7 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 
 			resizeArgs["newsize"] = 0                  // 0 indicates private parent resize
 			resizeArgs["parent"] = privateParentUniqId // uniq_id of the private parent
+			validateFields[privateParentUniqId] = "UniqId"
 			// server/resize api method always wants diskspace, vcpu, memory passed for pp resize, even if not changing
 			// value. So set to current value, then override based on passed flags.
 			resizeArgs["diskspace"] = cloudServerDetails.DiskSpace
@@ -187,12 +194,15 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 
 			if diskspaceFlag != -1 {
 				resizeArgs["diskspace"] = diskspaceFlag // desired diskspace
+				validateFields[diskspaceFlag] = "PositiveInt64"
 			}
 			if memoryFlag != -1 {
 				resizeArgs["memory"] = memoryFlag // desired memory
+				validateFields[memoryFlag] = "PositiveInt64"
 			}
 			if vcpuFlag != -1 {
 				resizeArgs["vcpu"] = vcpuFlag // desired vcpus
+				validateFields[vcpuFlag] = "PositiveInt64"
 			}
 
 			// determine if this will be a live resize
@@ -225,6 +235,10 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 					liveResize = false
 				}
 			}
+		}
+
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
 		}
 
 		_, err := lwCliInst.LwApiClient.Call("bleed/server/resize", resizeArgs)
