@@ -22,7 +22,12 @@ import (
 	"github.com/spf13/cast"
 )
 
-func Validate(chk map[interface{}]interface{}) error {
+func Validate(chk map[interface{}]interface{}) (err error) {
+	defer func() {
+		if paniced := recover(); paniced != nil {
+			err = fmt.Errorf("%w %s", ValidationFailure, paniced)
+		}
+	}()
 
 	for inputFieldValue, inputField := range chk {
 
@@ -44,20 +49,32 @@ func Validate(chk map[interface{}]interface{}) error {
 		// inputField must be defined in InputTypes struct
 		defined, shouldBeType, fieldVal := inputTypeDefined(inputFieldStr)
 		if !defined {
-			return fmt.Errorf("%w for input field [%+v] type [%s] is not valid", ValidationFailure, inputFieldValue, inputFieldStr)
+			err = fmt.Errorf("%w for input field [%+v] type [%s] is not valid", ValidationFailure,
+				inputFieldValue, inputFieldStr)
+			return
 		}
 
 		// inputFieldValue must be of the correct type
 		reflectValue := reflect.TypeOf(inputFieldValue).Name()
 		if reflectValue != shouldBeType {
-			return fmt.Errorf("%w for input field [%+v] type [%s] has an invalid type of [%s] wanted [%s]",
+			err = fmt.Errorf("%w for input field [%+v] type [%s] has an invalid type of [%s] wanted [%s]",
 				ValidationFailure, inputFieldValue, inputFieldStr, reflectValue, shouldBeType)
+			return
 		}
 
 		// if the input field wasn't passed, and allow optional is true, continue
 		if inputFieldOptional {
 			// if inputFieldValue is a zero value, return without error
 			inputFieldValueVal := reflect.ValueOf(inputFieldValue)
+
+			if inputFieldStr == "NonEmptyString" {
+				// since we check by going by the zero value for the type if the input field was passed,
+				// we can't enforce the string type to not be empty optionally for NonEmptyString. Since
+				// we can't differentiate between not passed and its zero value.
+				err = fmt.Errorf("NonEmptyString input fields cannot be optional")
+				return
+			}
+
 			if inputFieldValueVal.IsZero() {
 				continue
 			}
@@ -66,14 +83,16 @@ func Validate(chk map[interface{}]interface{}) error {
 		// if there's a Validate method call it
 		iface := fieldVal.Interface()
 		if interfaceHasMethod(iface, "Validate") {
-			if err := interfaceInputTypeValidate(iface, inputFieldValue); err != nil {
-				return fmt.Errorf("%w for input field [%+v] %s", ValidationFailure, inputFieldValue, err)
+			if validateErr := interfaceInputTypeValidate(iface, inputFieldValue); validateErr != nil {
+				err = fmt.Errorf("%w for input field [%+v] %s", ValidationFailure, inputFieldValue,
+					validateErr)
+				return
 			}
 		}
 
 	}
 
-	return nil
+	return
 }
 
 func interfaceInputTypeValidate(iface, inputFieldValue interface{}) error {

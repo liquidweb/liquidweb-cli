@@ -59,9 +59,9 @@ Server is not on a Private Parent.`,
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 
 		validateFields := map[interface{}]interface{}{
-			uniqIdFlag:   "UniqId",
-			hostnameFlag: map[string]string{"type": "NonEmptyString", "optional": "true"},
-			passwordFlag: map[string]string{"type": "NonEmptyString", "optional": "true"},
+			uniqIdFlag: "UniqId",
+			// expanded out struct to show ability.. its treated as required like above
+			hostnameFlag: map[string]string{"type": "NonEmptyString", "optional": "false"},
 		}
 
 		if privateParentFlag != "" && configIdFlag != -1 {
