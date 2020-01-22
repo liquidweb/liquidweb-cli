@@ -22,20 +22,45 @@ import (
 	"github.com/spf13/cast"
 )
 
-func Validate(chk map[interface{}]string) error {
+func Validate(chk map[interface{}]interface{}) error {
 
 	for inputFieldValue, inputField := range chk {
-		// inputField must be defined
-		defined, shouldBeType, fieldVal := inputTypeDefined(inputField)
+
+		inputFieldVal := reflect.ValueOf(inputField)
+
+		// by default, assume input field passed by user cannot be empty
+		inputFieldOptional := false
+		if inputFieldVal.Kind() == reflect.Map {
+			iface := inputFieldVal.Interface()
+			inputFieldType := iface.(map[string]string)["type"]
+			if iface.(map[string]string)["optional"] == "true" {
+				inputFieldOptional = true
+			}
+			inputFieldVal = reflect.ValueOf(inputFieldType)
+		}
+
+		inputFieldStr := cast.ToString(inputFieldVal)
+
+		// inputField must be defined in InputTypes struct
+		defined, shouldBeType, fieldVal := inputTypeDefined(inputFieldStr)
 		if !defined {
-			return fmt.Errorf("%w for input field [%+v] type [%s] is not valid", ValidationFailure, inputFieldValue, inputField)
+			return fmt.Errorf("%w for input field [%+v] type [%s] is not valid", ValidationFailure, inputFieldValue, inputFieldStr)
 		}
 
 		// inputFieldValue must be of the correct type
 		reflectValue := reflect.TypeOf(inputFieldValue).Name()
 		if reflectValue != shouldBeType {
 			return fmt.Errorf("%w for input field [%+v] type [%s] has an invalid type of [%s] wanted [%s]",
-				ValidationFailure, inputFieldValue, inputField, reflectValue, shouldBeType)
+				ValidationFailure, inputFieldValue, inputFieldStr, reflectValue, shouldBeType)
+		}
+
+		// if the input field wasn't passed, and allow optional is true, continue
+		if inputFieldOptional {
+			// if inputFieldValue is a zero value, return without error
+			inputFieldValueVal := reflect.ValueOf(inputFieldValue)
+			if inputFieldValueVal.IsZero() {
+				continue
+			}
 		}
 
 		// if there's a Validate method call it
@@ -45,6 +70,7 @@ func Validate(chk map[interface{}]string) error {
 				return fmt.Errorf("%w for input field [%+v] %s", ValidationFailure, inputFieldValue, err)
 			}
 		}
+
 	}
 
 	return nil

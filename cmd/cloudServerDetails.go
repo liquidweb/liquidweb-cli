@@ -42,7 +42,7 @@ https://cart.liquidweb.com/storm/api/docs/bleed/Storm/Server.html#method_details
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {

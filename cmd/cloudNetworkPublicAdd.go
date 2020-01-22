@@ -42,7 +42,7 @@ will be up to the administrator to configure the IP address(es) within the serve
 		rebootFlag, _ := cmd.Flags().GetBool("reboot")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {

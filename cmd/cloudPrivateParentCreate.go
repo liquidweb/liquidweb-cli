@@ -41,7 +41,7 @@ of configs, check 'cloud server options --configs'.`,
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			zoneFlag:     "PositiveInt64",
 			configIdFlag: "PositiveInt64",
 		}

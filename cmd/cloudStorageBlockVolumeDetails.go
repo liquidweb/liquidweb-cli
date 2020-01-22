@@ -36,7 +36,7 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {

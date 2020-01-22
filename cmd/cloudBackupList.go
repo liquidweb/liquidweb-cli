@@ -35,7 +35,7 @@ var cloudBackupListCmd = &cobra.Command{
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 
 		if uniqIdFlag != "" {
-			validateFields := map[interface{}]string{
+			validateFields := map[interface{}]interface{}{
 				uniqIdFlag: "UniqId",
 			}
 

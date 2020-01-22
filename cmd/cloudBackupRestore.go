@@ -33,7 +33,7 @@ var cloudBackupRestoreCmd = &cobra.Command{
 		rebuildFsFlag, _ := cmd.Flags().GetBool("rebuild-fs")
 		backupIdFlag, _ := cmd.Flags().GetInt64("backup_id")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag:   "UniqId",
 			backupIdFlag: "PositiveInt64",
 		}

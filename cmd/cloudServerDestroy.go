@@ -40,7 +40,7 @@ server.`,
 
 		for _, uniqId := range cloudServerDestroyCmdUniqIdFlag {
 
-			validateFields := map[interface{}]string{
+			validateFields := map[interface{}]interface{}{
 				uniqId: "UniqId",
 			}
 

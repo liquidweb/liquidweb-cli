@@ -32,7 +32,7 @@ var cloudImageCreateCmd = &cobra.Command{
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {

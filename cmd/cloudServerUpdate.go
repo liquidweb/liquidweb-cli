@@ -43,7 +43,7 @@ as-you-go, usage-based bandwidth charges.`,
 		bandwidthQuotaFlag, _ := cmd.Flags().GetInt64("bandwidth-quota")
 		backupQuotaFlag, _ := cmd.Flags().GetInt64("backup-quota")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {

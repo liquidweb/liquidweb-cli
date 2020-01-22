@@ -37,7 +37,7 @@ as well as how many resources each Cloud Server gets.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
 			nameFlag:   "NonEmptyString",
 		}

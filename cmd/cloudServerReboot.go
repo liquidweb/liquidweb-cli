@@ -35,7 +35,7 @@ To perform a forced a reboot, you must use --force`,
 		jsonOutput, _ := cmd.Flags().GetBool("json")
 		force, _ := cmd.Flags().GetBool("force")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqId: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {

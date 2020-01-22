@@ -36,7 +36,7 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		detachFromFlag, _ := cmd.Flags().GetString("detach-from")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag:     "UniqId",
 			detachFromFlag: "UniqId",
 		}

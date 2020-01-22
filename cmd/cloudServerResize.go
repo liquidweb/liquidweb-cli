@@ -76,7 +76,7 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {

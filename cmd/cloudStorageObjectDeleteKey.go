@@ -32,8 +32,9 @@ var cloudStorageObjectDeleteKeyCmd = &cobra.Command{
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		accessKeyFlag, _ := cmd.Flags().GetString("access-key")
 
-		validateFields := map[interface{}]string{
-			uniqIdFlag: "UniqId",
+		validateFields := map[interface{}]interface{}{
+			uniqIdFlag:    "UniqId",
+			accessKeyFlag: "NonEmptyString",
 		}
 		if err := validate.Validate(validateFields); err != nil {
 			lwCliInst.Die(err)

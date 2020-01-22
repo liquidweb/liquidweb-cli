@@ -38,7 +38,7 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		enableCrossAttachFlag, _ := cmd.Flags().GetBool("enable-cross-attach")
 		disableCrossAttachFlag, _ := cmd.Flags().GetBool("disable-cross-attach")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {

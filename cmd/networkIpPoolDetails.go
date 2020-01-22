@@ -35,7 +35,7 @@ your account.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		freeOnlyFlag, _ := cmd.Flags().GetBool("free-only")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {

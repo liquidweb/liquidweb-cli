@@ -65,7 +65,7 @@ Heartbeat
 		nameFlag, _ := cmd.Flags().GetString("name")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			zoneFlag: "PositiveInt64",
 		}
 		if err := validate.Validate(validateFields); err != nil {

@@ -33,7 +33,7 @@ var cloudImageRestoreCmd = &cobra.Command{
 		rebuildFsFlag, _ := cmd.Flags().GetBool("rebuild-fs")
 		imageIdFlag, _ := cmd.Flags().GetInt64("image_id")
 
-		validateFields := map[interface{}]string{
+		validateFields := map[interface{}]interface{}{
 			uniqIdFlag:  "UniqId",
 			imageIdFlag: "PositiveInt64",
 		}
