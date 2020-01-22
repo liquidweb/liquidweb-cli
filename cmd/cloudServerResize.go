@@ -76,11 +76,11 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
 
-		validateFields := map[string]interface{}{
-			"UniqId": uniqIdFlag,
+		validateFields := map[interface{}]string{
+			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		// convert bool to int for api

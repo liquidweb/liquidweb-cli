@@ -40,12 +40,12 @@ server.`,
 
 		for _, uniqId := range cloudServerDestroyCmdUniqIdFlag {
 
-			validateFields := map[string]interface{}{
-				"UniqId": uniqId,
+			validateFields := map[interface{}]string{
+				uniqId: "UniqId",
 			}
 
 			if err := validate.Validate(validateFields); err != nil {
-				fmt.Printf("passed uniq_id [%s] failed validation: %s ... skipping\n", uniqId, err)
+				fmt.Printf("%s ... skipping\n", err)
 				continue
 			}
 

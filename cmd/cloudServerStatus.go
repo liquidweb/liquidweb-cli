@@ -89,11 +89,11 @@ If nothing is currently running, only the 'status' field will be returned with o
 			}
 		} else {
 			for _, uid := range cloudServerStatusCmdUniqIdFlag {
-				validateFields := map[string]interface{}{
-					"UniqId": uid,
+				validateFields := map[interface{}]string{
+					uid: "UniqId",
 				}
 				if err := validate.Validate(validateFields); err != nil {
-					fmt.Printf("flag validation failure: %s ... skipping", err)
+					fmt.Printf("%s ... skipping\n", err)
 					continue
 				}
 				_printCloudServerStatus(uid, "")

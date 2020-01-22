@@ -34,11 +34,11 @@ Boot a server. If the server is already running, this will do nothing.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
-		validateFields := map[string]interface{}{
-			"UniqId": uniqIdFlag,
+		validateFields := map[interface{}]string{
+			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		startArgs := map[string]interface{}{

@@ -41,17 +41,12 @@ of configs, check 'cloud server options --configs'.`,
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 
-		validateFields := map[string]interface{}{
-			"PositiveInt64": zoneFlag,
+		validateFields := map[interface{}]string{
+			zoneFlag:     "PositiveInt64",
+			configIdFlag: "PositiveInt64",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
-		}
-		validateFields = map[string]interface{}{
-			"PositiveInt64": configIdFlag,
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		apiArgs := map[string]interface{}{

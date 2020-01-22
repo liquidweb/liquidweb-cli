@@ -35,11 +35,11 @@ To perform a forced a reboot, you must use --force`,
 		jsonOutput, _ := cmd.Flags().GetBool("json")
 		force, _ := cmd.Flags().GetBool("force")
 
-		validateFields := map[string]interface{}{
-			"UniqId": uniqId,
+		validateFields := map[interface{}]string{
+			uniqId: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		var resp apiTypes.CloudServerRebootResponse

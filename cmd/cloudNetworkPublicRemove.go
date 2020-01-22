@@ -44,11 +44,11 @@ Note that you cannot remove the Cloud Servers primary ip with this command.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		rebootFlag, _ := cmd.Flags().GetBool("reboot")
 
-		validateFields := map[string]interface{}{
-			"UniqId": uniqIdFlag,
+		validateFields := map[interface{}]string{
+			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		apiArgs := map[string]interface{}{
@@ -57,11 +57,11 @@ Note that you cannot remove the Cloud Servers primary ip with this command.`,
 		}
 
 		for _, ip := range cloudNetworkPublicRemoveCmdIpsFlag {
-			validateFields := map[string]interface{}{
-				"IP": ip,
+			validateFields := map[interface{}]string{
+				ip: "IP",
 			}
 			if err := validate.Validate(validateFields); err != nil {
-				fmt.Printf("passed ip failed validation: %s ... skipping\n", err)
+				fmt.Printf("%s ... skipping\n", err)
 			}
 
 			var details apiTypes.NetworkIpRemove

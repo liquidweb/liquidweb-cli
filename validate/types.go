@@ -16,11 +16,15 @@ limitations under the License.
 package validate
 
 import (
+	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/liquidweb/liquidweb-cli/utils"
 )
+
+var ValidationFailure = errors.New("validation failed")
 
 type InputTypes struct {
 	UniqId         InputTypeUniqId
@@ -37,13 +41,25 @@ type InputTypeUniqId struct {
 }
 
 func (x InputTypeUniqId) Validate() error {
+	// must be uppercase
 	allUpper := strings.ToUpper(x.UniqId)
 	if allUpper != x.UniqId {
 		return fmt.Errorf("a uniq_id must be uppercase")
 	}
 
+	// must be 6 characters
 	if len(x.UniqId) != 6 {
 		return fmt.Errorf("a uniq_id must be 6 characters long")
+	}
+
+	// must be alphanumeric
+	reg, err := regexp.Compile("[^a-zA-Z0-9]+")
+	if err != nil {
+		return err
+	}
+	regexStr := reg.ReplaceAllString(x.UniqId, "")
+	if regexStr != x.UniqId {
+		return fmt.Errorf("a uniq_id must be alphanumeric")
 	}
 
 	return nil

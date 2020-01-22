@@ -79,11 +79,11 @@ For a list of backups, see 'cloud inventory backups list'
 		backupIdFlag, _ := cmd.Flags().GetInt("backup-id")
 		imageIdFlag, _ := cmd.Flags().GetInt("image-id")
 
-		validateFields := map[string]interface{}{
-			"PositiveInt": zoneFlag,
+		validateFields := map[interface{}]string{
+			zoneFlag: "PositiveInt",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		// sanity check flags

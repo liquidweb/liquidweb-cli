@@ -65,11 +65,11 @@ Heartbeat
 		nameFlag, _ := cmd.Flags().GetString("name")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 
-		validateFields := map[string]interface{}{
-			"PositiveInt64": zoneFlag,
+		validateFields := map[interface{}]string{
+			zoneFlag: "PositiveInt64",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		apiArgs := map[string]interface{}{

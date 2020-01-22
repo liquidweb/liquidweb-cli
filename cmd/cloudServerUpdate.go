@@ -43,11 +43,11 @@ as-you-go, usage-based bandwidth charges.`,
 		bandwidthQuotaFlag, _ := cmd.Flags().GetInt64("bandwidth-quota")
 		backupQuotaFlag, _ := cmd.Flags().GetInt64("backup-quota")
 
-		validateFields := map[string]interface{}{
-			"UniqId": uniqIdFlag,
+		validateFields := map[interface{}]string{
+			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		if backupPlanFlag == "Quota" {

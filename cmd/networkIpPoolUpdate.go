@@ -38,11 +38,11 @@ your account.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 
-		validateFields := map[string]interface{}{
-			"UniqId": uniqIdFlag,
+		validateFields := map[interface{}]string{
+			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("passed uniq_id [%s] failed validation: %s", uniqIdFlag, err))
+			lwCliInst.Die(err)
 		}
 
 		if len(networkIpPoolUpdateCmdAddIpsFlag) == 0 && len(networkIpPoolUpdateCmdRemoveIpsFlag) == 0 &&

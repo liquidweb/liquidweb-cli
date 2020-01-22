@@ -22,27 +22,27 @@ import (
 	"github.com/spf13/cast"
 )
 
-func Validate(chk map[string]interface{}) error {
+func Validate(chk map[interface{}]string) error {
 
-	for inputField, inputFieldValue := range chk {
+	for inputFieldValue, inputField := range chk {
 		// inputField must be defined
 		defined, shouldBeType, fieldVal := inputTypeDefined(inputField)
 		if !defined {
-			return fmt.Errorf("input field [%s] is not defined", inputField)
+			return fmt.Errorf("%w for input field [%+v] type [%s] is not valid", ValidationFailure, inputFieldValue, inputField)
 		}
 
 		// inputFieldValue must be of the correct type
 		reflectValue := reflect.TypeOf(inputFieldValue).Name()
 		if reflectValue != shouldBeType {
-			return fmt.Errorf("input field [%s] has an invalid type of [%s] wanted [%s]",
-				inputField, reflectValue, shouldBeType)
+			return fmt.Errorf("%w for input field [%+v] type [%s] has an invalid type of [%s] wanted [%s]",
+				ValidationFailure, inputFieldValue, inputField, reflectValue, shouldBeType)
 		}
 
 		// if there's a Validate method call it
 		iface := fieldVal.Interface()
 		if interfaceHasMethod(iface, "Validate") {
 			if err := interfaceInputTypeValidate(iface, inputFieldValue); err != nil {
-				return err
+				return fmt.Errorf("%w for input field [%+v] %s", ValidationFailure, inputFieldValue, err)
 			}
 		}
 	}

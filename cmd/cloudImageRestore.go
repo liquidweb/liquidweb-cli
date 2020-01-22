@@ -33,12 +33,12 @@ var cloudImageRestoreCmd = &cobra.Command{
 		rebuildFsFlag, _ := cmd.Flags().GetBool("rebuild-fs")
 		imageIdFlag, _ := cmd.Flags().GetInt64("image_id")
 
-		validateFields := map[string]interface{}{
-			"UniqId":        uniqIdFlag,
-			"PositiveInt64": imageIdFlag,
+		validateFields := map[interface{}]string{
+			uniqIdFlag:  "UniqId",
+			imageIdFlag: "PositiveInt64",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		apiArgs := map[string]interface{}{"id": imageIdFlag, "uniq_id": uniqIdFlag}

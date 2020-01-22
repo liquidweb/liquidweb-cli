@@ -36,12 +36,12 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		newSizeFlag, _ := cmd.Flags().GetInt64("new-size")
 
-		validateFields := map[string]interface{}{
-			"UniqId":        uniqIdFlag,
-			"PositiveInt64": newSizeFlag,
+		validateFields := map[interface{}]string{
+			uniqIdFlag:  "UniqId",
+			newSizeFlag: "PositiveInt64",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		apiArgs := map[string]interface{}{

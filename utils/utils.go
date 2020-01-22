@@ -24,11 +24,11 @@ import (
 )
 
 func IpIsValid(ip string) bool {
-	if err := net.ParseIP(ip); err == nil {
-		return true
+	if parsedIp := net.ParseIP(ip); parsedIp == nil {
+		return false
 	}
 
-	return false
+	return true
 }
 
 func RandomString(length int) string {

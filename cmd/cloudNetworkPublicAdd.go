@@ -42,11 +42,11 @@ will be up to the administrator to configure the IP address(es) within the serve
 		rebootFlag, _ := cmd.Flags().GetBool("reboot")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 
-		validateFields := map[string]interface{}{
-			"UniqId": uniqIdFlag,
+		validateFields := map[interface{}]string{
+			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		if newIpsFlag == 0 && len(cloudNetworkPublicAddCmdPoolIpsFlag) == 0 {

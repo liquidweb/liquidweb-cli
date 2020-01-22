@@ -58,11 +58,11 @@ Server is not on a Private Parent.`,
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 
-		validateFields := map[string]interface{}{
-			"UniqId": uniqIdFlag,
+		validateFields := map[interface{}]string{
+			uniqIdFlag: "UniqId",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		if privateParentFlag != "" && configIdFlag != -1 {

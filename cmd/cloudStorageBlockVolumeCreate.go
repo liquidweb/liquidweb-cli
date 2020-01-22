@@ -41,11 +41,11 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		crossAttachFlag, _ := cmd.Flags().GetBool("cross-attach")
 		attachFlag, _ := cmd.Flags().GetString("attach")
 
-		validateFields := map[string]interface{}{
-			"PositiveInt64": sizeFlag,
+		validateFields := map[interface{}]string{
+			sizeFlag: "PositiveInt64",
 		}
 		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+			lwCliInst.Die(err)
 		}
 
 		apiArgs := map[string]interface{}{
