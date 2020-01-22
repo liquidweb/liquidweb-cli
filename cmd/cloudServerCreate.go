@@ -79,19 +79,38 @@ For a list of backups, see 'cloud inventory backups list'
 		backupIdFlag, _ := cmd.Flags().GetInt("backup-id")
 		imageIdFlag, _ := cmd.Flags().GetInt("image-id")
 
-		validateFields := map[interface{}]interface{}{
-			zoneFlag: "PositiveInt",
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
-
 		// sanity check flags
 		if configIdFlag == 0 && privateParentFlag == "" {
 			lwCliInst.Die(fmt.Errorf("--config_id is a required flag without --private-parent"))
 		}
 		if templateFlag == "" && backupIdFlag == -1 && imageIdFlag == -1 {
 			lwCliInst.Die(fmt.Errorf("at least one of the following flags must be set --template --image-id --backup-id"))
+		}
+
+		validateFields := map[interface{}]interface{}{
+			zoneFlag:       map[string]string{"type": "PositiveInt", "optional": "true"},
+			hostnameFlag:   "NonEmptyString",
+			typeFlag:       "NonEmptyString",
+			ipsFlag:        "PositiveInt",
+			passwordFlag:   "NonEmptyString",
+			backupPlanFlag: "NonEmptyString",
+		}
+		if backupIdFlag != -1 {
+			validateFields[backupIdFlag] = "PositiveInt"
+		}
+		if imageIdFlag != -1 {
+			validateFields[imageIdFlag] = "PositiveInt"
+		}
+		if vcpuFlag == -1 {
+			validateFields[configIdFlag] = "PositiveInt"
+		}
+		if configIdFlag == -1 {
+			validateFields[vcpuFlag] = "PositiveInt"
+			validateFields[memoryFlag] = "PositiveInt"
+			validateFields[diskspaceFlag] = "PositiveInt"
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
 		}
 
 		var publicSshKeyContents string

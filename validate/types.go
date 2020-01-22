@@ -30,7 +30,7 @@ type InputTypes struct {
 	UniqId         InputTypeUniqId
 	IP             InputTypeIP
 	PositiveInt64  InputTypePositiveInt64
-	PostiveInt     InputTypePositiveInt
+	PositiveInt    InputTypePositiveInt
 	NonEmptyString InputTypeNonEmptyString
 }
 
