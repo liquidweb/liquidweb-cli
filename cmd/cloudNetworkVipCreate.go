@@ -67,6 +67,7 @@ Heartbeat
 
 		validateFields := map[interface{}]interface{}{
 			zoneFlag: "PositiveInt64",
+			nameFlag: "NonEmptyString",
 		}
 		if err := validate.Validate(validateFields); err != nil {
 			lwCliInst.Die(err)
