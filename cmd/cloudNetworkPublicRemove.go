@@ -62,6 +62,7 @@ Note that you cannot remove the Cloud Servers primary ip with this command.`,
 			}
 			if err := validate.Validate(validateFields); err != nil {
 				fmt.Printf("%s ... skipping\n", err)
+				continue
 			}
 
 			var details apiTypes.NetworkIpRemove
