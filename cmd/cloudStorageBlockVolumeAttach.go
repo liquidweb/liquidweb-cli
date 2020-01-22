@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudStorageBlockVolumeAttachCmd = &cobra.Command{
@@ -34,6 +35,19 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		attachToFlag, _ := cmd.Flags().GetString("attach-to")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
+		validateFields = map[string]interface{}{
+			"UniqId": attachToFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
 
 		apiArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,

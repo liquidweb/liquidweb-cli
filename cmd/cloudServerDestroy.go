@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerDestroyCmdUniqIdFlag []string
@@ -38,6 +39,16 @@ server.`,
 		reasonFlag, _ := cmd.Flags().GetString("reason")
 
 		for _, uniqId := range cloudServerDestroyCmdUniqIdFlag {
+
+			validateFields := map[string]interface{}{
+				"UniqId": uniqId,
+			}
+
+			if err := validate.Validate(validateFields); err != nil {
+				fmt.Printf("passed uniq_id [%s] failed validation: %s ... skipping\n", uniqId, err)
+				continue
+			}
+
 			destroyArgs := map[string]interface{}{
 				"uniq_id":              uniqId,
 				"cancellation_comment": commentFlag,

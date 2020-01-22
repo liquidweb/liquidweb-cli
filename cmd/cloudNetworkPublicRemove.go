@@ -18,8 +18,10 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/spf13/cobra"
+
+	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudNetworkPublicRemoveCmdIpsFlag []string
@@ -42,12 +44,26 @@ Note that you cannot remove the Cloud Servers primary ip with this command.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		rebootFlag, _ := cmd.Flags().GetBool("reboot")
 
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
+
 		apiArgs := map[string]interface{}{
 			"reboot":  rebootFlag,
 			"uniq_id": uniqIdFlag,
 		}
 
 		for _, ip := range cloudNetworkPublicRemoveCmdIpsFlag {
+			validateFields := map[string]interface{}{
+				"IP": ip,
+			}
+			if err := validate.Validate(validateFields); err != nil {
+				fmt.Printf("passed ip failed validation: %s ... skipping\n", err)
+			}
+
 			var details apiTypes.NetworkIpRemove
 			apiArgs["ip"] = ip
 			err := lwCliInst.CallLwApiInto("bleed/network/ip/remove", apiArgs, &details)

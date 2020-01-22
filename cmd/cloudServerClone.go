@@ -22,6 +22,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerCloneCmdPoolIpsFlag []string
@@ -57,7 +58,13 @@ Server is not on a Private Parent.`,
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 
-		// flag check
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
+
 		if privateParentFlag != "" && configIdFlag != -1 {
 			lwCliInst.Die(fmt.Errorf("cant pass both --config_id and --private-parent flags"))
 		}

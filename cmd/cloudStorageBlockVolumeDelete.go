@@ -18,8 +18,10 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/spf13/cobra"
+
+	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudStorageBlockVolumeDeleteCmd = &cobra.Command{
@@ -32,6 +34,13 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
 
 		apiArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
 		var details apiTypes.CloudBlockStorageVolumeDelete

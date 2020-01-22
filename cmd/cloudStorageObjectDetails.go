@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudStorageObjectDetailsCmd = &cobra.Command{
@@ -29,6 +30,13 @@ var cloudStorageObjectDetailsCmd = &cobra.Command{
 	Long:  `Get details of a Object Store`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("passed uniq_id [%s] failed validation: %s", uniqIdFlag, err))
+		}
 
 		var details apiTypes.CloudObjectStoreDetails
 		apiArgs := map[string]interface{}{

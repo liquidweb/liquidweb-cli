@@ -18,9 +18,18 @@ package utils
 import (
 	"fmt"
 	"math/rand"
+	"net"
 	"os"
 	"time"
 )
+
+func IpIsValid(ip string) bool {
+	if err := net.ParseIP(ip); err == nil {
+		return true
+	}
+
+	return false
+}
 
 func RandomString(length int) string {
 	charset := "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" + "0123456789"

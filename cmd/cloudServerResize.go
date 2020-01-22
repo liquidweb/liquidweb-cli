@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerResizeCmd = &cobra.Command{
@@ -74,6 +75,13 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 		skipFsResizeFlag, _ := cmd.Flags().GetBool("skip-fs-resize")
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
 
 		// convert bool to int for api
 		skipFsResizeInt := 0

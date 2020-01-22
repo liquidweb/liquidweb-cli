@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerRebootCmd = &cobra.Command{
@@ -33,6 +34,13 @@ To perform a forced a reboot, you must use --force`,
 		uniqId, _ := cmd.Flags().GetString("uniq_id")
 		jsonOutput, _ := cmd.Flags().GetBool("json")
 		force, _ := cmd.Flags().GetBool("force")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqId,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
 
 		var resp apiTypes.CloudServerRebootResponse
 		if err := lwCliInst.CallLwApiInto("bleed/storm/server/reboot", map[string]interface{}{

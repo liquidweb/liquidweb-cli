@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var networkIpPoolUpdateCmdAddIpsFlag []string
@@ -36,6 +37,13 @@ your account.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("passed uniq_id [%s] failed validation: %s", uniqIdFlag, err))
+		}
 
 		if len(networkIpPoolUpdateCmdAddIpsFlag) == 0 && len(networkIpPoolUpdateCmdRemoveIpsFlag) == 0 &&
 			newIpsFlag == -1 {

@@ -85,7 +85,6 @@ func init() {
 	authAddContextCmd.Flags().String("api-url", "https://api.liquidweb.com", "API URL to use")
 	authAddContextCmd.Flags().Int("timeout", 30, "timeout value when communicating with api-url")
 
-	authAddContextCmd.MarkFlagRequired("uniq_id")
 	authAddContextCmd.MarkFlagRequired("username")
 	authAddContextCmd.MarkFlagRequired("password")
 }

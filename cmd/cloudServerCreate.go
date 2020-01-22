@@ -26,6 +26,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerCreateCmdPoolIpsFlag []string
@@ -77,6 +78,13 @@ For a list of backups, see 'cloud inventory backups list'
 		vcpuFlag, _ := cmd.Flags().GetInt("vcpu")
 		backupIdFlag, _ := cmd.Flags().GetInt("backup-id")
 		imageIdFlag, _ := cmd.Flags().GetInt("image-id")
+
+		validateFields := map[string]interface{}{
+			"PositiveInt": zoneFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
 
 		// sanity check flags
 		if configIdFlag == 0 && privateParentFlag == "" {

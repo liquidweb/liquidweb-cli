@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerStartCmd = &cobra.Command{
@@ -32,6 +33,13 @@ Boot a server. If the server is already running, this will do nothing.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
 
 		startArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,

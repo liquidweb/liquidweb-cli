@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudStorageObjectDeleteKeyCmd = &cobra.Command{
@@ -30,6 +31,13 @@ var cloudStorageObjectDeleteKeyCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		accessKeyFlag, _ := cmd.Flags().GetString("access-key")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("passed uniq_id [%s] failed validation: %s", uniqIdFlag, err))
+		}
 
 		apiArgs := map[string]interface{}{
 			"uniq_id":    uniqIdFlag,

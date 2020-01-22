@@ -23,6 +23,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var blockStorageVolumeList apiTypes.MergedPaginatedList
@@ -38,9 +39,15 @@ You can check this methods API documentation for what the returned fields mean:
 https://cart.liquidweb.com/storm/api/docs/bleed/Storm/Server.html#method_details
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
 
 		var details apiTypes.CloudServerDetails
 		if err := lwCliInst.CallLwApiInto("bleed/storm/server/details",

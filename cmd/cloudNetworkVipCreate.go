@@ -22,6 +22,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudNetworkVipCreateCmd = &cobra.Command{
@@ -63,6 +64,13 @@ Heartbeat
 	Run: func(cmd *cobra.Command, args []string) {
 		nameFlag, _ := cmd.Flags().GetString("name")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
+
+		validateFields := map[string]interface{}{
+			"PositiveInt64": zoneFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
 
 		apiArgs := map[string]interface{}{
 			"domain": nameFlag,

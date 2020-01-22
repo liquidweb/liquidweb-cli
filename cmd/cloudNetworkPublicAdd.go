@@ -18,8 +18,10 @@ package cmd
 import (
 	"fmt"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/spf13/cobra"
+
+	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudNetworkPublicAddCmdPoolIpsFlag []string
@@ -39,6 +41,13 @@ will be up to the administrator to configure the IP address(es) within the serve
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		rebootFlag, _ := cmd.Flags().GetBool("reboot")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
 
 		if newIpsFlag == 0 && len(cloudNetworkPublicAddCmdPoolIpsFlag) == 0 {
 			lwCliInst.Die(fmt.Errorf("at least one of --new-ips --pool-ips must be given"))

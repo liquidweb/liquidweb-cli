@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerBlockStorageOptimizedEnableCmd = &cobra.Command{
@@ -38,6 +39,13 @@ Enabling Cloud Block Storage will cause your Cloud Server to reboot.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+
+		validateFields := map[string]interface{}{
+			"UniqId": uniqIdFlag,
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(fmt.Errorf("flag validation failure: %s", err))
+		}
 
 		var optimized apiTypes.CloudServerIsBlockStorageOptimized
 		if err := lwCliInst.CallLwApiInto("bleed/storm/server/issbsoptimized",
