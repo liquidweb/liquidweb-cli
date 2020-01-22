@@ -59,9 +59,20 @@ will be up to the administrator to configure the IP address(es) within the serve
 		}
 		if newIpsFlag != 0 {
 			apiArgs["ip_count"] = newIpsFlag
+			validateFields := map[interface{}]interface{}{newIpsFlag: "PositiveInt64"}
+			if err := validate.Validate(validateFields); err != nil {
+				lwCliInst.Die(err)
+			}
 		}
 		if len(cloudNetworkPublicAddCmdPoolIpsFlag) != 0 {
 			apiArgs["pool_ips"] = cloudNetworkPublicAddCmdPoolIpsFlag
+			validateFields := map[interface{}]interface{}{}
+			for _, ip := range cloudNetworkPublicAddCmdPoolIpsFlag {
+				validateFields[ip] = "IP"
+			}
+			if err := validate.Validate(validateFields); err != nil {
+				lwCliInst.Die(err)
+			}
 		}
 
 		var details apiTypes.NetworkIpAdd
