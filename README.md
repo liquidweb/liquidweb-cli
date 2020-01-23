@@ -33,7 +33,6 @@ Flags:
 
 Use "liquidweb-cli [command] --help" for more information about a command.
 ```
-
 ## Obtaining prebuilt binaries
 
 Head on over to the [releases page](https://github.com/liquidweb/liquidweb-cli/releases)  to get prebuilt binaries for your platform.
