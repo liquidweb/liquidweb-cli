@@ -27,11 +27,12 @@ import (
 var ValidationFailure = errors.New("validation failed")
 
 type InputTypes struct {
-	UniqId         InputTypeUniqId
-	IP             InputTypeIP
-	PositiveInt64  InputTypePositiveInt64
-	PositiveInt    InputTypePositiveInt
-	NonEmptyString InputTypeNonEmptyString
+	UniqId               InputTypeUniqId
+	IP                   InputTypeIP
+	PositiveInt64        InputTypePositiveInt64
+	PositiveInt          InputTypePositiveInt
+	NonEmptyString       InputTypeNonEmptyString
+	LoadBalancerStrategy InputTypeLoadBalancerStrategyString
 }
 
 // UniqId
@@ -117,6 +118,31 @@ type InputTypeNonEmptyString struct {
 func (x InputTypeNonEmptyString) Validate() error {
 	if x.NonEmptyString == "" {
 		return fmt.Errorf("NonEmptyString cannot be empty")
+	}
+
+	return nil
+}
+
+// LoadBalancerStrategy
+
+type InputTypeLoadBalancerStrategyString struct {
+	LoadBalancerStrategy string
+}
+
+func (x InputTypeLoadBalancerStrategyString) Validate() error {
+	strategies := map[string]int{
+		"roundrobin":  1,
+		"connections": 1,
+		"cells":       1,
+	}
+
+	if _, exists := strategies[x.LoadBalancerStrategy]; !exists {
+		var slice []string
+		slice = append(slice, fmt.Sprintf("LoadBalancer strategy [%s] is invalid. Valid strategies: ", x.LoadBalancerStrategy))
+		for strategy, _ := range strategies {
+			slice = append(slice, fmt.Sprintf("%s ", strategy))
+		}
+		return fmt.Errorf("%s", strings.Join(slice[:], ""))
 	}
 
 	return nil

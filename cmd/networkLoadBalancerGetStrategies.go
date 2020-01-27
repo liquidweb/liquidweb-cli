@@ -16,26 +16,29 @@ limitations under the License.
 package cmd
 
 import (
-	"os"
+	"fmt"
 
 	"github.com/spf13/cobra"
+
+	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
-var networkIpPoolCmd = &cobra.Command{
-	Use:   "ip-pool",
-	Short: "IP Pool specific operations",
-	Long: `IP Pool specific operations.
+var networkLoadBalancerGetStrategiesCmd = &cobra.Command{
+	Use:   "get-strategies",
+	Short: "Get available load balancing strategies",
+	Long: `Get available load balancing strategies.
 
-Use an IP Pool to reserve IP addresses even when they aren't currently assigned
-to a server.
-
-For a full list of capabilities, please refer to the "Available Commands" section.`,
+Gets a list of available strategies, with extra descriptive information.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
-		os.Exit(1)
+		var strategies apiTypes.NetworkLoadBalancerStrategies
+		if err := lwCliInst.CallLwApiInto("bleed/network/loadbalancer/strategies",
+			map[string]interface{}{}, &strategies); err != nil {
+			lwCliInst.Die(err)
+		}
+		fmt.Print(strategies)
 	},
 }
 
 func init() {
-	networkCmd.AddCommand(networkIpPoolCmd)
+	networkLoadBalancerCmd.AddCommand(networkLoadBalancerGetStrategiesCmd)
 }

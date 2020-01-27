@@ -101,3 +101,118 @@ func (x NetworkAssignmentListEntry) String() string {
 
 	return strings.Join(slice[:], "")
 }
+
+type NetworkLoadBalancerDetails struct {
+	Name               string                              `json:"name" mapstructure:"name"`
+	Nodes              []NetworkLoadBalancerDetailsNode    `json:"nodes" mapstructure:"nodes"`
+	RegionId           int64                               `json:"region_id" mapstructure:"region_id"`
+	Services           []NetworkLoadBalancerDetailsService `json:"services" mapstructure:"services"`
+	SessionPersistence bool                                `json:"session_persistence" mapstructure:"session_persistence"`
+	SslIncludes        bool                                `json:"ssl_includes" mapstructure:"ssl_includes"`
+	SslTermination     bool                                `json:"ssl_termination" mapstructure:"ssl_termination"`
+	Strategy           string                              `json:"strategy" mapstructure:"strategy"`
+	UniqId             string                              `json:"uniq_id" mapstructure:"uniq_id"`
+	Vip                string                              `json:"vip" mapstructure:"vip"`
+}
+
+type NetworkLoadBalancerDetailsNode struct {
+	Domain string `json:"domain" mapstructure:"domain"`
+	Ip     string `json:"ip" mapstructure:"ip"`
+	UniqId string `json:"uniq_id" mapstructure:"mapstructure"`
+}
+
+type NetworkLoadBalancerDetailsService struct {
+	DestPort     int64                                          `json:"dest_port" mapstructure:"dest_port"`
+	Protocol     string                                         `json:"protocol" mapstructure:"protocol"`
+	SrcPort      int64                                          `json:"src_port" mapstructure:"src_port"`
+	HealthChecks []NetworkLoadBalancerDetailsServiceHealthCheck `json:"health_check" mapstructure:"health_check"`
+}
+
+type NetworkLoadBalancerDetailsServiceHealthCheck struct {
+	FailureThreshold  int64   `json:"failure_threshold" mapstructure:"failure_threshold"`
+	HttpBodyMatch     string  `json:"http_body_match" mapstructure:"http_body_match"`
+	HttpPath          string  `json:"http_path" mapstructure:"http_path"`
+	HttpResponseCodes []int64 `json:"http_response_codes" mapstructure:"http_response_codes"`
+	HttpUseTls        bool    `json:"http_use_tls" mapstructure:"http_use_tls"`
+	Interval          int64   `json:"interval" mapstructure:"interval"`
+	Protocol          string  `json:"protocol" mapstructure:"protocol"`
+	Timeout           int64   `json:"timeout" mapstructure:"timeout"`
+}
+
+func (x NetworkLoadBalancerDetails) String() string {
+	var slice []string
+
+	slice = append(slice, fmt.Sprintf("Name: %s\n", x.Name))
+	slice = append(slice, fmt.Sprintf("\tUniqId: %s\n", x.UniqId))
+	slice = append(slice, fmt.Sprintf("\tRegionId: %d\n", x.RegionId))
+	slice = append(slice, fmt.Sprintf("\tVip: %s\n", x.Vip))
+	slice = append(slice, fmt.Sprintf("\tStrategy: %s\n", x.Strategy))
+	slice = append(slice, fmt.Sprintf("\tSession Persistence: %t\n", x.SessionPersistence))
+	slice = append(slice, fmt.Sprintf("\tSSL Termination: %t\n", x.SslTermination))
+	slice = append(slice, fmt.Sprintf("\tSSL Includes: %t\n", x.SslIncludes))
+	slice = append(slice, "\tNodes:\n")
+	for _, node := range x.Nodes {
+		slice = append(slice, "\t\tNode:\n")
+		slice = append(slice, fmt.Sprintf("\t\t\tDomain: %s\n", node.Domain))
+		slice = append(slice, fmt.Sprintf("\t\t\tIP: %s\n", node.Ip))
+		slice = append(slice, fmt.Sprintf("\t\t\tUniqId: %s\n", node.UniqId))
+	}
+	slice = append(slice, "\tServices:\n")
+	for _, service := range x.Services {
+		slice = append(slice, "\t\tService:\n")
+		slice = append(slice, fmt.Sprintf("\t\t\tProtocol: %s\n", service.Protocol))
+		slice = append(slice, fmt.Sprintf("\t\t\tSource Port: %d\n", service.SrcPort))
+		slice = append(slice, fmt.Sprintf("\t\t\tDestination Port: %d\n", service.DestPort))
+		slice = append(slice, fmt.Sprintf("\t\t\tHealth Checks: %+v\n", service.HealthChecks))
+	}
+
+	return strings.Join(slice[:], "")
+}
+
+type NetworkLoadBalancerStrategies struct {
+	Strategies []NetworkLoadBalancerStrategy `json:"strategies" mapstructure:"strategies"`
+}
+
+type NetworkLoadBalancerStrategy struct {
+	Name        string `json:"name" mapstructure:"name"`
+	Description string `json:"description" mapstructure:"description"`
+	Strategy    string `json:"strategy" mapstructure:"strategy"`
+}
+
+func (x NetworkLoadBalancerStrategies) String() string {
+	var slice []string
+
+	slice = append(slice, "Strategies:\n")
+	for _, strategy := range x.Strategies {
+		slice = append(slice, fmt.Sprintf("\tName: %s\n", strategy.Name))
+		slice = append(slice, fmt.Sprintf("\t\tDescription: %s\n", strategy.Description))
+		slice = append(slice, fmt.Sprintf("\t\tStrategy: %s\n", strategy.Strategy))
+	}
+
+	return strings.Join(slice[:], "")
+}
+
+type NetworkLoadBalancerPossibleNodes struct {
+	Items []NetworkLoadBalancerPossibleNodesNode `json:"items" mapstructure:"items"`
+}
+
+type NetworkLoadBalancerPossibleNodesNode struct {
+	Domain   string `json:"domain" mapstructure:"domain"`
+	Ip       string `json:"domain" mapstructure:"domain"`
+	RegionId int64  `json:"region_id" mapstructure:"region_id"`
+	UniqId   string `json:"uniq_id" mapstructure:"uniq_id"`
+}
+
+func (x NetworkLoadBalancerPossibleNodes) String() string {
+	var slice []string
+
+	slice = append(slice, "Possible Nodes:\n")
+	for _, possibleNode := range x.Items {
+		slice = append(slice, fmt.Sprintf("\tDomain: %s\n", possibleNode.Domain))
+		slice = append(slice, fmt.Sprintf("\t\tUniqId: %s\n", possibleNode.UniqId))
+		slice = append(slice, fmt.Sprintf("\t\tIP: %s\n", possibleNode.Ip))
+		slice = append(slice, fmt.Sprintf("\t\tRegionId: %d\n", possibleNode.RegionId))
+	}
+
+	return strings.Join(slice[:], "")
+}
