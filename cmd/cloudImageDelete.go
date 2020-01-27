@@ -46,6 +46,6 @@ func init() {
 	cloudImageCmd.AddCommand(cloudImageDeleteCmd)
 
 	cloudImageDeleteCmd.Flags().Int64("image_id", -1,
-		"id number of the image (see 'cloud inventory image list')")
+		"id number of the image (see 'cloud image list')")
 	cloudImageDeleteCmd.MarkFlagRequired("image_id")
 }

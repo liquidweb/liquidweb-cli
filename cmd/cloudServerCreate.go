@@ -55,8 +55,8 @@ Examples:
 These examples use default values for various flags, such as password, type, ssh-key, hostname, etc.
 
 For a list of Templates, Configs, and Region/Zones, see 'cloud server options --configs --templates --zones'
-For a list of images, see 'cloud inventory images list'
-For a list of backups, see 'cloud inventory backups list'
+For a list of images, see 'cloud images list'
+For a list of backups, see 'cloud backups list'
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		templateFlag, _ := cmd.Flags().GetString("template")
@@ -270,8 +270,8 @@ func init() {
 	cloudServerCreateCmd.Flags().Int("zone", 0, "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
 	cloudServerCreateCmd.Flags().String("password", randomPassword, "root or administrator password to set")
 
-	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of backup to create from (see 'cloud inventory backup list')")
-	cloudServerCreateCmd.Flags().Int("image-id", -1, "id of image to create from (see 'cloud inventory image list')")
+	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of backup to create from (see 'cloud backup list')")
+	cloudServerCreateCmd.Flags().Int("image-id", -1, "id of image to create from (see 'cloud image list')")
 
 	cloudServerCreateCmd.Flags().StringSliceVar(&cloudServerCreateCmdPoolIpsFlag, "pool-ips", []string{},
 		"ips from your IP Pool separated by ',' to assign to the new Cloud Server")

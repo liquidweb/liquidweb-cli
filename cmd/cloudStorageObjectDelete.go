@@ -53,7 +53,7 @@ var cloudStorageObjectDeleteCmd = &cobra.Command{
 func init() {
 	cloudStorageObjectCmd.AddCommand(cloudStorageObjectDeleteCmd)
 	cloudStorageObjectDeleteCmd.Flags().String("uniq_id", "",
-		"uniq_id of object store to delete (see 'cloud inventory storage object list')")
+		"uniq_id of object store to delete (see 'cloud storage object list')")
 
 	cloudStorageObjectDeleteCmd.MarkFlagRequired("uniq_id")
 }

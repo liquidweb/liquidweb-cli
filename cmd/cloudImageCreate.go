@@ -49,7 +49,7 @@ var cloudImageCreateCmd = &cobra.Command{
 		}
 
 		fmt.Printf("Creating image! %+v\n", details)
-		fmt.Printf("\tthe Cloud Image will not appear in 'cloud inventory image list' until complete\n")
+		fmt.Printf("\tthe Cloud Image will not appear in 'cloud image list' until complete\n")
 	},
 }
 
