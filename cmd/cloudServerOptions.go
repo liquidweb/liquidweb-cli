@@ -157,9 +157,9 @@ Be sure to take a look at the flags section for specific flags to pass.`,
 				lwCliInst.Die(err)
 			}
 
-			//if zoneDetails.(map[string]interface{})["status"] != "Open" {
-			//	continue
-			//}
+			if zoneDetails.(map[string]interface{})["status"] != "Open" {
+				continue
+			}
 
 			regionId := cast.ToInt(zoneDetails.(map[string]interface{})["region"].(map[string]interface{})["id"])
 			regionsWithZoneInfo[regionId] = append(regionsWithZoneInfo[regionId], map[string]interface{}{
