@@ -245,7 +245,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 
 		// make current context?
 		for !haveMakeCurrentContextAnswer {
-			term.Write([]byte("Make current context? (yes/[no])"))
+			term.Write([]byte("Make current context? ([yes]/no)"))
 			makeCurrentContextBytes, err := term.ReadLine()
 			if err != nil {
 				return contexts, err
@@ -257,14 +257,14 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			}
 
 			haveMakeCurrentContextAnswer = true
-			if makeCurrentContextString == "yes" {
+			if makeCurrentContextString == "yes" || makeCurrentContextString == "" {
 				lwCliInst.Viper.Set("liquidweb.api.current_context", contextNameAnswer)
 			}
 		}
 
 		// more contexts to add ?
 		for !haveMoreContextsToAddAnswer {
-			term.Write([]byte("Add another context? ([yes]/no): "))
+			term.Write([]byte("Add another context? (yes/[no]): "))
 			moreContextsBytes, err := term.ReadLine()
 			if err != nil {
 				return contexts, err
@@ -276,7 +276,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 				continue
 			}
 
-			if answer == "no" {
+			if answer == "no" || answer == "" {
 				moreAdds = false
 				haveMoreContextsToAddAnswer = true
 			}
