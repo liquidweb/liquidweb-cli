@@ -233,7 +233,7 @@ For a list of backups, see 'cloud backups list'
 			createArgs["public_ssh_key"] = publicSshKeyContents
 		}
 
-		result, err := lwCliInst.LwApiClient.Call("bleed/server/create", createArgs)
+		result, err := lwCliInst.LwCliApiClient.Call("bleed/server/create", createArgs)
 		if err != nil {
 			lwCliInst.Die(err)
 		}

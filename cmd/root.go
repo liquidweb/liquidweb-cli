@@ -89,8 +89,7 @@ func initConfig() {
 	var lwCliInstErr error
 	lwCliInst, lwCliInstErr = instance.New(vp)
 	if lwCliInstErr != nil {
-		fmt.Printf("Fatal: [%s]\n", lwCliInstErr)
-		os.Exit(1)
+		lwCliInst.Die(lwCliInstErr)
 	}
 }
 
