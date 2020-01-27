@@ -18,9 +18,9 @@ package api
 
 import (
 	"fmt"
-	"github.com/spf13/viper"
 
 	lwApi "github.com/liquidweb/go-lwApi"
+	"github.com/spf13/viper"
 
 	"github.com/liquidweb/liquidweb-cli/types/errors"
 )
