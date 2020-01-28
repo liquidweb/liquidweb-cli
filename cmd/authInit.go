@@ -26,6 +26,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
+	"github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/types/errors"
 	"github.com/liquidweb/liquidweb-cli/utils"
 )
@@ -111,33 +112,11 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 		return
 	}
 
-	// if user consented to proceed, clear config
-	writeEmptyConfig()
-	cfgFile, cfgPathErr := getExpectedConfigPath()
-	if cfgPathErr != nil {
-		err = cfgPathErr
-		return
-	}
-	if utils.FileExists(cfgFile) {
-		if err := os.Remove(cfgFile); err != nil {
-			lwCliInst.Die(err)
-		}
-		f, err := os.Create(cfgFile)
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		f.Close()
-		if err := os.Chmod(cfgFile, 0600); err != nil {
-			lwCliInst.Die(err)
-		}
-
-		lwCliInst.Viper.ReadConfig(bytes.NewBuffer([]byte{}))
-	}
-
 	// create context add loop channels
 	userInputComplete := make(chan bool)
 	userInputError := make(chan error)
 	userInputExitEarly := make(chan bool)
+	userInputContext := make(chan cmdTypes.AuthContext)
 
 	term.Write([]byte("\nTo exit early, type 'exit' or send EOF (ctrl+d)\n\n"))
 
@@ -146,6 +125,7 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 	WHILEMOREADDS:
 		for moreAdds {
 			var (
+				context                      cmdTypes.AuthContext
 				contextNameAnswer            string
 				haveContextNameAnswer        bool
 				usernameAnswer               string
@@ -172,8 +152,7 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 					term.Write([]byte("context name cannot be blank.\n"))
 				} else {
 					haveContextNameAnswer = true
-					lwCliInst.Viper.Set(fmt.Sprintf(
-						"liquidweb.api.contexts.%s.contextname", contextNameAnswer), contextNameAnswer)
+					context.ContextName = contextNameAnswer
 				}
 			}
 
@@ -193,8 +172,7 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 					term.Write([]byte("username cannot be blank.\n"))
 				} else {
 					haveUsernameAnswer = true
-					lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.username",
-						contextNameAnswer), usernameAnswer)
+					context.Username = usernameAnswer
 				}
 			}
 
@@ -213,8 +191,7 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 					term.Write([]byte("password cannot be blank.\n"))
 				} else {
 					havePasswordAnswer = true
-					lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.password",
-						contextNameAnswer), passwordAnswer)
+					context.Password = passwordAnswer
 				}
 			}
 
@@ -238,7 +215,7 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 
 				haveMakeCurrentContextAnswer = true
 				if makeCurrentContextString == "yes" || makeCurrentContextString == "" {
-					lwCliInst.Viper.Set("liquidweb.api.current_context", contextNameAnswer)
+					context.CurrentContext = true
 				}
 			}
 
@@ -268,22 +245,20 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 				haveMoreContextsToAddAnswer = true
 			}
 
-			// if you can't use these defaults, see `auth update-context` to change it later
-			defaultUrl := "https://api.liquidweb.com"
-			lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.url",
-				contextNameAnswer), defaultUrl)
-			defaultTimeout := 90
-			lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.timeout",
-				contextNameAnswer), defaultTimeout)
-			defaultInsecure := false
-			lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.insecure",
-				contextNameAnswer), defaultInsecure)
+			// when these defaults are unsuitable, see `auth update-context` to change it later
+			context.Url = "https://api.liquidweb.com"
+			context.Timeout = 90
+			context.Insecure = false
+
+			// send context over
+			userInputContext <- context
 		}
 
 		// all done
 		userInputComplete <- true
 	}()
 
+	var contexts []cmdTypes.AuthContext
 WAIT:
 	for {
 		select {
@@ -294,15 +269,66 @@ WAIT:
 		case userInputErr := <-userInputError:
 			err = userInputErr
 			break WAIT
+		case context := <-userInputContext:
+			contexts = append(contexts, context)
 		case complete := <-userInputComplete:
 			if complete {
+				// wipe the config for a clean slate.
+				writeEmptyConfig()
+				cfgFile, cfgPathErr := getExpectedConfigPath()
+				if cfgPathErr != nil {
+					err = cfgPathErr
+					return
+				}
+				if utils.FileExists(cfgFile) {
+					if err := os.Remove(cfgFile); err != nil {
+						lwCliInst.Die(err)
+					}
+					f, err := os.Create(cfgFile)
+					if err != nil {
+						lwCliInst.Die(err)
+					}
+					f.Close()
+					if err := os.Chmod(cfgFile, 0600); err != nil {
+						lwCliInst.Die(err)
+					}
+
+					lwCliInst.Viper.ReadConfig(bytes.NewBuffer([]byte{}))
+				}
+
+				// set Viper config from contexts slice
+				for _, context := range contexts {
+					// ContextName
+					lwCliInst.Viper.Set(fmt.Sprintf(
+						"liquidweb.api.contexts.%s.contextname", context.ContextName), context.ContextName)
+					// Username
+					lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.username",
+						context.ContextName), context.Username)
+					// Password
+					lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.password",
+						context.ContextName), context.Password)
+					// CurrentContext
+					if context.CurrentContext {
+						lwCliInst.Viper.Set("liquidweb.api.current_context", context.ContextName)
+					}
+					// Url
+					lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.url",
+						context.ContextName), context.Url)
+					// Timeout
+					lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.timeout",
+						context.ContextName), context.Timeout)
+					// Insecure
+					lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.insecure",
+						context.ContextName), context.Insecure)
+				}
+
+				// no errors or early exits, so signify to write the config just set then break
+				writeConfig = true
 				break WAIT
 			}
 		}
 	}
 
-	// okay to write config if we get here because its already been destroyed per user ack
-	writeConfig = true
 	return
 }
 
