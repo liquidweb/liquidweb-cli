@@ -32,7 +32,7 @@ type LwCliApiClient struct {
 
 func (x LwCliApiClient) Call(method string, params interface{}) (got interface{}, err error) {
 	if err = x.Viper.ReadInConfig(); err != nil {
-		err = fmt.Errorf("%w Raw error: %s", errorTypes.InvalidConfigSyntax, err)
+		err = fmt.Errorf("%w Raw error: %s", errorTypes.ErrorReadingConfig, err)
 		return
 	}
 
