@@ -39,8 +39,6 @@ var authInitCmd = &cobra.Command{
 
 Intended to be ran for initial setup only.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		writeEmptyConfig()
-
 		if err := setAuthDataInteractively(); err != nil {
 			lwCliInst.Die(err)
 		}
@@ -52,9 +50,73 @@ func init() {
 }
 
 func setAuthDataInteractively() error {
+	_, writeConfig, err := fetchAuthDataInteractively()
+	if err != nil {
+		return err
+	}
+
+	if writeConfig {
+		if err := lwCliInst.Viper.WriteConfig(); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
+	var contexts []cmdTypes.AuthContext
+
+	if !terminal.IsTerminal(0) || !terminal.IsTerminal(1) {
+		return contexts, false, errorTypes.UnknownTerminal
+	}
+	oldState, err := terminal.MakeRaw(0)
+	if err != nil {
+		return contexts, false, err
+	}
+	defer terminal.Restore(0, oldState)
+	screen := struct {
+		io.Reader
+		io.Writer
+	}{os.Stdin, os.Stdout}
+	term := terminal.NewTerminal(screen, "")
+	term.SetPrompt(cast.ToString(term.Escape.Blue) + " > " + cast.ToString(term.Escape.Reset))
+
+	moreAdds := false
+
+	// warn before deleting config
+	var haveProceedAnswer bool
+	for !haveProceedAnswer {
+		term.Write([]byte("Warning: This will delete all auth contexts. Continue (yes/[no])?: "))
+		proceedBytes, err := term.ReadLine()
+		if err != nil {
+			return contexts, false, err
+		}
+		proceedString := cast.ToString(proceedBytes)
+		if proceedString != "yes" && proceedString != "no" && proceedString != "" {
+			term.Write([]byte("invalid input.\n"))
+			continue
+		}
+
+		if proceedString == "yes" {
+			moreAdds = true
+			haveProceedAnswer = true
+		} else if proceedString == "" || proceedString == "no" {
+			haveProceedAnswer = true
+			moreAdds = false
+		}
+	}
+
+	// return if user didnt acknowledge to proceed
+	if !moreAdds {
+		return contexts, false, nil
+	}
+
+	// if user consented to proceed, clear config
+	writeEmptyConfig()
 	cfgFile, err := getExpectedConfigPath()
 	if err != nil {
-		lwCliInst.Die(err)
+		return contexts, false, err
 	}
 	if utils.FileExists(cfgFile) {
 		if err := os.Remove(cfgFile); err != nil {
@@ -72,36 +134,6 @@ func setAuthDataInteractively() error {
 		lwCliInst.Viper.ReadConfig(bytes.NewBuffer([]byte{}))
 	}
 
-	if _, err := fetchAuthDataInteractively(); err != nil {
-		return err
-	}
-
-	if err := lwCliInst.Viper.WriteConfig(); err != nil {
-		return err
-	}
-
-	return nil
-}
-
-func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
-	var contexts []cmdTypes.AuthContext
-
-	if !terminal.IsTerminal(0) || !terminal.IsTerminal(1) {
-		return contexts, errorTypes.UnknownTerminal
-	}
-	oldState, err := terminal.MakeRaw(0)
-	if err != nil {
-		return contexts, err
-	}
-	defer terminal.Restore(0, oldState)
-	screen := struct {
-		io.Reader
-		io.Writer
-	}{os.Stdin, os.Stdout}
-	term := terminal.NewTerminal(screen, "")
-	term.SetPrompt(cast.ToString(term.Escape.Blue) + " > " + cast.ToString(term.Escape.Reset))
-
-	moreAdds := true
 	for moreAdds {
 		var (
 			contextNameAnswer            string
@@ -125,7 +157,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			term.Write([]byte("Name this context: "))
 			contextNameBytes, err := term.ReadLine()
 			if err != nil {
-				return contexts, err
+				return contexts, false, err
 			}
 			contextNameAnswer = cast.ToString(contextNameBytes)
 			if contextNameAnswer == "" {
@@ -142,7 +174,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			term.Write([]byte("LiquidWeb username: "))
 			usernameBytes, err := term.ReadLine()
 			if err != nil {
-				return contexts, err
+				return contexts, false, err
 			}
 			usernameAnswer = cast.ToString(usernameBytes)
 			if usernameAnswer == "" {
@@ -158,7 +190,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 		for !havePasswordAnswer {
 			passwordBytes, err := term.ReadPassword("LiquidWeb password: ")
 			if err != nil {
-				return contexts, err
+				return contexts, false, err
 			}
 			passwordAnswer = cast.ToString(passwordBytes)
 			if passwordAnswer == "" {
@@ -177,7 +209,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			term.Write([]byte(question))
 			urlBytes, err := term.ReadLine()
 			if err != nil {
-				return contexts, err
+				return contexts, false, err
 			}
 			urlAnswer := cast.ToString(urlBytes)
 			if urlAnswer == "" {
@@ -203,7 +235,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			term.Write([]byte("Insecure SSL Validation (yes/[no]): "))
 			insecureBytes, err := term.ReadLine()
 			if err != nil {
-				return contexts, err
+				return contexts, false, err
 			}
 			insecureString := cast.ToString(insecureBytes)
 			if insecureString != "yes" && insecureString != "no" && insecureString != "" {
@@ -226,7 +258,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			term.Write([]byte(question))
 			timeoutBytes, err := term.ReadLine()
 			if err != nil {
-				return contexts, err
+				return contexts, false, err
 			}
 			timeoutAnswer = cast.ToInt(timeoutBytes)
 			if timeoutAnswer == 0 {
@@ -248,7 +280,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			term.Write([]byte("Make current context? ([yes]/no)"))
 			makeCurrentContextBytes, err := term.ReadLine()
 			if err != nil {
-				return contexts, err
+				return contexts, false, err
 			}
 			makeCurrentContextString := cast.ToString(makeCurrentContextBytes)
 			if makeCurrentContextString != "" && makeCurrentContextString != "yes" && makeCurrentContextString != "no" {
@@ -267,7 +299,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 			term.Write([]byte("Add another context? (yes/[no]): "))
 			moreContextsBytes, err := term.ReadLine()
 			if err != nil {
-				return contexts, err
+				return contexts, false, err
 			}
 
 			answer := cast.ToString(moreContextsBytes)
@@ -297,7 +329,7 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, error) {
 		contexts = append(contexts, context)
 	}
 
-	return contexts, err
+	return contexts, true, err
 }
 
 func getExpectedConfigPath() (string, error) {
@@ -317,7 +349,6 @@ func writeEmptyConfig() error {
 		return err
 	}
 
-	fmt.Printf("using config file %s\n", cfgFile)
 	f, err := os.Create(cfgFile)
 	if err != nil {
 		return err
