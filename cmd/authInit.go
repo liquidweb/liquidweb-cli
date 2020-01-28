@@ -26,7 +26,6 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/types/errors"
 	"github.com/liquidweb/liquidweb-cli/utils"
 )
@@ -49,7 +48,7 @@ func init() {
 }
 
 func setAuthDataInteractively() error {
-	_, writeConfig, err := fetchAuthDataInteractively()
+	writeConfig, err := fetchAuthDataInteractively()
 	if err != nil {
 		return err
 	}
@@ -63,15 +62,15 @@ func setAuthDataInteractively() error {
 	return nil
 }
 
-func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
-	var contexts []cmdTypes.AuthContext
-
+func fetchAuthDataInteractively() (writeConfig bool, err error) {
 	if !terminal.IsTerminal(0) || !terminal.IsTerminal(1) {
-		return contexts, false, errorTypes.UnknownTerminal
+		err = errorTypes.UnknownTerminal
+		return
 	}
-	oldState, err := terminal.MakeRaw(0)
-	if err != nil {
-		return contexts, false, err
+	oldState, termMakeErr := terminal.MakeRaw(0)
+	if termMakeErr != nil {
+		err = termMakeErr
+		return
 	}
 	defer terminal.Restore(0, oldState)
 	screen := struct {
@@ -87,9 +86,10 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 	var haveProceedAnswer bool
 	for !haveProceedAnswer {
 		term.Write([]byte("Warning: This will delete all auth contexts. Continue (yes/[no])?: "))
-		proceedBytes, err := term.ReadLine()
-		if err != nil {
-			return contexts, false, err
+		proceedBytes, readErr := term.ReadLine()
+		if readErr != nil {
+			err = readErr
+			return
 		}
 		proceedString := cast.ToString(proceedBytes)
 		if proceedString != "yes" && proceedString != "no" && proceedString != "" {
@@ -108,14 +108,15 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 
 	// return if user didnt acknowledge to proceed
 	if !moreAdds {
-		return contexts, false, nil
+		return
 	}
 
 	// if user consented to proceed, clear config
 	writeEmptyConfig()
-	cfgFile, err := getExpectedConfigPath()
-	if err != nil {
-		return contexts, false, err
+	cfgFile, cfgPathErr := getExpectedConfigPath()
+	if cfgPathErr != nil {
+		err = cfgPathErr
+		return
 	}
 	if utils.FileExists(cfgFile) {
 		if err := os.Remove(cfgFile); err != nil {
@@ -148,9 +149,10 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 		// context name
 		for !haveContextNameAnswer {
 			term.Write([]byte("Name this context: "))
-			contextNameBytes, err := term.ReadLine()
-			if err != nil {
-				return contexts, false, err
+			contextNameBytes, readErr := term.ReadLine()
+			if readErr != nil {
+				err = readErr
+				return
 			}
 			contextNameAnswer = cast.ToString(contextNameBytes)
 			if contextNameAnswer == "" {
@@ -165,9 +167,10 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 		// username
 		for !haveUsernameAnswer {
 			term.Write([]byte("LiquidWeb username: "))
-			usernameBytes, err := term.ReadLine()
-			if err != nil {
-				return contexts, false, err
+			usernameBytes, readErr := term.ReadLine()
+			if readErr != nil {
+				err = readErr
+				return
 			}
 			usernameAnswer = cast.ToString(usernameBytes)
 			if usernameAnswer == "" {
@@ -181,9 +184,10 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 
 		// password
 		for !havePasswordAnswer {
-			passwordBytes, err := term.ReadPassword("LiquidWeb password: ")
-			if err != nil {
-				return contexts, false, err
+			passwordBytes, readErr := term.ReadPassword("LiquidWeb password: ")
+			if readErr != nil {
+				err = readErr
+				return
 			}
 			passwordAnswer = cast.ToString(passwordBytes)
 			if passwordAnswer == "" {
@@ -198,9 +202,10 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 		// make current context?
 		for !haveMakeCurrentContextAnswer {
 			term.Write([]byte("Make current context? ([yes]/no)"))
-			makeCurrentContextBytes, err := term.ReadLine()
-			if err != nil {
-				return contexts, false, err
+			makeCurrentContextBytes, readErr := term.ReadLine()
+			if readErr != nil {
+				err = readErr
+				return
 			}
 			makeCurrentContextString := cast.ToString(makeCurrentContextBytes)
 			if makeCurrentContextString != "" && makeCurrentContextString != "yes" && makeCurrentContextString != "no" {
@@ -217,9 +222,10 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 		// more contexts to add ?
 		for !haveMoreContextsToAddAnswer {
 			term.Write([]byte("Add another context? (yes/[no]): "))
-			moreContextsBytes, err := term.ReadLine()
-			if err != nil {
-				return contexts, false, err
+			moreContextsBytes, readErr := term.ReadLine()
+			if readErr != nil {
+				err = readErr
+				return
 			}
 
 			answer := cast.ToString(moreContextsBytes)
@@ -246,21 +252,10 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 		defaultInsecure := false
 		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.insecure",
 			contextNameAnswer), defaultInsecure)
-
-		// return entry data
-		context := cmdTypes.AuthContext{
-			ContextName: contextNameAnswer,
-			Username:    usernameAnswer,
-			Password:    passwordAnswer,
-			Url:         defaultUrl,
-			Insecure:    defaultInsecure,
-			Timeout:     defaultTimeout,
-		}
-
-		contexts = append(contexts, context)
 	}
 
-	return contexts, true, err
+	writeConfig = true
+	return
 }
 
 func getExpectedConfigPath() (string, error) {
