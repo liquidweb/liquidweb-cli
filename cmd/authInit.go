@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
 
 	"golang.org/x/crypto/ssh/terminal"
 
@@ -142,12 +141,6 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 			haveUsernameAnswer           bool
 			passwordAnswer               string
 			havePasswordAnswer           bool
-			urlAnswer                    string
-			haveUrlAnswer                bool
-			insecureAnswer               bool
-			haveInsecureAnswer           bool
-			timeoutAnswer                int
-			haveTimeoutAnswer            bool
 			haveMakeCurrentContextAnswer bool
 			haveMoreContextsToAddAnswer  bool
 		)
@@ -202,79 +195,6 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 			}
 		}
 
-		// url
-		for !haveUrlAnswer {
-			defaultUrl := "https://api.liquidweb.com"
-			question := fmt.Sprintf("API URL (enter for default [%s]): ", defaultUrl)
-			term.Write([]byte(question))
-			urlBytes, err := term.ReadLine()
-			if err != nil {
-				return contexts, false, err
-			}
-			urlAnswer := cast.ToString(urlBytes)
-			if urlAnswer == "" {
-				haveUrlAnswer = true
-				urlAnswer = defaultUrl
-				lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.url",
-					contextNameAnswer), defaultUrl)
-			} else {
-				// make sure it looks like a url
-				if strings.HasPrefix(urlAnswer, "https://") {
-					haveUrlAnswer = true
-					lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.url",
-						contextNameAnswer), urlAnswer)
-				} else {
-					resp := fmt.Sprintf("url [%s] looks invalid; should start with 'https://'\n", urlAnswer)
-					term.Write([]byte(resp))
-				}
-			}
-		}
-
-		// insecure ssl validation
-		for !haveInsecureAnswer {
-			term.Write([]byte("Insecure SSL Validation (yes/[no]): "))
-			insecureBytes, err := term.ReadLine()
-			if err != nil {
-				return contexts, false, err
-			}
-			insecureString := cast.ToString(insecureBytes)
-			if insecureString != "yes" && insecureString != "no" && insecureString != "" {
-				term.Write([]byte("invalid input.\n"))
-				continue
-			}
-
-			if insecureString == "yes" {
-				insecureAnswer = true
-			}
-			haveInsecureAnswer = true
-			lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.insecure",
-				contextNameAnswer), insecureAnswer)
-		}
-
-		// timeout
-		for !haveTimeoutAnswer {
-			defaultTimeout := 90
-			question := fmt.Sprintf("API timeout (enter for default [%d]): ", defaultTimeout)
-			term.Write([]byte(question))
-			timeoutBytes, err := term.ReadLine()
-			if err != nil {
-				return contexts, false, err
-			}
-			timeoutAnswer = cast.ToInt(timeoutBytes)
-			if timeoutAnswer == 0 {
-				timeoutAnswer = defaultTimeout
-			}
-			if timeoutAnswer <= 0 {
-				resp := fmt.Sprintf("timeout [%d] must be > 0.\n", timeoutAnswer)
-				term.Write([]byte(resp))
-				continue
-			}
-
-			haveTimeoutAnswer = true
-			lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.timeout",
-				contextNameAnswer), timeoutAnswer)
-		}
-
 		// make current context?
 		for !haveMakeCurrentContextAnswer {
 			term.Write([]byte("Make current context? ([yes]/no)"))
@@ -316,14 +236,25 @@ func fetchAuthDataInteractively() ([]cmdTypes.AuthContext, bool, error) {
 			haveMoreContextsToAddAnswer = true
 		}
 
-		// save entry data
+		// if you can't use these defaults, see `auth update-context` to change it later
+		defaultUrl := "https://api.liquidweb.com"
+		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.url",
+			contextNameAnswer), defaultUrl)
+		defaultTimeout := 90
+		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.timeout",
+			contextNameAnswer), defaultTimeout)
+		defaultInsecure := false
+		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.insecure",
+			contextNameAnswer), defaultInsecure)
+
+		// return entry data
 		context := cmdTypes.AuthContext{
 			ContextName: contextNameAnswer,
 			Username:    usernameAnswer,
 			Password:    passwordAnswer,
-			Url:         urlAnswer,
-			Insecure:    insecureAnswer,
-			Timeout:     timeoutAnswer,
+			Url:         defaultUrl,
+			Insecure:    defaultInsecure,
+			Timeout:     defaultTimeout,
 		}
 
 		contexts = append(contexts, context)
