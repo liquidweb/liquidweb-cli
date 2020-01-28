@@ -17,25 +17,14 @@ package api
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 
 	lwApi "github.com/liquidweb/go-lwApi"
-
-	"github.com/liquidweb/liquidweb-cli/types/errors"
 )
 
 func New(viper *viper.Viper) (*LwCliApiClient, error) {
-	if err := viper.ReadInConfig(); err != nil {
-		strErr := strings.ToUpper(cast.ToString(err))
-		// only consider this an error here if there is a config file
-		if !strings.Contains(strErr, "CONFIG FILE") && !strings.Contains(strErr, "NOT FOUND IN") {
-			return &LwCliApiClient{}, fmt.Errorf("%w Raw error: %s", errorTypes.ErrorReadingConfig, strErr)
-		}
-	}
-
 	// create the object from the current context if there is one. If "auth init" has not yet been ran,
 	// there would be no current context yet.
 	lwCliApiClient := LwCliApiClient{Viper: viper}
