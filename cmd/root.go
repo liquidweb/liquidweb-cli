@@ -158,7 +158,7 @@ func derivePrivateParentUniqId(name string) (string, error) {
 	return privateParentUniqId, nil
 }
 
-func dialoagDesctructiveConfirmProceed() (proceed bool) {
+func dialogDesctructiveConfirmProceed() (proceed bool) {
 
 	var haveConfirmationAnswer bool
 	utils.PrintTeal("Tip: Avoid future confirmations by passing --force\n\n")
