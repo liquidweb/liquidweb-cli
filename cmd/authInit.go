@@ -134,126 +134,174 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 		lwCliInst.Viper.ReadConfig(bytes.NewBuffer([]byte{}))
 	}
 
-	for moreAdds {
-		var (
-			contextNameAnswer            string
-			haveContextNameAnswer        bool
-			usernameAnswer               string
-			haveUsernameAnswer           bool
-			passwordAnswer               string
-			havePasswordAnswer           bool
-			haveMakeCurrentContextAnswer bool
-			haveMoreContextsToAddAnswer  bool
-		)
+	// create context add loop channels
+	userInputComplete := make(chan bool)
+	userInputError := make(chan error)
+	userInputExitEarly := make(chan bool)
 
-		// context name
-		for !haveContextNameAnswer {
-			term.Write([]byte("Name this context: "))
-			contextNameBytes, readErr := term.ReadLine()
-			if readErr != nil {
-				err = readErr
-				return
-			}
-			contextNameAnswer = cast.ToString(contextNameBytes)
-			if contextNameAnswer == "" {
-				term.Write([]byte("context name cannot be blank.\n"))
-			} else {
-				haveContextNameAnswer = true
-				lwCliInst.Viper.Set(fmt.Sprintf(
-					"liquidweb.api.contexts.%s.contextname", contextNameAnswer), contextNameAnswer)
-			}
-		}
+	term.Write([]byte("\nTo exit early, type 'exit' or send EOF (ctrl+d)\n\n"))
 
-		// username
-		for !haveUsernameAnswer {
-			term.Write([]byte("LiquidWeb username: "))
-			usernameBytes, readErr := term.ReadLine()
-			if readErr != nil {
-				err = readErr
-				return
-			}
-			usernameAnswer = cast.ToString(usernameBytes)
-			if usernameAnswer == "" {
-				term.Write([]byte("username cannot be blank.\n"))
-			} else {
-				haveUsernameAnswer = true
-				lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.username",
-					contextNameAnswer), usernameAnswer)
-			}
-		}
+	// start context add loop
+	go func() {
+	WHILEMOREADDS:
+		for moreAdds {
+			var (
+				contextNameAnswer            string
+				haveContextNameAnswer        bool
+				usernameAnswer               string
+				haveUsernameAnswer           bool
+				passwordAnswer               string
+				havePasswordAnswer           bool
+				haveMakeCurrentContextAnswer bool
+				haveMoreContextsToAddAnswer  bool
+			)
 
-		// password
-		for !havePasswordAnswer {
-			passwordBytes, readErr := term.ReadPassword("LiquidWeb password: ")
-			if readErr != nil {
-				err = readErr
-				return
-			}
-			passwordAnswer = cast.ToString(passwordBytes)
-			if passwordAnswer == "" {
-				term.Write([]byte("password cannot be blank.\n"))
-			} else {
-				havePasswordAnswer = true
-				lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.password",
-					contextNameAnswer), passwordAnswer)
-			}
-		}
-
-		// make current context?
-		for !haveMakeCurrentContextAnswer {
-			term.Write([]byte("Make current context? ([yes]/no)"))
-			makeCurrentContextBytes, readErr := term.ReadLine()
-			if readErr != nil {
-				err = readErr
-				return
-			}
-			makeCurrentContextString := cast.ToString(makeCurrentContextBytes)
-			if makeCurrentContextString != "" && makeCurrentContextString != "yes" && makeCurrentContextString != "no" {
-				term.Write([]byte("invalid input.\n"))
-				continue
+			// context name
+			for !haveContextNameAnswer {
+				term.Write([]byte("Name this context: "))
+				contextNameBytes, err := term.ReadLine()
+				if err != nil {
+					userInputError <- err
+					break WHILEMOREADDS
+				}
+				contextNameAnswer = cast.ToString(contextNameBytes)
+				if contextNameAnswer == "exit" {
+					userInputExitEarly <- true
+					break WHILEMOREADDS
+				} else if contextNameAnswer == "" {
+					term.Write([]byte("context name cannot be blank.\n"))
+				} else {
+					haveContextNameAnswer = true
+					lwCliInst.Viper.Set(fmt.Sprintf(
+						"liquidweb.api.contexts.%s.contextname", contextNameAnswer), contextNameAnswer)
+				}
 			}
 
-			haveMakeCurrentContextAnswer = true
-			if makeCurrentContextString == "yes" || makeCurrentContextString == "" {
-				lwCliInst.Viper.Set("liquidweb.api.current_context", contextNameAnswer)
+			// username
+			for !haveUsernameAnswer {
+				term.Write([]byte("LiquidWeb username: "))
+				usernameBytes, err := term.ReadLine()
+				if err != nil {
+					userInputError <- err
+					break WHILEMOREADDS
+				}
+				usernameAnswer = cast.ToString(usernameBytes)
+				if usernameAnswer == "exit" {
+					userInputExitEarly <- true
+					break WHILEMOREADDS
+				} else if usernameAnswer == "" {
+					term.Write([]byte("username cannot be blank.\n"))
+				} else {
+					haveUsernameAnswer = true
+					lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.username",
+						contextNameAnswer), usernameAnswer)
+				}
 			}
-		}
 
-		// more contexts to add ?
-		for !haveMoreContextsToAddAnswer {
-			term.Write([]byte("Add another context? (yes/[no]): "))
-			moreContextsBytes, readErr := term.ReadLine()
-			if readErr != nil {
-				err = readErr
-				return
+			// password
+			for !havePasswordAnswer {
+				passwordBytes, err := term.ReadPassword("LiquidWeb password: ")
+				if err != nil {
+					userInputError <- err
+					break WHILEMOREADDS
+				}
+				passwordAnswer = cast.ToString(passwordBytes)
+				if passwordAnswer == "exit" {
+					userInputExitEarly <- true
+					break WHILEMOREADDS
+				} else if passwordAnswer == "" {
+					term.Write([]byte("password cannot be blank.\n"))
+				} else {
+					havePasswordAnswer = true
+					lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.password",
+						contextNameAnswer), passwordAnswer)
+				}
 			}
 
-			answer := cast.ToString(moreContextsBytes)
-			if answer != "" && answer != "yes" && answer != "no" {
-				term.Write([]byte("invalid input.\n"))
-				continue
+			// make current context?
+			for !haveMakeCurrentContextAnswer {
+				term.Write([]byte("Make current context? ([yes]/no)"))
+				makeCurrentContextBytes, err := term.ReadLine()
+				if err != nil {
+					userInputError <- err
+					break WHILEMOREADDS
+				}
+				makeCurrentContextString := cast.ToString(makeCurrentContextBytes)
+				if makeCurrentContextString == "exit" {
+					userInputExitEarly <- true
+					break WHILEMOREADDS
+				}
+				if makeCurrentContextString != "" && makeCurrentContextString != "yes" && makeCurrentContextString != "no" {
+					term.Write([]byte("invalid input.\n"))
+					continue
+				}
+
+				haveMakeCurrentContextAnswer = true
+				if makeCurrentContextString == "yes" || makeCurrentContextString == "" {
+					lwCliInst.Viper.Set("liquidweb.api.current_context", contextNameAnswer)
+				}
 			}
 
-			if answer == "no" || answer == "" {
-				moreAdds = false
+			// more contexts to add ?
+			for !haveMoreContextsToAddAnswer {
+				term.Write([]byte("Add another context? (yes/[no]): "))
+				moreContextsBytes, err := term.ReadLine()
+				if err != nil {
+					userInputError <- err
+					break WHILEMOREADDS
+				}
+
+				answer := cast.ToString(moreContextsBytes)
+				if answer == "exit" {
+					userInputExitEarly <- true
+					break WHILEMOREADDS
+				}
+				if answer != "" && answer != "yes" && answer != "no" {
+					term.Write([]byte("invalid input.\n"))
+					continue
+				}
+
+				if answer == "no" || answer == "" {
+					moreAdds = false
+				}
+
 				haveMoreContextsToAddAnswer = true
 			}
 
-			haveMoreContextsToAddAnswer = true
+			// if you can't use these defaults, see `auth update-context` to change it later
+			defaultUrl := "https://api.liquidweb.com"
+			lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.url",
+				contextNameAnswer), defaultUrl)
+			defaultTimeout := 90
+			lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.timeout",
+				contextNameAnswer), defaultTimeout)
+			defaultInsecure := false
+			lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.insecure",
+				contextNameAnswer), defaultInsecure)
 		}
 
-		// if you can't use these defaults, see `auth update-context` to change it later
-		defaultUrl := "https://api.liquidweb.com"
-		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.url",
-			contextNameAnswer), defaultUrl)
-		defaultTimeout := 90
-		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.timeout",
-			contextNameAnswer), defaultTimeout)
-		defaultInsecure := false
-		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s.insecure",
-			contextNameAnswer), defaultInsecure)
+		// all done
+		userInputComplete <- true
+	}()
+
+WAIT:
+	for {
+		select {
+		case exitEarly := <-userInputExitEarly:
+			if exitEarly {
+				break WAIT
+			}
+		case userInputErr := <-userInputError:
+			err = userInputErr
+			break WAIT
+		case complete := <-userInputComplete:
+			if complete {
+				break WAIT
+			}
+		}
 	}
 
+	// okay to write config if we get here because its already been destroyed per user ack
 	writeConfig = true
 	return
 }
