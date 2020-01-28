@@ -26,6 +26,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerCreateCmdPoolIpsFlag []string
@@ -54,8 +55,8 @@ Examples:
 These examples use default values for various flags, such as password, type, ssh-key, hostname, etc.
 
 For a list of Templates, Configs, and Region/Zones, see 'cloud server options --configs --templates --zones'
-For a list of images, see 'cloud inventory images list'
-For a list of backups, see 'cloud inventory backups list'
+For a list of images, see 'cloud images list'
+For a list of backups, see 'cloud backups list'
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		templateFlag, _ := cmd.Flags().GetString("template")
@@ -84,6 +85,32 @@ For a list of backups, see 'cloud inventory backups list'
 		}
 		if templateFlag == "" && backupIdFlag == -1 && imageIdFlag == -1 {
 			lwCliInst.Die(fmt.Errorf("at least one of the following flags must be set --template --image-id --backup-id"))
+		}
+
+		validateFields := map[interface{}]interface{}{
+			zoneFlag:       map[string]string{"type": "PositiveInt", "optional": "true"},
+			hostnameFlag:   "NonEmptyString",
+			typeFlag:       "NonEmptyString",
+			ipsFlag:        "PositiveInt",
+			passwordFlag:   "NonEmptyString",
+			backupPlanFlag: "NonEmptyString",
+		}
+		if backupIdFlag != -1 {
+			validateFields[backupIdFlag] = "PositiveInt"
+		}
+		if imageIdFlag != -1 {
+			validateFields[imageIdFlag] = "PositiveInt"
+		}
+		if vcpuFlag == -1 {
+			validateFields[configIdFlag] = "PositiveInt"
+		}
+		if configIdFlag == -1 {
+			validateFields[vcpuFlag] = "PositiveInt"
+			validateFields[memoryFlag] = "PositiveInt"
+			validateFields[diskspaceFlag] = "PositiveInt"
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
 		}
 
 		var publicSshKeyContents string
@@ -206,7 +233,7 @@ For a list of backups, see 'cloud inventory backups list'
 			createArgs["public_ssh_key"] = publicSshKeyContents
 		}
 
-		result, err := lwCliInst.LwApiClient.Call("bleed/server/create", createArgs)
+		result, err := lwCliInst.LwCliApiClient.Call("bleed/server/create", createArgs)
 		if err != nil {
 			lwCliInst.Die(err)
 		}
@@ -243,8 +270,8 @@ func init() {
 	cloudServerCreateCmd.Flags().Int("zone", 0, "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
 	cloudServerCreateCmd.Flags().String("password", randomPassword, "root or administrator password to set")
 
-	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of backup to create from (see 'cloud inventory backup list')")
-	cloudServerCreateCmd.Flags().Int("image-id", -1, "id of image to create from (see 'cloud inventory image list')")
+	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of backup to create from (see 'cloud backup list')")
+	cloudServerCreateCmd.Flags().Int("image-id", -1, "id of image to create from (see 'cloud image list')")
 
 	cloudServerCreateCmd.Flags().StringSliceVar(&cloudServerCreateCmdPoolIpsFlag, "pool-ips", []string{},
 		"ips from your IP Pool separated by ',' to assign to the new Cloud Server")

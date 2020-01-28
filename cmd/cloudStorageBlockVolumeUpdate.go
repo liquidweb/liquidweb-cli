@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudStorageBlockVolumeUpdateCmd = &cobra.Command{
@@ -37,8 +38,15 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		enableCrossAttachFlag, _ := cmd.Flags().GetBool("enable-cross-attach")
 		disableCrossAttachFlag, _ := cmd.Flags().GetBool("disable-cross-attach")
 
+		validateFields := map[interface{}]interface{}{
+			uniqIdFlag: "UniqId",
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
+		}
+
 		if enableCrossAttachFlag && disableCrossAttachFlag {
-			lwCliInst.Die(fmt.Errorf("cant both enable and disab"))
+			lwCliInst.Die(fmt.Errorf("cant both enable and disable"))
 		}
 
 		apiArgs := map[string]interface{}{

@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudStorageBlockVolumeDetachCmd = &cobra.Command{
@@ -34,6 +35,14 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		detachFromFlag, _ := cmd.Flags().GetString("detach-from")
+
+		validateFields := map[interface{}]interface{}{
+			uniqIdFlag:     "UniqId",
+			detachFromFlag: "UniqId",
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
+		}
 
 		apiArgs := map[string]interface{}{
 			"uniq_id":     uniqIdFlag,

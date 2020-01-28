@@ -3,7 +3,7 @@ SHELL=/bin/bash
 GO_LINKER_SYMBOL := "main.version"
 
 default:
-	$(MAKE) build
+	$(MAKE) install
 
 %:
     @:
@@ -20,6 +20,17 @@ static:
 
 build:
 	go build -ldflags="-s -w" -o _exe/liquidweb-cli github.com/liquidweb/liquidweb-cli
+
+install:
+	go install
+	@echo ""
+	@echo "liquidweb-cli has been installed, and it should now be in your PATH."
+	@echo ""
+	@echo "Executables are installed in the directory named by the GOBIN environment"
+	@echo "variable, which defaults to GOPATH/bin or HOME/go/bin if the GOPATH"
+	@echo "environment variable is not set. Executables in GOROOT"
+	@echo "are installed in GOROOT/bin or GOTOOLDIR instead of GOBIN."
+	@echo ""
 
 run:
 	go run main.go $(call args,)

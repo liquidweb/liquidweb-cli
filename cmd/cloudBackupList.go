@@ -23,6 +23,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudBackupListCmd = &cobra.Command{
@@ -32,6 +33,16 @@ var cloudBackupListCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+
+		if uniqIdFlag != "" {
+			validateFields := map[interface{}]interface{}{
+				uniqIdFlag: "UniqId",
+			}
+
+			if err := validate.Validate(validateFields); err != nil {
+				lwCliInst.Die(err)
+			}
+		}
 
 		methodArgs := instance.AllPaginatedResultsArgs{
 			Method:         "bleed/storm/backup/list",

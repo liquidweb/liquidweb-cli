@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudPrivateParentCreateCmd = &cobra.Command{
@@ -39,6 +40,14 @@ of configs, check 'cloud server options --configs'.`,
 		nameFlag, _ := cmd.Flags().GetString("name")
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
+
+		validateFields := map[interface{}]interface{}{
+			zoneFlag:     "PositiveInt64",
+			configIdFlag: "PositiveInt64",
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
+		}
 
 		apiArgs := map[string]interface{}{
 			"domain":    nameFlag,

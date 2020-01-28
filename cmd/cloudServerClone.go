@@ -22,6 +22,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerCloneCmdPoolIpsFlag []string
@@ -57,7 +58,12 @@ Server is not on a Private Parent.`,
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 
-		// flag check
+		validateFields := map[interface{}]interface{}{
+			uniqIdFlag: "UniqId",
+			// expanded out struct to show ability.. its treated as required like above
+			hostnameFlag: map[string]string{"type": "NonEmptyString", "optional": "false"},
+		}
+
 		if privateParentFlag != "" && configIdFlag != -1 {
 			lwCliInst.Die(fmt.Errorf("cant pass both --config_id and --private-parent flags"))
 		}
@@ -85,24 +91,36 @@ Server is not on a Private Parent.`,
 		}
 		if zoneFlag != -1 {
 			cloneArgs["zone"] = zoneFlag
+			validateFields[zoneFlag] = "PositiveInt64"
 		}
 		if privateParentUniqId != "" {
 			cloneArgs["parent"] = privateParentUniqId
 		}
 		if diskspaceFlag != -1 {
 			cloneArgs["diskspace"] = diskspaceFlag
+			validateFields[diskspaceFlag] = "PositiveInt64"
 		}
 		if memoryFlag != -1 {
 			cloneArgs["memory"] = memoryFlag
+			validateFields[memoryFlag] = "PositiveInt64"
 		}
 		if vcpuFlag != -1 {
 			cloneArgs["vcpu"] = vcpuFlag
+			validateFields[vcpuFlag] = "PositiveInt64"
 		}
 		if configIdFlag != -1 {
 			cloneArgs["config_id"] = configIdFlag
+			validateFields[configIdFlag] = "PositiveInt64"
 		}
 		if len(cloudServerCloneCmdPoolIpsFlag) > 0 {
 			cloneArgs["pool_ips"] = cloudServerCloneCmdPoolIpsFlag
+			for _, ip := range cloudServerCloneCmdPoolIpsFlag {
+				validateFields[ip] = "IP"
+			}
+		}
+
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
 		}
 
 		var details apiTypes.CloudServerCloneResponse
@@ -132,7 +150,7 @@ func init() {
 
 	// Private Parent
 	cloudServerCloneCmd.Flags().String("private-parent", "",
-		"name or uniq_id of the Private Parent to place new Cloud Server on (see: 'cloud inventory private-parent list')")
+		"name or uniq_id of the Private Parent to place new Cloud Server on (see: 'cloud private-parent list')")
 	cloudServerCloneCmd.Flags().Int64("diskspace", -1, "diskspace for new Cloud Server (when private-parent)")
 	cloudServerCloneCmd.Flags().Int64("memory", -1, "memory for new Cloud Server (when private-parent)")
 	cloudServerCloneCmd.Flags().Int64("vcpu", -1, "amount of vcpus for new Cloud Server (when private-parent)")

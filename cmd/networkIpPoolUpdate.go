@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var networkIpPoolUpdateCmdAddIpsFlag []string
@@ -37,6 +38,10 @@ your account.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 
+		validateFields := map[interface{}]interface{}{
+			uniqIdFlag: "UniqId",
+		}
+
 		if len(networkIpPoolUpdateCmdAddIpsFlag) == 0 && len(networkIpPoolUpdateCmdRemoveIpsFlag) == 0 &&
 			newIpsFlag == -1 {
 			lwCliInst.Die(fmt.Errorf(
@@ -49,12 +54,23 @@ your account.`,
 
 		if len(networkIpPoolUpdateCmdAddIpsFlag) > 0 {
 			apiArgs["add_ips"] = networkIpPoolUpdateCmdAddIpsFlag
+			for _, ip := range networkIpPoolUpdateCmdAddIpsFlag {
+				validateFields[ip] = "IP"
+			}
 		}
 		if len(networkIpPoolUpdateCmdRemoveIpsFlag) > 0 {
 			apiArgs["remove_ips"] = networkIpPoolUpdateCmdRemoveIpsFlag
+			for _, ip := range networkIpPoolUpdateCmdRemoveIpsFlag {
+				validateFields[ip] = "IP"
+			}
 		}
 		if newIpsFlag != -1 {
 			apiArgs["new_ips"] = newIpsFlag
+			validateFields[newIpsFlag] = "PositiveInt64"
+		}
+
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
 		}
 
 		var details apiTypes.NetworkIpPoolDetails

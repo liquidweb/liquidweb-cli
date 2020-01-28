@@ -24,6 +24,7 @@ import (
 	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerStatusCmdUniqIdFlag []string
@@ -88,6 +89,13 @@ If nothing is currently running, only the 'status' field will be returned with o
 			}
 		} else {
 			for _, uid := range cloudServerStatusCmdUniqIdFlag {
+				validateFields := map[interface{}]interface{}{
+					uid: "UniqId",
+				}
+				if err := validate.Validate(validateFields); err != nil {
+					fmt.Printf("%s ... skipping\n", err)
+					continue
+				}
 				_printCloudServerStatus(uid, "")
 			}
 		}

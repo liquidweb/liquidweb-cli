@@ -17,10 +17,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerDestroyCmdUniqIdFlag []string
@@ -36,8 +38,27 @@ server.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		commentFlag, _ := cmd.Flags().GetString("comment")
 		reasonFlag, _ := cmd.Flags().GetString("reason")
+		forceFlag, _ := cmd.Flags().GetBool("force")
+
+		// if force flag wasn't passed
+		if !forceFlag {
+			// exit if user didn't consent
+			if proceed := dialogDesctructiveConfirmProceed(); !proceed {
+				os.Exit(0)
+			}
+		}
 
 		for _, uniqId := range cloudServerDestroyCmdUniqIdFlag {
+
+			validateFields := map[interface{}]interface{}{
+				uniqId: "UniqId",
+			}
+
+			if err := validate.Validate(validateFields); err != nil {
+				fmt.Printf("%s ... skipping\n", err)
+				continue
+			}
+
 			destroyArgs := map[string]interface{}{
 				"uniq_id":              uniqId,
 				"cancellation_comment": commentFlag,
@@ -67,6 +88,7 @@ func init() {
 		"comment related to the cancellation")
 	cloudServerDestroyCmd.Flags().String("reason", "",
 		"reason for the cancellation (optional)")
+	cloudServerDestroyCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
 	cloudServerDestroyCmd.MarkFlagRequired("uniq_id")
 }

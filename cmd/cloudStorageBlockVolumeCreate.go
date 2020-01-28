@@ -22,6 +22,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudStorageBlockVolumeCreateCmd = &cobra.Command{
@@ -39,6 +40,13 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 		crossAttachFlag, _ := cmd.Flags().GetBool("cross-attach")
 		attachFlag, _ := cmd.Flags().GetString("attach")
+
+		validateFields := map[interface{}]interface{}{
+			sizeFlag: "PositiveInt64",
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
+		}
 
 		apiArgs := map[string]interface{}{
 			"domain":       nameFlag,

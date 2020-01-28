@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"bufio"
 	"fmt"
 	"os"
 	"strings"
@@ -26,6 +27,7 @@ import (
 
 	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var cfgFile string
@@ -89,8 +91,7 @@ func initConfig() {
 	var lwCliInstErr error
 	lwCliInst, lwCliInstErr = instance.New(vp)
 	if lwCliInstErr != nil {
-		fmt.Printf("Fatal: [%s]\n", lwCliInstErr)
-		os.Exit(1)
+		lwCliInst.Die(lwCliInstErr)
 	}
 }
 
@@ -155,4 +156,31 @@ func derivePrivateParentUniqId(name string) (string, error) {
 	}
 
 	return privateParentUniqId, nil
+}
+
+func dialogDesctructiveConfirmProceed() (proceed bool) {
+
+	var haveConfirmationAnswer bool
+	utils.PrintTeal("Tip: Avoid future confirmations by passing --force\n\n")
+
+	for !haveConfirmationAnswer {
+		utils.PrintRed("This is a destructive operation. Continue (yes/[no])?: ")
+		scanner := bufio.NewScanner(os.Stdin)
+		scanner.Scan()
+		answer := scanner.Text()
+
+		if answer != "" && answer != "yes" && answer != "no" {
+			utils.PrintYellow("invalid input.\n")
+			continue
+		}
+
+		haveConfirmationAnswer = true
+		if answer == "no" || answer == "" {
+			proceed = false
+		} else if answer == "yes" {
+			proceed = true
+		}
+	}
+
+	return
 }

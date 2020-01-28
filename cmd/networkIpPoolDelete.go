@@ -17,10 +17,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var networkIpPoolDeleteCmd = &cobra.Command{
@@ -32,6 +34,22 @@ An IP Pool is a range of nonintersecting, reusable IP addresses reserved to
 your account.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		forceFlag, _ := cmd.Flags().GetBool("force")
+
+		// if force flag wasn't passed
+		if !forceFlag {
+			// exit if user didn't consent
+			if proceed := dialogDesctructiveConfirmProceed(); !proceed {
+				os.Exit(0)
+			}
+		}
+
+		validateFields := map[interface{}]interface{}{
+			uniqIdFlag: "UniqId",
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
+		}
 
 		apiArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,
@@ -50,6 +68,7 @@ func init() {
 	networkIpPoolCmd.AddCommand(networkIpPoolDeleteCmd)
 
 	networkIpPoolDeleteCmd.Flags().String("uniq_id", "", "uniq_id of IP Pool")
+	networkIpPoolDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
 	networkIpPoolDeleteCmd.MarkFlagRequired("uniq_id")
 }

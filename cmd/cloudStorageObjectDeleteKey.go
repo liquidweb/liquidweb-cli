@@ -17,10 +17,12 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudStorageObjectDeleteKeyCmd = &cobra.Command{
@@ -30,6 +32,23 @@ var cloudStorageObjectDeleteKeyCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		accessKeyFlag, _ := cmd.Flags().GetString("access-key")
+		forceFlag, _ := cmd.Flags().GetBool("force")
+
+		// if force flag wasn't passed
+		if !forceFlag {
+			// exit if user didn't consent
+			if proceed := dialogDesctructiveConfirmProceed(); !proceed {
+				os.Exit(0)
+			}
+		}
+
+		validateFields := map[interface{}]interface{}{
+			uniqIdFlag:    "UniqId",
+			accessKeyFlag: "NonEmptyString",
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
+		}
 
 		apiArgs := map[string]interface{}{
 			"uniq_id":    uniqIdFlag,
@@ -50,6 +69,7 @@ func init() {
 	cloudStorageObjectCmd.AddCommand(cloudStorageObjectDeleteKeyCmd)
 	cloudStorageObjectDeleteKeyCmd.Flags().String("uniq_id", "", "uniq_id of Object Store")
 	cloudStorageObjectDeleteKeyCmd.Flags().String("access-key", "", "the access key to remove from the Object Store")
+	cloudStorageObjectDeleteKeyCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
 	cloudStorageObjectDeleteKeyCmd.MarkFlagRequired("uniq_id")
 	cloudStorageObjectDeleteKeyCmd.MarkFlagRequired("access-key")

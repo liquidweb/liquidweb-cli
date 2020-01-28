@@ -46,6 +46,6 @@ func init() {
 	cloudImageCmd.AddCommand(cloudImageDetailsCmd)
 
 	cloudImageDetailsCmd.Flags().Int64("image_id", -1,
-		"id number of the image (see 'cloud inventory image list')")
+		"id number of the image (see 'cloud image list')")
 	cloudImageDetailsCmd.MarkFlagRequired("image_id")
 }

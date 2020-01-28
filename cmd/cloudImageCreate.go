@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudImageCreateCmd = &cobra.Command{
@@ -31,6 +32,14 @@ var cloudImageCreateCmd = &cobra.Command{
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 
+		validateFields := map[interface{}]interface{}{
+			uniqIdFlag: "UniqId",
+			nameFlag:   "NonEmptyString",
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
+		}
+
 		apiArgs := map[string]interface{}{"name": nameFlag, "uniq_id": uniqIdFlag}
 
 		var details apiTypes.CloudImageCreateResponse
@@ -40,7 +49,7 @@ var cloudImageCreateCmd = &cobra.Command{
 		}
 
 		fmt.Printf("Creating image! %+v\n", details)
-		fmt.Printf("\tthe Cloud Image will not appear in 'cloud inventory image list' until complete\n")
+		fmt.Printf("\tthe Cloud Image will not appear in 'cloud image list' until complete\n")
 	},
 }
 

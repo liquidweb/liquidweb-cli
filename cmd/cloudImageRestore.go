@@ -21,6 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudImageRestoreCmd = &cobra.Command{
@@ -31,6 +32,14 @@ var cloudImageRestoreCmd = &cobra.Command{
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		rebuildFsFlag, _ := cmd.Flags().GetBool("rebuild-fs")
 		imageIdFlag, _ := cmd.Flags().GetInt64("image_id")
+
+		validateFields := map[interface{}]interface{}{
+			uniqIdFlag:  "UniqId",
+			imageIdFlag: "PositiveInt64",
+		}
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
+		}
 
 		apiArgs := map[string]interface{}{"id": imageIdFlag, "uniq_id": uniqIdFlag}
 		if rebuildFsFlag {
