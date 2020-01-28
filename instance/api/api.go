@@ -30,10 +30,9 @@ import (
 func New(viper *viper.Viper) (*LwCliApiClient, error) {
 	if err := viper.ReadInConfig(); err != nil {
 		strErr := strings.ToUpper(cast.ToString(err))
-		if strings.Contains(strErr, "CONFIG FILE") && strings.Contains(strErr, "NOT FOUND IN") {
-			err = nil // no present yet config is not fatal here
-		} else {
-			return &LwCliApiClient{}, fmt.Errorf("%w Raw error: %s", errorTypes.InvalidConfigSyntax, err)
+		// this is only considered an error if there is a config file
+		if !strings.Contains(strErr, "CONFIG FILE") && !strings.Contains(strErr, "NOT FOUND IN") {
+			return &LwCliApiClient{}, fmt.Errorf("%w Raw error: %s", errorTypes.InvalidConfigSyntax, strErr)
 		}
 	}
 
