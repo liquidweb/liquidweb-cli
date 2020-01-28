@@ -40,7 +40,7 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 		// if force flag wasn't passed
 		if !forceFlag {
 			// exit if user didn't consent
-			if proceed := dialoagDesctructiveConfirmProceed(); !proceed {
+			if proceed := dialogDesctructiveConfirmProceed(); !proceed {
 				os.Exit(0)
 			}
 		}

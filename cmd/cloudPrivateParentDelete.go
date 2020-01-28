@@ -40,7 +40,7 @@ as well as how many resources each Cloud Server gets.`,
 		// if force flag wasn't passed
 		if !forceFlag {
 			// exit if user didn't consent
-			if proceed := dialoagDesctructiveConfirmProceed(); !proceed {
+			if proceed := dialogDesctructiveConfirmProceed(); !proceed {
 				os.Exit(0)
 			}
 		}
