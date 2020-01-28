@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -30,6 +31,15 @@ var cloudStorageObjectDeleteCmd = &cobra.Command{
 	Long:  `Delete an Object Store`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		forceFlag, _ := cmd.Flags().GetBool("force")
+
+		// if force flag wasn't passed
+		if !forceFlag {
+			// exit if user didn't consent
+			if proceed := dialoagDesctructiveConfirmProceed(); !proceed {
+				os.Exit(0)
+			}
+		}
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -54,6 +64,7 @@ func init() {
 	cloudStorageObjectCmd.AddCommand(cloudStorageObjectDeleteCmd)
 	cloudStorageObjectDeleteCmd.Flags().String("uniq_id", "",
 		"uniq_id of object store to delete (see 'cloud storage object list')")
+	cloudStorageObjectDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
 	cloudStorageObjectDeleteCmd.MarkFlagRequired("uniq_id")
 }

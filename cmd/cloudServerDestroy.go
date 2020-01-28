@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -37,6 +38,15 @@ server.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		commentFlag, _ := cmd.Flags().GetString("comment")
 		reasonFlag, _ := cmd.Flags().GetString("reason")
+		forceFlag, _ := cmd.Flags().GetBool("force")
+
+		// if force flag wasn't passed
+		if !forceFlag {
+			// exit if user didn't consent
+			if proceed := dialoagDesctructiveConfirmProceed(); !proceed {
+				os.Exit(0)
+			}
+		}
 
 		for _, uniqId := range cloudServerDestroyCmdUniqIdFlag {
 
@@ -78,6 +88,7 @@ func init() {
 		"comment related to the cancellation")
 	cloudServerDestroyCmd.Flags().String("reason", "",
 		"reason for the cancellation (optional)")
+	cloudServerDestroyCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
 	cloudServerDestroyCmd.MarkFlagRequired("uniq_id")
 }
