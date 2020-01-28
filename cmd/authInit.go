@@ -29,6 +29,7 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/types/errors"
 	"github.com/liquidweb/liquidweb-cli/utils"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var authInitCmd = &cobra.Command{
@@ -249,6 +250,18 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 			context.Url = "https://api.liquidweb.com"
 			context.Timeout = 90
 			context.Insecure = false
+
+			validateFields := map[interface{}]interface{}{
+				context.Url:         "HttpsLiquidwebUrl",
+				context.Timeout:     "PositiveInt",
+				context.ContextName: "NonEmptyString",
+				context.Username:    "NonEmptyString",
+				context.Password:    "NonEmptyString",
+			}
+			if err := validate.Validate(validateFields); err != nil {
+				userInputError <- err
+				break WHILEMOREADDS
+			}
 
 			// send context over
 			userInputContext <- context
