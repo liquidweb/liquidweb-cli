@@ -47,7 +47,7 @@ func init() {
 	cloudImageCmd.AddCommand(cloudImageRenameCmd)
 
 	cloudImageRenameCmd.Flags().Int64("image_id", -1,
-		"id number of the image (see 'cloud inventory image list')")
+		"id number of the image (see 'cloud image list')")
 	cloudImageRenameCmd.Flags().String("name", "", "new name for the Cloud Image")
 
 	cloudImageRenameCmd.MarkFlagRequired("image_id")

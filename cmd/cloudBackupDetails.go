@@ -46,6 +46,6 @@ func init() {
 	cloudBackupCmd.AddCommand(cloudBackupDetailsCmd)
 
 	cloudBackupDetailsCmd.Flags().Int64("backup_id", -1,
-		"id number of the backup (see 'cloud inventory backup list')")
+		"id number of the backup (see 'cloud backup list')")
 	cloudBackupDetailsCmd.MarkFlagRequired("backup_id")
 }

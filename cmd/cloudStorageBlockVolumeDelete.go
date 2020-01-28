@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -34,6 +35,15 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		forceFlag, _ := cmd.Flags().GetBool("force")
+
+		// if force flag wasn't passed
+		if !forceFlag {
+			// exit if user didn't consent
+			if proceed := dialogDesctructiveConfirmProceed(); !proceed {
+				os.Exit(0)
+			}
+		}
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -57,6 +67,7 @@ func init() {
 	cloudStorageBlockVolumeCmd.AddCommand(cloudStorageBlockVolumeDeleteCmd)
 
 	cloudStorageBlockVolumeDeleteCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Block Storage volume")
+	cloudStorageBlockVolumeDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
 	cloudStorageBlockVolumeDeleteCmd.MarkFlagRequired("uniq_id")
 }

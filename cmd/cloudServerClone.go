@@ -150,7 +150,7 @@ func init() {
 
 	// Private Parent
 	cloudServerCloneCmd.Flags().String("private-parent", "",
-		"name or uniq_id of the Private Parent to place new Cloud Server on (see: 'cloud inventory private-parent list')")
+		"name or uniq_id of the Private Parent to place new Cloud Server on (see: 'cloud private-parent list')")
 	cloudServerCloneCmd.Flags().Int64("diskspace", -1, "diskspace for new Cloud Server (when private-parent)")
 	cloudServerCloneCmd.Flags().Int64("memory", -1, "memory for new Cloud Server (when private-parent)")
 	cloudServerCloneCmd.Flags().Int64("vcpu", -1, "amount of vcpus for new Cloud Server (when private-parent)")

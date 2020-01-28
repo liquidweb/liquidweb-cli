@@ -18,6 +18,7 @@ package validate
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -27,11 +28,12 @@ import (
 var ValidationFailure = errors.New("validation failed")
 
 type InputTypes struct {
-	UniqId         InputTypeUniqId
-	IP             InputTypeIP
-	PositiveInt64  InputTypePositiveInt64
-	PositiveInt    InputTypePositiveInt
-	NonEmptyString InputTypeNonEmptyString
+	UniqId            InputTypeUniqId
+	IP                InputTypeIP
+	PositiveInt64     InputTypePositiveInt64
+	PositiveInt       InputTypePositiveInt
+	NonEmptyString    InputTypeNonEmptyString
+	HttpsLiquidwebUrl InputTypeHttpsLiquidwebUrl
 }
 
 // UniqId
@@ -117,6 +119,28 @@ type InputTypeNonEmptyString struct {
 func (x InputTypeNonEmptyString) Validate() error {
 	if x.NonEmptyString == "" {
 		return fmt.Errorf("NonEmptyString cannot be empty")
+	}
+
+	return nil
+}
+
+// HttpsLiquidwebUrl
+
+type InputTypeHttpsLiquidwebUrl struct {
+	HttpsLiquidwebUrl string
+}
+
+func (x InputTypeHttpsLiquidwebUrl) Validate() error {
+	if !strings.HasPrefix(x.HttpsLiquidwebUrl, "https://") {
+		return fmt.Errorf("given url [%s] appears invalid; should start with 'https://'", x.HttpsLiquidwebUrl)
+	}
+
+	if !strings.Contains(x.HttpsLiquidwebUrl, "liquidweb.com") {
+		return fmt.Errorf("given url [%s] appears invalid; should contain 'liquidweb.com'", x.HttpsLiquidwebUrl)
+	}
+
+	if _, err := url.ParseRequestURI(x.HttpsLiquidwebUrl); err != nil {
+		return fmt.Errorf("given url [%s] appears invalid; %s", x.HttpsLiquidwebUrl, err)
 	}
 
 	return nil
