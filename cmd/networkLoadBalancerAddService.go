@@ -37,8 +37,8 @@ A service represents a service to load balance.`,
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag:   "UniqId",
-			srcPortFlag:  "PositiveInt",
-			destPortFlag: "PositiveInt",
+			srcPortFlag:  "NetworkPort",
+			destPortFlag: "NetworkPort",
 		}
 		if err := validate.Validate(validateFields); err != nil {
 			lwCliInst.Die(err)

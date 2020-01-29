@@ -145,6 +145,12 @@ func interfaceInputTypeValidate(iface, inputFieldValue interface{}) error {
 		if err := obj.Validate(); err != nil {
 			return err
 		}
+	case InputTypeNetworkPort:
+		var obj InputTypeNetworkPort
+		obj.NetworkPort = cast.ToInt(inputFieldValue)
+		if err := obj.Validate(); err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("bug: validation missing entry for %s", inputFieldValue)
 	}

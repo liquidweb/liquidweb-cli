@@ -39,6 +39,7 @@ type InputTypes struct {
 	LoadBalancerStrategy    InputTypeLoadBalancerStrategyString
 	HttpsLiquidwebUrl       InputTypeHttpsLiquidwebUrl
 	LoadBalancerServicePair InputTypeLoadBalancerServicePair
+	NetworkPort             InputTypeNetworkPort
 }
 
 // UniqId
@@ -204,10 +205,24 @@ func (x InputTypeLoadBalancerServicePair) Validate() error {
 				x.LoadBalancerServicePair)
 		}
 
-		portInt := cast.ToInt(portStr)
-		if portInt <= 0 || portInt > 65535 {
-			return fmt.Errorf("port [%d] is invalid; must be between 1 and 65535", portInt)
+		obj := InputTypeNetworkPort{NetworkPort: cast.ToInt(portStr)}
+		if err := obj.Validate(); err != nil {
+			return err
 		}
+	}
+
+	return nil
+}
+
+// NetworkPort
+
+type InputTypeNetworkPort struct {
+	NetworkPort int
+}
+
+func (x InputTypeNetworkPort) Validate() error {
+	if x.NetworkPort <= 0 || x.NetworkPort > 65535 {
+		return fmt.Errorf("NetworkPort [%d] is invalid; must be between 1 and 65535", x.NetworkPort)
 	}
 
 	return nil
