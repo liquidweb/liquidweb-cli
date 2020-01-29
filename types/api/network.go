@@ -216,3 +216,7 @@ func (x NetworkLoadBalancerPossibleNodes) String() string {
 
 	return strings.Join(slice[:], "")
 }
+
+type NetworkLoadBalancerDelete struct {
+	Deleted string `json:"deleted" mapstructure:"deleted"`
+}
