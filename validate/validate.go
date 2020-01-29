@@ -139,9 +139,9 @@ func interfaceInputTypeValidate(iface, inputFieldValue interface{}) error {
 		if err := obj.Validate(); err != nil {
 			return err
 		}
-	case InputTypeLoadBalancerServicePair:
-		var obj InputTypeLoadBalancerServicePair
-		obj.LoadBalancerServicePair = cast.ToString(inputFieldValue)
+	case InputTypeNetworkPortPair:
+		var obj InputTypeNetworkPortPair
+		obj.NetworkPortPair = cast.ToString(inputFieldValue)
 		if err := obj.Validate(); err != nil {
 			return err
 		}

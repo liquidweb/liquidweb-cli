@@ -146,7 +146,7 @@ var networkLoadBalancerUpdateCmd = &cobra.Command{
 			var servicesToBalance []map[string]int
 
 			for _, pair := range networkLoadBalancerUpdateServicesCmd {
-				err := validate.Validate(map[interface{}]interface{}{pair: "LoadBalancerServicePair"})
+				err := validate.Validate(map[interface{}]interface{}{pair: "NetworkPortPair"})
 				if err != nil {
 					lwCliInst.Die(err)
 				}

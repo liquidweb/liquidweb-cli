@@ -31,15 +31,15 @@ import (
 var ValidationFailure = errors.New("validation failed")
 
 type InputTypes struct {
-	UniqId                  InputTypeUniqId
-	IP                      InputTypeIP
-	PositiveInt64           InputTypePositiveInt64
-	PositiveInt             InputTypePositiveInt
-	NonEmptyString          InputTypeNonEmptyString
-	LoadBalancerStrategy    InputTypeLoadBalancerStrategyString
-	HttpsLiquidwebUrl       InputTypeHttpsLiquidwebUrl
-	LoadBalancerServicePair InputTypeLoadBalancerServicePair
-	NetworkPort             InputTypeNetworkPort
+	UniqId               InputTypeUniqId
+	IP                   InputTypeIP
+	PositiveInt64        InputTypePositiveInt64
+	PositiveInt          InputTypePositiveInt
+	NonEmptyString       InputTypeNonEmptyString
+	LoadBalancerStrategy InputTypeLoadBalancerStrategyString
+	HttpsLiquidwebUrl    InputTypeHttpsLiquidwebUrl
+	NetworkPortPair      InputTypeNetworkPortPair
+	NetworkPort          InputTypeNetworkPort
 }
 
 // UniqId
@@ -180,29 +180,29 @@ func (x InputTypeHttpsLiquidwebUrl) Validate() error {
 	return nil
 }
 
-// LoadBalancerServicePair
+// NetworkPortPair
 
-type InputTypeLoadBalancerServicePair struct {
-	LoadBalancerServicePair string
+type InputTypeNetworkPortPair struct {
+	NetworkPortPair string
 }
 
-func (x InputTypeLoadBalancerServicePair) Validate() error {
-	if !strings.Contains(x.LoadBalancerServicePair, ":") {
-		return fmt.Errorf("given LoadBalancerServicePair [%s] contains no ':' which is invalid",
-			x.LoadBalancerServicePair)
+func (x InputTypeNetworkPortPair) Validate() error {
+	if !strings.Contains(x.NetworkPortPair, ":") {
+		return fmt.Errorf("given NetworkPortPair [%s] contains no ':' which is invalid",
+			x.NetworkPortPair)
 	}
 
-	splitPair := strings.Split(x.LoadBalancerServicePair, ":")
+	splitPair := strings.Split(x.NetworkPortPair, ":")
 
 	if len(splitPair) != 2 {
 		return fmt.Errorf(
-			"A LoadBalancerServicePair must contain exactly one source/destination port pair")
+			"A NetworkPortPair must contain exactly one source/destination port pair")
 	}
 
 	for _, portStr := range splitPair {
 		if _, err := strconv.Atoi(portStr); err != nil {
 			return fmt.Errorf("port [%s] in port pair [%s] doesnt look numeric", portStr,
-				x.LoadBalancerServicePair)
+				x.NetworkPortPair)
 		}
 
 		obj := InputTypeNetworkPort{NetworkPort: cast.ToInt(portStr)}
