@@ -34,7 +34,7 @@ import (
 
 func New(viper *viper.Viper) (Client, error) {
 
-	lwApiClient, err := lwCliInstApi.New(viper)
+	lwCliApiClient, err := lwCliInstApi.New(viper)
 	if err != nil {
 		return Client{}, fmt.Errorf(
 			"Failed creating an lwApi client. Error was:\n%s\nPlease check your liquidweb-cli config file for errors or ommissions\n",
@@ -42,8 +42,8 @@ func New(viper *viper.Viper) (Client, error) {
 	}
 
 	client := Client{
-		LwApiClient: lwApiClient,
-		Viper:       viper,
+		LwCliApiClient: lwCliApiClient,
+		Viper:          viper,
 	}
 
 	return client, nil
@@ -119,7 +119,7 @@ func (client *Client) RemoveContext(context string) error {
 }
 
 func (client *Client) CallLwApiInto(method string, methodArgs map[string]interface{}, obj interface{}) (err error) {
-	got, err := client.LwApiClient.Call(method, methodArgs)
+	got, err := client.LwCliApiClient.Call(method, methodArgs)
 	if err != nil {
 		return
 	}
@@ -149,7 +149,7 @@ func (client *Client) AllPaginatedResults(args *AllPaginatedResultsArgs) (apiTyp
 		methodArgs["page_size"] = resultsPerPage
 	}
 
-	got, err := client.LwApiClient.Call(args.Method, methodArgs)
+	got, err := client.LwCliApiClient.Call(args.Method, methodArgs)
 	if err != nil {
 		return apiTypes.MergedPaginatedList{}, err
 	}
@@ -170,7 +170,7 @@ func (client *Client) AllPaginatedResults(args *AllPaginatedResultsArgs) (apiTyp
 
 		for morePages {
 			methodArgs["page_num"] = nextPage
-			got, err := client.LwApiClient.Call(args.Method, methodArgs)
+			got, err := client.LwCliApiClient.Call(args.Method, methodArgs)
 			if err != nil {
 				return apiTypes.MergedPaginatedList{}, err
 			}

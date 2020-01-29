@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -34,6 +35,15 @@ Parents you have total control of how many instances can live on the Private Par
 as well as how many resources each Cloud Server gets.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		nameFlag, _ := cmd.Flags().GetString("name")
+		forceFlag, _ := cmd.Flags().GetBool("force")
+
+		// if force flag wasn't passed
+		if !forceFlag {
+			// exit if user didn't consent
+			if proceed := dialogDesctructiveConfirmProceed(); !proceed {
+				os.Exit(0)
+			}
+		}
 
 		// if passed a private-parent flag, derive its uniq_id
 		var privateParentUniqId string
@@ -60,6 +70,7 @@ func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentDeleteCmd)
 
 	cloudPrivateParentDeleteCmd.Flags().String("name", "", "name or uniq_id of the Private Parent")
+	cloudPrivateParentDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
 	cloudPrivateParentDeleteCmd.MarkFlagRequired("name")
 }

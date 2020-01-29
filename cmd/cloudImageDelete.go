@@ -17,6 +17,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/spf13/cobra"
 
@@ -29,6 +30,15 @@ var cloudImageDeleteCmd = &cobra.Command{
 	Long:  `Delete a Cloud Image`,
 	Run: func(cmd *cobra.Command, args []string) {
 		imageIdFlag, _ := cmd.Flags().GetInt64("image_id")
+		forceFlag, _ := cmd.Flags().GetBool("force")
+
+		// if force flag wasn't passed
+		if !forceFlag {
+			// exit if user didn't consent
+			if proceed := dialogDesctructiveConfirmProceed(); !proceed {
+				os.Exit(0)
+			}
+		}
 
 		apiArgs := map[string]interface{}{"id": imageIdFlag}
 
@@ -46,6 +56,7 @@ func init() {
 	cloudImageCmd.AddCommand(cloudImageDeleteCmd)
 
 	cloudImageDeleteCmd.Flags().Int64("image_id", -1,
-		"id number of the image (see 'cloud inventory image list')")
+		"id number of the image (see 'cloud image list')")
+	cloudImageDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 	cloudImageDeleteCmd.MarkFlagRequired("image_id")
 }

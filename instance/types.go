@@ -18,12 +18,12 @@ package instance
 import (
 	"github.com/spf13/viper"
 
-	lwApi "github.com/liquidweb/go-lwApi"
+	lwCliInstApi "github.com/liquidweb/liquidweb-cli/instance/api"
 )
 
 type Client struct {
-	LwApiClient *lwApi.Client
-	Viper       *viper.Viper
+	LwCliApiClient *lwCliInstApi.LwCliApiClient
+	Viper          *viper.Viper
 }
 
 type AllPaginatedResultsArgs struct {

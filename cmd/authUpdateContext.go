@@ -17,12 +17,12 @@ package cmd
 
 import (
 	"fmt"
-	"strings"
 
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/cmd"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var authUpdateContextCmd = &cobra.Command{
@@ -59,29 +59,33 @@ If you've never setup any contexts, check "auth init".`,
 			lwCliInst.Die(err)
 		}
 
+		validateFields := map[interface{}]interface{}{}
+
 		if username != "" {
 			authContext.Username = username
+			validateFields[username] = "NonEmptyString"
 		}
 		if password != "" {
 			authContext.Password = password
+			validateFields[password] = "NonEmptyString"
 		}
 		if url != "" {
-			if !strings.HasPrefix(url, "https://") {
-				lwCliInst.Die(fmt.Errorf("given url [%s] appears invalid; should start with 'https://'", url))
-			}
 			authContext.Url = url
+			validateFields[url] = "HttpsLiquidwebUrl"
 		}
 		if timeout != -1 {
-			if timeout < 1 {
-				lwCliInst.Die(fmt.Errorf("given timeout [%d] appears invalid; its less than 1", timeout))
-			}
 			authContext.Timeout = timeout
+			validateFields[timeout] = "PositiveInt"
 		}
 		if setSecure {
 			authContext.Insecure = false
 		}
 		if setInsecure {
 			authContext.Insecure = true
+		}
+
+		if err := validate.Validate(validateFields); err != nil {
+			lwCliInst.Die(err)
 		}
 
 		lwCliInst.Viper.Set(fmt.Sprintf("liquidweb.api.contexts.%s", contextName), map[string]interface{}{

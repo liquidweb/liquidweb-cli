@@ -18,6 +18,7 @@ package validate
 import (
 	"errors"
 	"fmt"
+	"net/url"
 	"regexp"
 	"strings"
 
@@ -33,6 +34,7 @@ type InputTypes struct {
 	PositiveInt          InputTypePositiveInt
 	NonEmptyString       InputTypeNonEmptyString
 	LoadBalancerStrategy InputTypeLoadBalancerStrategyString
+	HttpsLiquidwebUrl    InputTypeHttpsLiquidwebUrl
 }
 
 // UniqId
@@ -143,6 +145,28 @@ func (x InputTypeLoadBalancerStrategyString) Validate() error {
 			slice = append(slice, fmt.Sprintf("%s ", strategy))
 		}
 		return fmt.Errorf("%s", strings.Join(slice[:], ""))
+	}
+
+	return nil
+}
+
+// HttpsLiquidwebUrl
+
+type InputTypeHttpsLiquidwebUrl struct {
+	HttpsLiquidwebUrl string
+}
+
+func (x InputTypeHttpsLiquidwebUrl) Validate() error {
+	if !strings.HasPrefix(x.HttpsLiquidwebUrl, "https://") {
+		return fmt.Errorf("given url [%s] appears invalid; should start with 'https://'", x.HttpsLiquidwebUrl)
+	}
+
+	if !strings.Contains(x.HttpsLiquidwebUrl, "liquidweb.com") {
+		return fmt.Errorf("given url [%s] appears invalid; should contain 'liquidweb.com'", x.HttpsLiquidwebUrl)
+	}
+
+	if _, err := url.ParseRequestURI(x.HttpsLiquidwebUrl); err != nil {
+		return fmt.Errorf("given url [%s] appears invalid; %s", x.HttpsLiquidwebUrl, err)
 	}
 
 	return nil

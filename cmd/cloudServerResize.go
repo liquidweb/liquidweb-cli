@@ -241,7 +241,7 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 			lwCliInst.Die(err)
 		}
 
-		_, err := lwCliInst.LwApiClient.Call("bleed/server/resize", resizeArgs)
+		_, err := lwCliInst.LwCliApiClient.Call("bleed/server/resize", resizeArgs)
 		if err != nil {
 			lwCliInst.Die(err)
 		}

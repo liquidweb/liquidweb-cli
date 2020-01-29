@@ -45,6 +45,9 @@ If you've never setup any contexts, check "auth init".`,
 			fmt.Printf("\tInsecure: %t\n", context.Insecure)
 			fmt.Printf("\tTimeout: %d\n", context.Timeout)
 		}
+
+		currentContext := lwCliInst.Viper.GetString("liquidweb.api.current_context")
+		fmt.Printf("Current context: [%s]\n", currentContext)
 	},
 }
 
