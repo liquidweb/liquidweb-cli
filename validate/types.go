@@ -20,7 +20,10 @@ import (
 	"fmt"
 	"net/url"
 	"regexp"
+	"strconv"
 	"strings"
+
+	"github.com/spf13/cast"
 
 	"github.com/liquidweb/liquidweb-cli/utils"
 )
@@ -28,13 +31,14 @@ import (
 var ValidationFailure = errors.New("validation failed")
 
 type InputTypes struct {
-	UniqId               InputTypeUniqId
-	IP                   InputTypeIP
-	PositiveInt64        InputTypePositiveInt64
-	PositiveInt          InputTypePositiveInt
-	NonEmptyString       InputTypeNonEmptyString
-	LoadBalancerStrategy InputTypeLoadBalancerStrategyString
-	HttpsLiquidwebUrl    InputTypeHttpsLiquidwebUrl
+	UniqId                  InputTypeUniqId
+	IP                      InputTypeIP
+	PositiveInt64           InputTypePositiveInt64
+	PositiveInt             InputTypePositiveInt
+	NonEmptyString          InputTypeNonEmptyString
+	LoadBalancerStrategy    InputTypeLoadBalancerStrategyString
+	HttpsLiquidwebUrl       InputTypeHttpsLiquidwebUrl
+	LoadBalancerServicePair InputTypeLoadBalancerServicePair
 }
 
 // UniqId
@@ -140,7 +144,8 @@ func (x InputTypeLoadBalancerStrategyString) Validate() error {
 
 	if _, exists := strategies[x.LoadBalancerStrategy]; !exists {
 		var slice []string
-		slice = append(slice, fmt.Sprintf("LoadBalancer strategy [%s] is invalid. Valid strategies: ", x.LoadBalancerStrategy))
+		slice = append(slice, fmt.Sprintf("LoadBalancer strategy [%s] is invalid. Valid strategies: ",
+			x.LoadBalancerStrategy))
 		for strategy, _ := range strategies {
 			slice = append(slice, fmt.Sprintf("%s ", strategy))
 		}
@@ -158,15 +163,51 @@ type InputTypeHttpsLiquidwebUrl struct {
 
 func (x InputTypeHttpsLiquidwebUrl) Validate() error {
 	if !strings.HasPrefix(x.HttpsLiquidwebUrl, "https://") {
-		return fmt.Errorf("given url [%s] appears invalid; should start with 'https://'", x.HttpsLiquidwebUrl)
+		return fmt.Errorf("given url [%s] appears invalid; should start with 'https://'",
+			x.HttpsLiquidwebUrl)
 	}
 
 	if !strings.Contains(x.HttpsLiquidwebUrl, "liquidweb.com") {
-		return fmt.Errorf("given url [%s] appears invalid; should contain 'liquidweb.com'", x.HttpsLiquidwebUrl)
+		return fmt.Errorf("given url [%s] appears invalid; should contain 'liquidweb.com'",
+			x.HttpsLiquidwebUrl)
 	}
 
 	if _, err := url.ParseRequestURI(x.HttpsLiquidwebUrl); err != nil {
 		return fmt.Errorf("given url [%s] appears invalid; %s", x.HttpsLiquidwebUrl, err)
+	}
+
+	return nil
+}
+
+// LoadBalancerServicePair
+
+type InputTypeLoadBalancerServicePair struct {
+	LoadBalancerServicePair string
+}
+
+func (x InputTypeLoadBalancerServicePair) Validate() error {
+	if !strings.Contains(x.LoadBalancerServicePair, ":") {
+		return fmt.Errorf("given LoadBalancerServicePair [%s] contains no ':' which is invalid",
+			x.LoadBalancerServicePair)
+	}
+
+	splitPair := strings.Split(x.LoadBalancerServicePair, ":")
+
+	if len(splitPair) != 2 {
+		return fmt.Errorf(
+			"A LoadBalancerServicePair must contain exactly one source/destination port pair")
+	}
+
+	for _, portStr := range splitPair {
+		if _, err := strconv.Atoi(portStr); err != nil {
+			return fmt.Errorf("port [%s] in port pair [%s] doesnt look numeric", portStr,
+				x.LoadBalancerServicePair)
+		}
+
+		portInt := cast.ToInt(portStr)
+		if portInt < 0 || portInt > 65535 {
+			return fmt.Errorf("port [%d] is invalid; must be between 0 and 65535", portInt)
+		}
 	}
 
 	return nil

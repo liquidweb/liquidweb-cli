@@ -139,6 +139,12 @@ func interfaceInputTypeValidate(iface, inputFieldValue interface{}) error {
 		if err := obj.Validate(); err != nil {
 			return err
 		}
+	case InputTypeLoadBalancerServicePair:
+		var obj InputTypeLoadBalancerServicePair
+		obj.LoadBalancerServicePair = cast.ToString(inputFieldValue)
+		if err := obj.Validate(); err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("bug: validation missing entry for %s", inputFieldValue)
 	}

@@ -118,7 +118,7 @@ type NetworkLoadBalancerDetails struct {
 type NetworkLoadBalancerDetailsNode struct {
 	Domain string `json:"domain" mapstructure:"domain"`
 	Ip     string `json:"ip" mapstructure:"ip"`
-	UniqId string `json:"uniq_id" mapstructure:"mapstructure"`
+	UniqId string `json:"uniq_id" mapstructure:"uniq_id"`
 }
 
 type NetworkLoadBalancerDetailsService struct {
@@ -198,7 +198,7 @@ type NetworkLoadBalancerPossibleNodes struct {
 
 type NetworkLoadBalancerPossibleNodesNode struct {
 	Domain   string `json:"domain" mapstructure:"domain"`
-	Ip       string `json:"domain" mapstructure:"domain"`
+	Ip       string `json:"ip" mapstructure:"ip"`
 	RegionId int64  `json:"region_id" mapstructure:"region_id"`
 	UniqId   string `json:"uniq_id" mapstructure:"uniq_id"`
 }

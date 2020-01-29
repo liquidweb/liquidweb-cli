@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"strings"
 
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
@@ -139,12 +140,28 @@ var networkLoadBalancerUpdateCmd = &cobra.Command{
 			}
 		}
 
-		// services TODO:  update its src:dest,src:dst form
+		// services
 		if len(networkLoadBalancerUpdateServicesCmd) > 0 {
-			apiArgs["nodes"] = networkLoadBalancerUpdateServicesCmd
-			for _, ip := range networkLoadBalancerUpdateServicesCmd {
-				validateFields[ip] = "IP"
+			// slice of maps with keys src_port, dest_port, with a value of its network port number.
+			var servicesToBalance []map[string]int
+
+			for _, pair := range networkLoadBalancerUpdateServicesCmd {
+				err := validate.Validate(map[interface{}]interface{}{pair: "LoadBalancerServicePair"})
+				if err != nil {
+					lwCliInst.Die(err)
+				}
+
+				splitPair := strings.Split(pair, ":")
+				srcPort := cast.ToInt(splitPair[0])
+				destPort := cast.ToInt(splitPair[1])
+
+				servicesToBalance = append(servicesToBalance, map[string]int{
+					"src_port":  srcPort,
+					"dest_port": destPort,
+				})
 			}
+
+			apiArgs["services"] = servicesToBalance
 		}
 
 		if len(apiArgs) == 1 {
