@@ -205,8 +205,8 @@ func (x InputTypeLoadBalancerServicePair) Validate() error {
 		}
 
 		portInt := cast.ToInt(portStr)
-		if portInt < 0 || portInt > 65535 {
-			return fmt.Errorf("port [%d] is invalid; must be between 0 and 65535", portInt)
+		if portInt <= 0 || portInt > 65535 {
+			return fmt.Errorf("port [%d] is invalid; must be between 1 and 65535", portInt)
 		}
 	}
 
