@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
 source scripts/build/.variables
+set -e
 CGO_ENABLED=0 go build -x -ldflags '-w -extldflags "-static"' --ldflags "${LDFLAGS}" -o _exe/liquidweb-cli github.com/liquidweb/liquidweb-cli
 exit 0

@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 source scripts/build/.variables
+set -e
 go install -x --ldflags "${LDFLAGS}"
 echo ""
 echo "liquidweb-cli has been installed, and it should now be in your PATH."
