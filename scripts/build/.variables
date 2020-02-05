@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+unset LDFLAGS
+
+GITCOMMIT=$(git rev-parse --short HEAD 2> /dev/null)
+BUILDTIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+latest_tag=$(git describe --abbrev=0 --tags)
+gitcommit_match_tag=$(git describe --exact-match ${GITCOMMIT})
+
+if [[ "${gitcommit_match_tag}" == "${latest_tag}" ]]; then
+    # building on official tag
+    VERSION=${latest_tag}
+else
+    # -dirty because its a dev build, not on a official tag.
+    VERSION="${latest_tag}-dirty"
+fi
+
+export LDFLAGS="\
+    -w \
+    -X \"github.com/liquidweb/liquidweb-cli/cmd.GitCommit=${GITCOMMIT}\" \
+    -X \"github.com/liquidweb/liquidweb-cli/cmd.BuildTime=${BUILDTIME}\" \
+    -X \"github.com/liquidweb/liquidweb-cli/cmd.Version=${VERSION}\" \
+    ${LDFLAGS:-} \
+"
