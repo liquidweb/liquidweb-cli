@@ -122,21 +122,21 @@ type NetworkLoadBalancerDetailsNode struct {
 }
 
 type NetworkLoadBalancerDetailsService struct {
-	DestPort     int64                                          `json:"dest_port" mapstructure:"dest_port"`
-	Protocol     string                                         `json:"protocol" mapstructure:"protocol"`
-	SrcPort      int64                                          `json:"src_port" mapstructure:"src_port"`
-	HealthChecks []NetworkLoadBalancerDetailsServiceHealthCheck `json:"health_check" mapstructure:"health_check"`
+	DestPort    int64                                        `json:"dest_port" mapstructure:"dest_port"`
+	Protocol    string                                       `json:"protocol" mapstructure:"protocol"`
+	SrcPort     int64                                        `json:"src_port" mapstructure:"src_port"`
+	HealthCheck NetworkLoadBalancerDetailsServiceHealthCheck `json:"health_check" mapstructure:"health_check"`
 }
 
 type NetworkLoadBalancerDetailsServiceHealthCheck struct {
-	FailureThreshold  int64   `json:"failure_threshold" mapstructure:"failure_threshold"`
-	HttpBodyMatch     string  `json:"http_body_match" mapstructure:"http_body_match"`
-	HttpPath          string  `json:"http_path" mapstructure:"http_path"`
-	HttpResponseCodes []int64 `json:"http_response_codes" mapstructure:"http_response_codes"`
-	HttpUseTls        bool    `json:"http_use_tls" mapstructure:"http_use_tls"`
-	Interval          int64   `json:"interval" mapstructure:"interval"`
-	Protocol          string  `json:"protocol" mapstructure:"protocol"`
-	Timeout           int64   `json:"timeout" mapstructure:"timeout"`
+	FailureThreshold  int64  `json:"failure_threshold" mapstructure:"failure_threshold"`
+	HttpBodyMatch     string `json:"http_body_match" mapstructure:"http_body_match"`
+	HttpPath          string `json:"http_path" mapstructure:"http_path"`
+	HttpResponseCodes string `json:"http_response_codes" mapstructure:"http_response_codes"`
+	HttpUseTls        bool   `json:"http_use_tls" mapstructure:"http_use_tls"`
+	Interval          int64  `json:"interval" mapstructure:"interval"`
+	Protocol          string `json:"protocol" mapstructure:"protocol"`
+	Timeout           int64  `json:"timeout" mapstructure:"timeout"`
 }
 
 func (x NetworkLoadBalancerDetails) String() string {
@@ -163,7 +163,17 @@ func (x NetworkLoadBalancerDetails) String() string {
 		slice = append(slice, fmt.Sprintf("\t\t\tProtocol: %s\n", service.Protocol))
 		slice = append(slice, fmt.Sprintf("\t\t\tSource Port: %d\n", service.SrcPort))
 		slice = append(slice, fmt.Sprintf("\t\t\tDestination Port: %d\n", service.DestPort))
-		slice = append(slice, fmt.Sprintf("\t\t\tHealth Checks: %+v\n", service.HealthChecks))
+		if service.HealthCheck.Protocol != "" {
+			slice = append(slice, "\t\t\tHealth Check:\n")
+			slice = append(slice, fmt.Sprintf("\t\t\t\tProtocol: %s\n", service.HealthCheck.Protocol))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tTimeout: %d\n", service.HealthCheck.Timeout))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tInterval: %d\n", service.HealthCheck.Interval))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tHttpUseTls: %t\n", service.HealthCheck.HttpUseTls))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tHttpResponseCodes: %s\n", service.HealthCheck.HttpResponseCodes))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tHttpPath: %s\n", service.HealthCheck.HttpPath))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tHttpBodyMatch: %s\n", service.HealthCheck.HttpBodyMatch))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tFailureThreshold: %d\n", service.HealthCheck.FailureThreshold))
+		}
 	}
 
 	return strings.Join(slice[:], "")

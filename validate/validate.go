@@ -151,6 +151,18 @@ func interfaceInputTypeValidate(iface, inputFieldValue interface{}) error {
 		if err := obj.Validate(); err != nil {
 			return err
 		}
+	case InputTypeLoadBalancerHealthCheckProtocol:
+		var obj InputTypeLoadBalancerHealthCheckProtocol
+		obj.LoadBalancerHealthCheckProtocol = cast.ToString(inputFieldValue)
+		if err := obj.Validate(); err != nil {
+			return err
+		}
+	case InputTypeLoadBalancerHttpCodeRange:
+		var obj InputTypeLoadBalancerHttpCodeRange
+		obj.LoadBalancerHttpCodeRange = cast.ToString(inputFieldValue)
+		if err := obj.Validate(); err != nil {
+			return err
+		}
 	default:
 		return fmt.Errorf("bug: validation missing entry for %s", inputFieldValue)
 	}

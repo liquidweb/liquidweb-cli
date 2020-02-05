@@ -24,16 +24,23 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var networkLoadBalancerCreateNodesCmd []string
 var networkLoadBalancerCreateServicesCmd []string
+var healthChecksMapCreate map[string]string
 
 var networkLoadBalancerCreateCmd = &cobra.Command{
 	Use:   "create",
 	Short: "Create a Load Balancer",
-	Long:  `Create a Load Balancer`,
+	Long: fmt.Sprintf(`Create a Load Balancer
+
+A Load Balancer allows you to distribute traffic to multiple endpoints.
+
+%s
+`, networkLoadBalancerServicesHealthChecksHelp),
 	Run: func(cmd *cobra.Command, args []string) {
 		nameFlag, _ := cmd.Flags().GetString("name")
 		strategyFlag, _ := cmd.Flags().GetString("strategy")
@@ -141,7 +148,12 @@ var networkLoadBalancerCreateCmd = &cobra.Command{
 			lwCliInst.Die(fmt.Errorf("--services must have source/destination port pairs (see 'help network load-balancer create')"))
 		}
 		// slice of maps with keys src_port, dest_port, with a value of its network port number.
-		var servicesToBalance []map[string]int
+		var servicesToBalance []map[string]interface{}
+		// a service is permitted to have one health check
+		healthChecks, err := cmdTypes.LoadBalancerHealthCheck{HealthCheck: healthChecksMapCreate}.Transform()
+		if err != nil {
+			lwCliInst.Die(err)
+		}
 
 		for _, pair := range networkLoadBalancerCreateServicesCmd {
 			err := validate.Validate(map[interface{}]interface{}{pair: "NetworkPortPair"})
@@ -153,10 +165,17 @@ var networkLoadBalancerCreateCmd = &cobra.Command{
 			srcPort := cast.ToInt(splitPair[0])
 			destPort := cast.ToInt(splitPair[1])
 
-			servicesToBalance = append(servicesToBalance, map[string]int{
+			serviceToBalance := map[string]interface{}{
 				"src_port":  srcPort,
 				"dest_port": destPort,
-			})
+			}
+
+			// if a health check exists for this service set it
+			if _, exists := healthChecks[splitPair[0]]; exists {
+				serviceToBalance["health_check"] = healthChecks[splitPair[0]]
+			}
+
+			servicesToBalance = append(servicesToBalance, serviceToBalance)
 		}
 
 		apiArgs["services"] = servicesToBalance
@@ -195,6 +214,9 @@ func init() {
 
 	networkLoadBalancerCreateCmd.Flags().StringSliceVar(&networkLoadBalancerCreateServicesCmd, "services",
 		[]string{}, "source/destination port pairs (such as 80:80) separated by ',' to balance via the Load Balancer")
+
+	networkLoadBalancerCreateCmd.Flags().StringToStringVar(&healthChecksMapCreate, "health-check", nil,
+		"Health check defintions for the service matching src_port")
 
 	networkLoadBalancerCreateCmd.MarkFlagRequired("name")
 	networkLoadBalancerCreateCmd.MarkFlagRequired("services")

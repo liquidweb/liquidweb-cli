@@ -31,15 +31,17 @@ import (
 var ValidationFailure = errors.New("validation failed")
 
 type InputTypes struct {
-	UniqId               InputTypeUniqId
-	IP                   InputTypeIP
-	PositiveInt64        InputTypePositiveInt64
-	PositiveInt          InputTypePositiveInt
-	NonEmptyString       InputTypeNonEmptyString
-	LoadBalancerStrategy InputTypeLoadBalancerStrategyString
-	HttpsLiquidwebUrl    InputTypeHttpsLiquidwebUrl
-	NetworkPortPair      InputTypeNetworkPortPair
-	NetworkPort          InputTypeNetworkPort
+	UniqId                          InputTypeUniqId
+	IP                              InputTypeIP
+	PositiveInt64                   InputTypePositiveInt64
+	PositiveInt                     InputTypePositiveInt
+	NonEmptyString                  InputTypeNonEmptyString
+	LoadBalancerStrategy            InputTypeLoadBalancerStrategyString
+	HttpsLiquidwebUrl               InputTypeHttpsLiquidwebUrl
+	NetworkPortPair                 InputTypeNetworkPortPair
+	NetworkPort                     InputTypeNetworkPort
+	LoadBalancerHttpCodeRange       InputTypeLoadBalancerHttpCodeRange
+	LoadBalancerHealthCheckProtocol InputTypeLoadBalancerHealthCheckProtocol
 }
 
 // UniqId
@@ -223,6 +225,65 @@ type InputTypeNetworkPort struct {
 func (x InputTypeNetworkPort) Validate() error {
 	if x.NetworkPort <= 0 || x.NetworkPort > 65535 {
 		return fmt.Errorf("NetworkPort [%d] is invalid; must be between 1 and 65535", x.NetworkPort)
+	}
+
+	return nil
+}
+
+// LoadBalancerHealthCheckProtocol
+
+type InputTypeLoadBalancerHealthCheckProtocol struct {
+	LoadBalancerHealthCheckProtocol string
+}
+
+func (x InputTypeLoadBalancerHealthCheckProtocol) Validate() error {
+	if x.LoadBalancerHealthCheckProtocol != "tcp" && x.LoadBalancerHealthCheckProtocol != "http" {
+		return fmt.Errorf("A LoadBalancerHealthCheckProtocol must be one of [http, tcp]")
+	}
+
+	return nil
+}
+
+// LoadBalancerHttpCodeRange
+
+type InputTypeLoadBalancerHttpCodeRange struct {
+	LoadBalancerHttpCodeRange string
+}
+
+func (x InputTypeLoadBalancerHttpCodeRange) Validate() error {
+	if x.LoadBalancerHttpCodeRange == "" {
+		return fmt.Errorf("A LoadBalancerHttpCodeRange cannot be blank")
+	}
+
+	// format example: 200,201,400-404,205
+	codes := strings.Split(x.LoadBalancerHttpCodeRange, ",")
+	for _, code := range codes {
+		var eachCode []string
+		if strings.Contains(code, "-") {
+			splitCodes := strings.Split(code, "-")
+			if len(splitCodes) != 2 {
+				return fmt.Errorf("a LoadBalancerHttpCodeRange with '-' for ranges must be in form '200-202' for example")
+			}
+			eachCode = append(eachCode, splitCodes[0])
+			eachCode = append(eachCode, splitCodes[1])
+		} else {
+			eachCode = append(eachCode, code)
+		}
+
+		for _, code := range eachCode {
+			if _, err := strconv.Atoi(code); err != nil {
+				return fmt.Errorf("http code [%s] in [%s] doesnt look numeric", code, x.LoadBalancerHttpCodeRange)
+			}
+
+			reg, err := regexp.Compile(`^\d\d\d$`)
+			if err != nil {
+				return err
+			}
+			matched := reg.MatchString(code)
+			if !matched {
+				return fmt.Errorf("http code [%s] must be a three digit number", code)
+			}
+		}
 	}
 
 	return nil

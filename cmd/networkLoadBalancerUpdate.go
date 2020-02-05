@@ -24,16 +24,51 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var networkLoadBalancerUpdateNodesCmd []string
 var networkLoadBalancerUpdateServicesCmd []string
+var healthChecksMapUpdate map[string]string
+var networkLoadBalancerServicesHealthChecksHelp = `--services flag values are ',' delimited. Each value should be in format:
+
+  'sourcePort:destinationPort',
+
+such as '80:80,443:443'.
+
+--health-check flag values represent custom health check paramaters for a service on a Load Balancer. Valid health check parameters:
+
+  failure_threshold -> int // permissible failures before node is taken out of services pool (default 3)
+  http_body_match -> string // when protocol is http, the string to look for in the http body to determine if health is ok (default unset)
+  http_path -> string // when protocol is http, the http path to hit when performing a health check (default /)
+  http_response_codes -> string // when protocol is http, http response codes to consider "success" when performing a health check (default 200-206:300-304)
+  http_use_tls -> "bool" // when protocol is http, uses https when "true" for health check (default false)
+  interval -> int // time duration between health checks (default 30)
+  protocol -> string // *Required (valid values: tcp, http)
+  timeout -> int // timeout value for the health check probe (default 5)
+
+For example, to set these values for the service with source port 443, the flag could look like this:
+
+  --health-check 443_failure_threshold=12,443_http_body_match=hello,443_http_path=/status,443_http_response_codes=200:201:202,443_http_use_tls=true,443_interval=10,443_protocol=tcp,443_timeout=99
+
+Notice the leading '443_' before the parameter name. To create a health check for service 80 as well, follow the same pattern, but
+replacing '443_' with '80_'.`
 
 var networkLoadBalancerUpdateCmd = &cobra.Command{
 	Use:   "update",
 	Short: "Change configuration of an existing Load Balancer",
-	Long:  `Change configuration of an existing Load Balancer`,
+	Long: fmt.Sprintf(`Change configuration of an existing Load Balancer
+
+A Load Balancer allows you to distribute traffic to multiple endpoints.
+
+%s
+
+To remove a health check from a service, simply call update for the service(s) omitting their --health-check entries. For example,
+this would remove any set health checks for services 443:443,80:80 (as well as remove any other services entirely):
+
+network load-balancer update --uniq_id ABC123 --services 443:443,80:80
+`, networkLoadBalancerServicesHealthChecksHelp),
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		nameFlag, _ := cmd.Flags().GetString("name")
@@ -142,8 +177,12 @@ var networkLoadBalancerUpdateCmd = &cobra.Command{
 
 		// services
 		if len(networkLoadBalancerUpdateServicesCmd) > 0 {
-			// slice of maps with keys src_port, dest_port, with a value of its network port number.
-			var servicesToBalance []map[string]int
+			var servicesToBalance []map[string]interface{}
+			// a service is permitted to have one health check
+			healthChecks, err := cmdTypes.LoadBalancerHealthCheck{HealthCheck: healthChecksMapUpdate}.Transform()
+			if err != nil {
+				lwCliInst.Die(err)
+			}
 
 			for _, pair := range networkLoadBalancerUpdateServicesCmd {
 				err := validate.Validate(map[interface{}]interface{}{pair: "NetworkPortPair"})
@@ -155,10 +194,17 @@ var networkLoadBalancerUpdateCmd = &cobra.Command{
 				srcPort := cast.ToInt(splitPair[0])
 				destPort := cast.ToInt(splitPair[1])
 
-				servicesToBalance = append(servicesToBalance, map[string]int{
+				serviceToBalance := map[string]interface{}{
 					"src_port":  srcPort,
 					"dest_port": destPort,
-				})
+				}
+
+				// if a health check exists for this service set it
+				if _, exists := healthChecks[splitPair[0]]; exists {
+					serviceToBalance["health_check"] = healthChecks[splitPair[0]]
+				}
+
+				servicesToBalance = append(servicesToBalance, serviceToBalance)
 			}
 
 			apiArgs["services"] = servicesToBalance
@@ -202,6 +248,9 @@ func init() {
 
 	networkLoadBalancerUpdateCmd.Flags().StringSliceVar(&networkLoadBalancerUpdateServicesCmd, "services",
 		[]string{}, "source/destination port pairs (such as 80:80) separated by ',' to balance via the Load Balancer")
+
+	networkLoadBalancerUpdateCmd.Flags().StringToStringVar(&healthChecksMapUpdate, "health-check", nil,
+		"Health check defintions for the service matching source port")
 
 	networkLoadBalancerUpdateCmd.MarkFlagRequired("uniq_id")
 }
