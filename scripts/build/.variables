@@ -6,7 +6,7 @@ GITCOMMIT=$(git rev-parse --short HEAD 2> /dev/null)
 BUILDTIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
 
 latest_tag=$(git describe --abbrev=0 --tags)
-gitcommit_match_tag=$(git describe --exact-match ${GITCOMMIT})
+gitcommit_match_tag=$(git describe --exact-match ${GITCOMMIT} 2> /dev/null)
 
 if [[ "${gitcommit_match_tag}" == "${latest_tag}" ]]; then
     # building on official tag
