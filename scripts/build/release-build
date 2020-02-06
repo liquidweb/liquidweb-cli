@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+source scripts/build/.variables
+set -e
+VERSION=${VERSION} GITCOMMIT=${GITCOMMIT} BUILDTIME=${BUILDTIME} goreleaser --snapshot --skip-publish --rm-dist
+exit 0

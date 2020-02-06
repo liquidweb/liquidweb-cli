@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+source scripts/build/.variables
+set -e
+go build -x --ldflags "${LDFLAGS}" -o _exe/liquidweb-cli github.com/liquidweb/liquidweb-cli
+exit 0
