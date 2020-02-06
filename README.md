@@ -26,6 +26,7 @@ Available Commands:
   cloud       Interact with LiquidWeb's Cloud platform.
   help        Help about any command
   network     network actions
+  version     show build information
 
 Flags:
       --config string   config file (default is $HOME/.liquidweb-cli.yaml)
