@@ -16,8 +16,11 @@ limitations under the License.
 package apiTypes
 
 import (
+	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 type NetworkIpPoolListEntry struct {
@@ -129,14 +132,61 @@ type NetworkLoadBalancerDetailsService struct {
 }
 
 type NetworkLoadBalancerDetailsServiceHealthCheck struct {
-	FailureThreshold  int64  `json:"failure_threshold" mapstructure:"failure_threshold"`
-	HttpBodyMatch     string `json:"http_body_match" mapstructure:"http_body_match"`
-	HttpPath          string `json:"http_path" mapstructure:"http_path"`
-	HttpResponseCodes string `json:"http_response_codes" mapstructure:"http_response_codes"`
-	HttpUseTls        bool   `json:"http_use_tls" mapstructure:"http_use_tls"`
-	Interval          int64  `json:"interval" mapstructure:"interval"`
-	Protocol          string `json:"protocol" mapstructure:"protocol"`
-	Timeout           int64  `json:"timeout" mapstructure:"timeout"`
+	FailureThreshold  int64  `json:"failure_threshold" mapstructure:"failure_threshold" yaml:"failure_threshold"`
+	HttpBodyMatch     string `json:"http_body_match" mapstructure:"http_body_match" yaml:"http_body_match"`
+	HttpPath          string `json:"http_path" mapstructure:"http_path" yaml:"http_path"`
+	HttpResponseCodes string `json:"http_response_codes" mapstructure:"http_response_codes" yaml:"http_response_codes"`
+	HttpUseTls        bool   `json:"http_use_tls" mapstructure:"http_use_tls" yaml:"http_use_tls"`
+	Interval          int64  `json:"interval" mapstructure:"interval" yaml:"interval"`
+	Protocol          string `json:"protocol" mapstructure:"protocol" yaml:"protocol"`
+	Timeout           int64  `json:"timeout" mapstructure:"timeout" yaml:"timeout"`
+}
+
+func (x NetworkLoadBalancerDetailsServiceHealthCheck) Validate() error {
+	// protocol is required
+	if x.Protocol == "" {
+		return errors.New("protocol is required and was not given")
+	}
+
+	// place defaults for http_path, http_use_tls, http_response_codes if protocol == "http" if unset.
+	if x.Protocol != "http" {
+		// when protocol isn't http, these shouldn't be set.
+		if x.HttpPath != "" {
+			return errors.New("http_path cannot be set when protocol isn't http")
+		}
+		if x.HttpResponseCodes != "" {
+			return errors.New("http_response_codes cannot be set when protocol isn't http")
+		}
+		if x.HttpUseTls {
+			return errors.New("http_use_tls cannot be set when protocol isn't http")
+		}
+		if x.HttpBodyMatch != "" {
+			return errors.New("http_body_match cannot be set when protocol isn't http")
+		}
+	}
+
+	validateFields := map[interface{}]interface{}{
+		x.Protocol: "LoadBalancerHealthCheckProtocol",
+	}
+
+	if x.HttpResponseCodes != "" {
+		validateFields[x.HttpResponseCodes] = "LoadBalancerHttpCodeRange"
+	}
+	if x.Timeout != 0 {
+		validateFields[x.Timeout] = "PositiveInt64"
+	}
+	if x.Interval != 0 {
+		validateFields[x.Interval] = "PositiveInt64"
+	}
+	if x.FailureThreshold != 0 {
+		validateFields[x.FailureThreshold] = "PositiveInt64"
+	}
+
+	if validateErr := validate.Validate(validateFields); validateErr != nil {
+		return fmt.Errorf("healthCheck validation failed: %s", validateErr)
+	}
+
+	return nil
 }
 
 func (x NetworkLoadBalancerDetails) String() string {

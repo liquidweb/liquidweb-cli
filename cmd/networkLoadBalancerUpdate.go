@@ -22,7 +22,9 @@ import (
 
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
+	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/validate"
@@ -50,10 +52,33 @@ such as '80:80,443:443'.
 
 For example, to set these values for the service with source port 443, the flag could look like this:
 
-  --health-check 443_failure_threshold=12,443_http_body_match=hello,443_http_path=/status,443_http_response_codes=200:201:202,443_http_use_tls=true,443_interval=10,443_protocol=tcp,443_timeout=99
+  --health-check 443_failure_threshold=12,443_http_body_match=hello,443_http_path=/status,443_http_response_codes=200:201:202,443_http_use_tls=true,443_interval=10,443_protocol=http,443_timeout=99
 
 Notice the leading '443_' before the parameter name. To create a health check for service 80 as well, follow the same pattern, but
 replacing '443_' with '80_'.`
+var networkLoadBalancerServicesHealthCheckFileHelp = `--health-check-file value should be the path to a yaml file containing the health check(s) to apply for each service(s). Here is
+an example of how that file should look:
+
+443:
+  protocol: http
+  timeout: 5
+  interval: 10
+  http_use_tls: true
+  http_response_codes: 200-202,404
+  http_path: /status-443
+  http_body_match:
+  failure_threshold: 3
+80:
+  protocol: http
+  timeout: 10
+  interval: 20
+  http_use_tls: false
+  http_response_codes: 200-202,404
+  http_path: /status-80
+  http_body_match:
+  failure_threshold: 3
+
+It is an error to provide both --health-check and --health-check-file flags.`
 
 var networkLoadBalancerUpdateCmd = &cobra.Command{
 	Use:   "update",
@@ -64,11 +89,15 @@ A Load Balancer allows you to distribute traffic to multiple endpoints.
 
 %s
 
+%s
+
 To remove a health check from a service, simply call update for the service(s) omitting their --health-check entries. For example,
 this would remove any set health checks for services 443:443,80:80 (as well as remove any other services entirely):
 
 network load-balancer update --uniq_id ABC123 --services 443:443,80:80
-`, networkLoadBalancerServicesHealthChecksHelp),
+
+Similarly to remove a health check when using --health-check-file, simply remove the health check from the file.
+`, networkLoadBalancerServicesHealthChecksHelp, networkLoadBalancerServicesHealthCheckFileHelp),
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		nameFlag, _ := cmd.Flags().GetString("name")
@@ -80,6 +109,7 @@ network load-balancer update --uniq_id ABC123 --services 443:443,80:80
 		sslIntermediateCertFlag, _ := cmd.Flags().GetString("ssl-intermediate-certificate")
 		enableSslIncludesFlag, _ := cmd.Flags().GetBool("enable-ssl-includes")
 		disableSslIncludesFlag, _ := cmd.Flags().GetBool("disable-ssl-includes")
+		healthCheckFileFlag, _ := cmd.Flags().GetString("health-check-file")
 
 		if enableSslTerminationFlag && disableSslTerminationFlag {
 			lwCliInst.Die(fmt.Errorf("can't both enable and disable ssl termination"))
@@ -96,6 +126,9 @@ network load-balancer update --uniq_id ABC123 --services 443:443,80:80
 			if !enableSslTerminationFlag {
 				lwCliInst.Die(fmt.Errorf("when using --ssl-certificate or --ssl-private-key --enable-ssl-termination must be passed"))
 			}
+		}
+		if len(healthChecksMapUpdate) > 0 && healthCheckFileFlag != "" {
+			lwCliInst.Die(fmt.Errorf("cannot pass conflicting flags --health-check and --health-check-file"))
 		}
 
 		validateFields := map[interface{}]interface{}{
@@ -178,12 +211,42 @@ network load-balancer update --uniq_id ABC123 --services 443:443,80:80
 		// services
 		if len(networkLoadBalancerUpdateServicesCmd) > 0 {
 			var servicesToBalance []map[string]interface{}
-			// a service is permitted to have one health check
-			healthChecks, err := cmdTypes.LoadBalancerHealthCheck{HealthCheck: healthChecksMapUpdate}.Transform()
-			if err != nil {
-				lwCliInst.Die(err)
+			// a service is permitted to have one health check.
+
+			var healthChecks map[string]map[string]interface{}
+
+			// health check, command line flags.
+			if len(healthChecksMapUpdate) > 0 {
+				healthChecksFromCmdLine, err := cmdTypes.LoadBalancerHealthCheckCmdLine{HealthCheck: healthChecksMapUpdate}.Transform()
+				if err != nil {
+					lwCliInst.Die(err)
+				}
+				healthChecks = healthChecksFromCmdLine
+			} else if healthCheckFileFlag != "" {
+				// health check, yaml file
+				contents, err := ioutil.ReadFile(healthCheckFileFlag)
+				if err != nil {
+					lwCliInst.Die(fmt.Errorf("error reading given --health-check-file [%s]: %s", healthCheckFileFlag, err))
+				}
+				if err = yaml.Unmarshal(contents, &healthChecks); err != nil {
+					lwCliInst.Die(fmt.Errorf("error yaml decoding [%s] (see help for an example of the file); %s", healthCheckFileFlag, err))
+				}
 			}
 
+			// validate
+			for _, healthCheck := range healthChecks {
+				var obj apiTypes.NetworkLoadBalancerDetailsServiceHealthCheck
+				if err := instance.CastFieldTypes(healthCheck, &obj); err != nil {
+					lwCliInst.Die(fmt.Errorf(
+						"failed casting --health-check-file [%s] to expected structure (see help for an example of the file): %s",
+						healthCheckFileFlag, err))
+				}
+				if err := obj.Validate(); err != nil {
+					lwCliInst.Die(err)
+				}
+			}
+
+			// build services api argument
 			for _, pair := range networkLoadBalancerUpdateServicesCmd {
 				err := validate.Validate(map[interface{}]interface{}{pair: "NetworkPortPair"})
 				if err != nil {
@@ -206,7 +269,6 @@ network load-balancer update --uniq_id ABC123 --services 443:443,80:80
 
 				servicesToBalance = append(servicesToBalance, serviceToBalance)
 			}
-
 			apiArgs["services"] = servicesToBalance
 		}
 
@@ -250,7 +312,10 @@ func init() {
 		[]string{}, "source/destination port pairs (such as 80:80) separated by ',' to balance via the Load Balancer")
 
 	networkLoadBalancerUpdateCmd.Flags().StringToStringVar(&healthChecksMapUpdate, "health-check", nil,
-		"Health check defintions for the service matching source port")
+		"Health check defintions for the service matching source port. Should not be combined with --health-check.")
+
+	networkLoadBalancerUpdateCmd.Flags().String("health-check-file", "",
+		"A file containing valid yaml describing the LoadBalancer health checks to add for the service(s). Should not be combined with --health-check.")
 
 	networkLoadBalancerUpdateCmd.MarkFlagRequired("uniq_id")
 }

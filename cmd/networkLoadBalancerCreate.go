@@ -22,7 +22,9 @@ import (
 
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
+	"gopkg.in/yaml.v2"
 
+	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/validate"
@@ -40,7 +42,9 @@ var networkLoadBalancerCreateCmd = &cobra.Command{
 A Load Balancer allows you to distribute traffic to multiple endpoints.
 
 %s
-`, networkLoadBalancerServicesHealthChecksHelp),
+
+%s
+`, networkLoadBalancerServicesHealthChecksHelp, networkLoadBalancerServicesHealthCheckFileHelp),
 	Run: func(cmd *cobra.Command, args []string) {
 		nameFlag, _ := cmd.Flags().GetString("name")
 		strategyFlag, _ := cmd.Flags().GetString("strategy")
@@ -52,6 +56,7 @@ A Load Balancer allows you to distribute traffic to multiple endpoints.
 		enableSslIncludesFlag, _ := cmd.Flags().GetBool("enable-ssl-includes")
 		disableSslIncludesFlag, _ := cmd.Flags().GetBool("disable-ssl-includes")
 		regionFlag, _ := cmd.Flags().GetInt("region")
+		healthCheckFileFlag, _ := cmd.Flags().GetString("health-check-file")
 
 		if enableSslTerminationFlag && disableSslTerminationFlag {
 			lwCliInst.Die(fmt.Errorf("can't both enable and disable ssl termination"))
@@ -68,6 +73,9 @@ A Load Balancer allows you to distribute traffic to multiple endpoints.
 			if !enableSslTerminationFlag {
 				lwCliInst.Die(fmt.Errorf("when using --ssl-certificate or --ssl-private-key --enable-ssl-termination must be passed"))
 			}
+		}
+		if len(healthChecksMapCreate) > 0 && healthCheckFileFlag != "" {
+			lwCliInst.Die(fmt.Errorf("cannot pass conflicting flags --health-check and --health-check-file"))
 		}
 
 		validateFields := map[interface{}]interface{}{
@@ -150,9 +158,39 @@ A Load Balancer allows you to distribute traffic to multiple endpoints.
 		// slice of maps with keys src_port, dest_port, with a value of its network port number.
 		var servicesToBalance []map[string]interface{}
 		// a service is permitted to have one health check
-		healthChecks, err := cmdTypes.LoadBalancerHealthCheck{HealthCheck: healthChecksMapCreate}.Transform()
-		if err != nil {
-			lwCliInst.Die(err)
+
+		var healthChecks map[string]map[string]interface{}
+
+		// health check, command line flags.
+		if len(healthChecksMapCreate) > 0 {
+			healthChecksFromCmdLine, err := cmdTypes.LoadBalancerHealthCheckCmdLine{HealthCheck: healthChecksMapCreate}.Transform()
+			if err != nil {
+				lwCliInst.Die(err)
+			}
+			healthChecks = healthChecksFromCmdLine
+		} else if healthCheckFileFlag != "" {
+			// health check, yaml file
+			contents, err := ioutil.ReadFile(healthCheckFileFlag)
+			if err != nil {
+				lwCliInst.Die(fmt.Errorf("error reading given --health-check-file [%s]: %s", healthCheckFileFlag, err))
+			}
+			if err = yaml.Unmarshal(contents, &healthChecks); err != nil {
+				lwCliInst.Die(fmt.Errorf("error yaml decoding [%s] (see help for an example of the file); %s", healthCheckFileFlag, err))
+			}
+		}
+
+		// validate
+		for _, healthCheck := range healthChecks {
+			var obj apiTypes.NetworkLoadBalancerDetailsServiceHealthCheck
+
+			if err := instance.CastFieldTypes(healthCheck, &obj); err != nil {
+				lwCliInst.Die(fmt.Errorf(
+					"failed casting --health-check-file [%s] to expected structure (see help for an example of the file): %s",
+					healthCheckFileFlag, err))
+			}
+			if err := obj.Validate(); err != nil {
+				lwCliInst.Die(err)
+			}
 		}
 
 		for _, pair := range networkLoadBalancerCreateServicesCmd {
@@ -216,7 +254,9 @@ func init() {
 		[]string{}, "source/destination port pairs (such as 80:80) separated by ',' to balance via the Load Balancer")
 
 	networkLoadBalancerCreateCmd.Flags().StringToStringVar(&healthChecksMapCreate, "health-check", nil,
-		"Health check defintions for the service matching src_port")
+		"Health check defintions for the service matching src_port. Should not be combined with --health-check.")
+	networkLoadBalancerCreateCmd.Flags().String("health-check-file", "",
+		"A file containing valid yaml describing the LoadBalancer health checks to add for the service(s). Should not be combined with --health-check.")
 
 	networkLoadBalancerCreateCmd.MarkFlagRequired("name")
 	networkLoadBalancerCreateCmd.MarkFlagRequired("services")

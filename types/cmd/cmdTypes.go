@@ -18,12 +18,9 @@ package cmdTypes
 import (
 	"fmt"
 	"regexp"
-	"strconv"
 	"strings"
 
 	"github.com/spf13/cast"
-
-	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 type AuthContext struct {
@@ -36,11 +33,11 @@ type AuthContext struct {
 	Timeout        int    `json:"timeout" mapstructure:"timeout"`
 }
 
-type LoadBalancerHealthCheck struct {
+type LoadBalancerHealthCheckCmdLine struct {
 	HealthCheck map[string]string `json:"health_check" mapstructure:"health_check"`
 }
 
-func (x LoadBalancerHealthCheck) Transform() (bySrcPort map[string]map[string]interface{}, err error) {
+func (x LoadBalancerHealthCheckCmdLine) Transform() (bySrcPort map[string]map[string]interface{}, err error) {
 	// this is a bit of a hack. I couldn't find any supported way in cobra/viper/pflag to
 	// get flags to go into a slice of maps. So its reading from flags into a single map,
 	// and then doing this logic here to transform that into one suitable to aid later
@@ -153,40 +150,6 @@ func (x LoadBalancerHealthCheck) Transform() (bySrcPort map[string]map[string]in
 				err = fmt.Errorf("http_body_match cannot be set when protocol isn't http")
 				return
 			}
-		}
-
-		validateFields := map[interface{}]interface{}{
-			healthCheck["protocol"]: "LoadBalancerHealthCheckProtocol",
-		}
-
-		if val, exists := healthCheck["http_response_codes"]; exists {
-			validateFields[val] = "LoadBalancerHttpCodeRange"
-		}
-		if val, exists := healthCheck["timeout"]; exists {
-			if _, convErr := strconv.Atoi(cast.ToString(val)); convErr != nil {
-				err = fmt.Errorf("timeout value [%+v] doesn't look numeric", val)
-				return
-			}
-			validateFields[cast.ToInt(val)] = "PositiveInt"
-		}
-		if val, exists := healthCheck["interval"]; exists {
-			if _, convErr := strconv.Atoi(cast.ToString(val)); convErr != nil {
-				err = fmt.Errorf("interval value [%+v] doesn't look numeric", val)
-				return
-			}
-			validateFields[cast.ToInt(val)] = "PositiveInt"
-		}
-		if val, exists := healthCheck["failure_threshold"]; exists {
-			if _, convErr := strconv.Atoi(cast.ToString(val)); convErr != nil {
-				err = fmt.Errorf("failure_threshold value [%+v] doesn't look numeric", val)
-				return
-			}
-			validateFields[cast.ToInt(val)] = "PositiveInt"
-		}
-
-		if validateErr := validate.Validate(validateFields); validateErr != nil {
-			err = fmt.Errorf("healthCheck validation failed for service with source port [%+v]: %s", sourcePort, validateErr)
-			return
 		}
 	}
 
