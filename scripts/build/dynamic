@@ -2,5 +2,5 @@
 
 source scripts/build/.variables
 set -e
-go build -x --ldflags "${LDFLAGS}" -o _exe/liquidweb-cli github.com/liquidweb/liquidweb-cli
+go build -x --ldflags "${LDFLAGS}" -o _exe/lw github.com/liquidweb/liquidweb-cli
 exit 0

@@ -2,9 +2,9 @@
 
 source scripts/build/.variables
 set -e
-go install -x --ldflags "${LDFLAGS}"
+go build -o $GOPATH/bin/lw -x --ldflags "${LDFLAGS}"
 echo ""
-echo "liquidweb-cli has been installed, and it should now be in your PATH."
+echo "lw has been installed, and it should now be in your PATH."
 echo ""
 echo "Executables are installed in the directory named by the GOBIN environment"
 echo "variable, which defaults to GOPATH/bin or HOME/go/bin if the GOPATH"
