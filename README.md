@@ -1,4 +1,4 @@
-# liquidweb-cli
+# lw (liquidweb-cli)
 Official command line interface for the LiquidWeb API
 ```
 CLI interface for LiquidWeb.
@@ -19,7 +19,7 @@ As always, consult the various subcommands for specific features and
 capabilities.
 
 Usage:
-  liquidweb-cli [command]
+  lw [command]
 
 Available Commands:
   auth        authentication actions
@@ -30,9 +30,9 @@ Available Commands:
 
 Flags:
       --config string   config file (default is $HOME/.liquidweb-cli.yaml)
-  -h, --help            help for liquidweb-cli
+  -h, --help            help for lw
 
-Use "liquidweb-cli [command] --help" for more information about a command.
+Use "lw [command] --help" for more information about a command.
 ```
 ## Obtaining prebuilt binaries
 
@@ -40,12 +40,12 @@ Head on over to the [releases page](https://github.com/liquidweb/liquidweb-cli/r
 
 ## Building from source
 
-You can build liquidweb-cli from source by running `make build` from the root of this repository. The resulting program will be located at `./_exe/liquidweb-cli`.
-You can also build+install liquidweb-cli onto your system in the ordinary `go install` way. To do this, either just run `go install` from the root of this repository,
+You can build lw from source by running `make build` from the root of this repository. The resulting program will be located at `./_exe/lw`.
+You can also build+install lw onto your system in the ordinary `go install` way. To do this, either just run `go install` from the root of this repository,
 or `make install`. If you run `make` with no arguments, this will be the default action.
 
 ## First Time Setup
-The first time you use liquidweb-cli, you will need to setup an auth context. An auth context holds authentication related data for a specific LiquidWeb account. You can follow a guided questionnaire to add your auth contexts if you pass arguments `auth init` to liquidweb-cli. By default contexts are stored in `~/.liquidweb-cli.yaml` or `%APPDATA%/.liquidweb-cli.yaml` on Windows.
+The first time you use lw, you will need to setup an auth context. An auth context holds authentication related data for a specific LiquidWeb account. You can follow a guided questionnaire to add your auth contexts if you pass arguments `auth init` to lw. By default contexts are stored in `~/.liquidweb-cli.yaml` or `%APPDATA%/.liquidweb-cli.yaml` on Windows.
 
 ## Adding auth contexts later
 If you end up wanting to add an auth context later on, you can do so with `auth add-context`. You can find the usage documentation in `help auth add-context`.
