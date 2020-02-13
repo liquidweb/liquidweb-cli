@@ -16,8 +16,11 @@ limitations under the License.
 package apiTypes
 
 import (
+	"errors"
 	"fmt"
 	"strings"
+
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 type NetworkIpPoolListEntry struct {
@@ -122,21 +125,68 @@ type NetworkLoadBalancerDetailsNode struct {
 }
 
 type NetworkLoadBalancerDetailsService struct {
-	DestPort     int64                                          `json:"dest_port" mapstructure:"dest_port"`
-	Protocol     string                                         `json:"protocol" mapstructure:"protocol"`
-	SrcPort      int64                                          `json:"src_port" mapstructure:"src_port"`
-	HealthChecks []NetworkLoadBalancerDetailsServiceHealthCheck `json:"health_check" mapstructure:"health_check"`
+	DestPort    int64                                        `json:"dest_port" mapstructure:"dest_port"`
+	Protocol    string                                       `json:"protocol" mapstructure:"protocol"`
+	SrcPort     int64                                        `json:"src_port" mapstructure:"src_port"`
+	HealthCheck NetworkLoadBalancerDetailsServiceHealthCheck `json:"health_check" mapstructure:"health_check"`
 }
 
 type NetworkLoadBalancerDetailsServiceHealthCheck struct {
-	FailureThreshold  int64   `json:"failure_threshold" mapstructure:"failure_threshold"`
-	HttpBodyMatch     string  `json:"http_body_match" mapstructure:"http_body_match"`
-	HttpPath          string  `json:"http_path" mapstructure:"http_path"`
-	HttpResponseCodes []int64 `json:"http_response_codes" mapstructure:"http_response_codes"`
-	HttpUseTls        bool    `json:"http_use_tls" mapstructure:"http_use_tls"`
-	Interval          int64   `json:"interval" mapstructure:"interval"`
-	Protocol          string  `json:"protocol" mapstructure:"protocol"`
-	Timeout           int64   `json:"timeout" mapstructure:"timeout"`
+	FailureThreshold  int64  `json:"failure_threshold" mapstructure:"failure_threshold" yaml:"failure_threshold"`
+	HttpBodyMatch     string `json:"http_body_match" mapstructure:"http_body_match" yaml:"http_body_match"`
+	HttpPath          string `json:"http_path" mapstructure:"http_path" yaml:"http_path"`
+	HttpResponseCodes string `json:"http_response_codes" mapstructure:"http_response_codes" yaml:"http_response_codes"`
+	HttpUseTls        bool   `json:"http_use_tls" mapstructure:"http_use_tls" yaml:"http_use_tls"`
+	Interval          int64  `json:"interval" mapstructure:"interval" yaml:"interval"`
+	Protocol          string `json:"protocol" mapstructure:"protocol" yaml:"protocol"`
+	Timeout           int64  `json:"timeout" mapstructure:"timeout" yaml:"timeout"`
+}
+
+func (x NetworkLoadBalancerDetailsServiceHealthCheck) Validate() error {
+	// protocol is required
+	if x.Protocol == "" {
+		return errors.New("protocol is required and was not given")
+	}
+
+	// place defaults for http_path, http_use_tls, http_response_codes if protocol == "http" if unset.
+	if x.Protocol != "http" {
+		// when protocol isn't http, these shouldn't be set.
+		if x.HttpPath != "" {
+			return errors.New("http_path cannot be set when protocol isn't http")
+		}
+		if x.HttpResponseCodes != "" {
+			return errors.New("http_response_codes cannot be set when protocol isn't http")
+		}
+		if x.HttpUseTls {
+			return errors.New("http_use_tls cannot be set when protocol isn't http")
+		}
+		if x.HttpBodyMatch != "" {
+			return errors.New("http_body_match cannot be set when protocol isn't http")
+		}
+	}
+
+	validateFields := map[interface{}]interface{}{
+		x.Protocol: "LoadBalancerHealthCheckProtocol",
+	}
+
+	if x.HttpResponseCodes != "" {
+		validateFields[x.HttpResponseCodes] = "LoadBalancerHttpCodeRange"
+	}
+	if x.Timeout != 0 {
+		validateFields[x.Timeout] = "PositiveInt64"
+	}
+	if x.Interval != 0 {
+		validateFields[x.Interval] = "PositiveInt64"
+	}
+	if x.FailureThreshold != 0 {
+		validateFields[x.FailureThreshold] = "PositiveInt64"
+	}
+
+	if validateErr := validate.Validate(validateFields); validateErr != nil {
+		return fmt.Errorf("healthCheck validation failed: %s", validateErr)
+	}
+
+	return nil
 }
 
 func (x NetworkLoadBalancerDetails) String() string {
@@ -163,7 +213,17 @@ func (x NetworkLoadBalancerDetails) String() string {
 		slice = append(slice, fmt.Sprintf("\t\t\tProtocol: %s\n", service.Protocol))
 		slice = append(slice, fmt.Sprintf("\t\t\tSource Port: %d\n", service.SrcPort))
 		slice = append(slice, fmt.Sprintf("\t\t\tDestination Port: %d\n", service.DestPort))
-		slice = append(slice, fmt.Sprintf("\t\t\tHealth Checks: %+v\n", service.HealthChecks))
+		if service.HealthCheck.Protocol != "" {
+			slice = append(slice, "\t\t\tHealth Check:\n")
+			slice = append(slice, fmt.Sprintf("\t\t\t\tProtocol: %s\n", service.HealthCheck.Protocol))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tTimeout: %d\n", service.HealthCheck.Timeout))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tInterval: %d\n", service.HealthCheck.Interval))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tHttpUseTls: %t\n", service.HealthCheck.HttpUseTls))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tHttpResponseCodes: %s\n", service.HealthCheck.HttpResponseCodes))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tHttpPath: %s\n", service.HealthCheck.HttpPath))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tHttpBodyMatch: %s\n", service.HealthCheck.HttpBodyMatch))
+			slice = append(slice, fmt.Sprintf("\t\t\t\tFailureThreshold: %d\n", service.HealthCheck.FailureThreshold))
+		}
 	}
 
 	return strings.Join(slice[:], "")
