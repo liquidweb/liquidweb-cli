@@ -21,13 +21,12 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var networkIpPoolCmd = &cobra.Command{
-	Use:   "ip-pool",
-	Short: "IP Pool specific operations",
-	Long: `IP Pool specific operations.
+var networkLoadBalancerCmd = &cobra.Command{
+	Use:   "load-balancer",
+	Short: "Load Balancer specific operations",
+	Long: `Load Balancer specific operations.
 
-Use an IP Pool to reserve IP addresses even when they aren't currently assigned
-to a server.
+A Load Balancer allows you to distribute traffic to multiple endpoints.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -37,5 +36,5 @@ For a full list of capabilities, please refer to the "Available Commands" sectio
 }
 
 func init() {
-	networkCmd.AddCommand(networkIpPoolCmd)
+	networkCmd.AddCommand(networkLoadBalancerCmd)
 }

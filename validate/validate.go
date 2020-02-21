@@ -127,9 +127,39 @@ func interfaceInputTypeValidate(iface, inputFieldValue interface{}) error {
 		if err := obj.Validate(); err != nil {
 			return err
 		}
+	case InputTypeLoadBalancerStrategyString:
+		var obj InputTypeLoadBalancerStrategyString
+		obj.LoadBalancerStrategy = cast.ToString(inputFieldValue)
+		if err := obj.Validate(); err != nil {
+			return err
+		}
 	case InputTypeHttpsLiquidwebUrl:
 		var obj InputTypeHttpsLiquidwebUrl
 		obj.HttpsLiquidwebUrl = cast.ToString(inputFieldValue)
+		if err := obj.Validate(); err != nil {
+			return err
+		}
+	case InputTypeNetworkPortPair:
+		var obj InputTypeNetworkPortPair
+		obj.NetworkPortPair = cast.ToString(inputFieldValue)
+		if err := obj.Validate(); err != nil {
+			return err
+		}
+	case InputTypeNetworkPort:
+		var obj InputTypeNetworkPort
+		obj.NetworkPort = cast.ToInt(inputFieldValue)
+		if err := obj.Validate(); err != nil {
+			return err
+		}
+	case InputTypeLoadBalancerHealthCheckProtocol:
+		var obj InputTypeLoadBalancerHealthCheckProtocol
+		obj.LoadBalancerHealthCheckProtocol = cast.ToString(inputFieldValue)
+		if err := obj.Validate(); err != nil {
+			return err
+		}
+	case InputTypeLoadBalancerHttpCodeRange:
+		var obj InputTypeLoadBalancerHttpCodeRange
+		obj.LoadBalancerHttpCodeRange = cast.ToString(inputFieldValue)
 		if err := obj.Validate(); err != nil {
 			return err
 		}
