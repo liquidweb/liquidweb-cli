@@ -34,7 +34,7 @@ var cfgFile string
 var lwCliInst instance.Client
 
 var rootCmd = &cobra.Command{
-	Use:   "liquidweb-cli",
+	Use:   "lw",
 	Short: "CLI interface for LiquidWeb",
 	Long: `CLI interface for LiquidWeb.
 
