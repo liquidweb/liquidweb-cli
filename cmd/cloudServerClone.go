@@ -74,7 +74,7 @@ Server is not on a Private Parent.`,
 		var privateParentUniqId string
 		if privateParentFlag != "" {
 			var err error
-			privateParentUniqId, err = derivePrivateParentUniqId(privateParentFlag)
+			privateParentUniqId, err = lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
 			if err != nil {
 				lwCliInst.Die(err)
 			}

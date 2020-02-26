@@ -150,7 +150,7 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 					"resizes on private parents require at least least one of: --memory --diskspace --vcpu flags"))
 			}
 
-			privateParentUniqId, err := derivePrivateParentUniqId(privateParentFlag)
+			privateParentUniqId, err := lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
 			if err != nil {
 				lwCliInst.Die(err)
 			}

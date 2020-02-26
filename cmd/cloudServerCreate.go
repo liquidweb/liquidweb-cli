@@ -18,15 +18,12 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
-	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
-	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerCreateCmdPoolIpsFlag []string
@@ -59,189 +56,47 @@ For a list of images, see 'cloud images list'
 For a list of backups, see 'cloud backups list'
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		templateFlag, _ := cmd.Flags().GetString("template")
-		typeFlag, _ := cmd.Flags().GetString("type")
-		hostnameFlag, _ := cmd.Flags().GetString("hostname")
-		ipsFlag, _ := cmd.Flags().GetInt("ips")
-		pubSshKeyFlag, _ := cmd.Flags().GetString("public-ssh-key")
-		configIdFlag, _ := cmd.Flags().GetInt("config_id")
-		backupPlanFlag, _ := cmd.Flags().GetString("backup-plan")
-		backupPlanQuotaFlag, _ := cmd.Flags().GetInt("backup-plan-quota")
-		bandwidthFlag, _ := cmd.Flags().GetString("bandwidth")
-		zoneFlag, _ := cmd.Flags().GetInt("zone")
-		winavFlag, _ := cmd.Flags().GetString("winav")
-		msSqlFlag, _ := cmd.Flags().GetString("ms_sql")
-		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
-		passwordFlag, _ := cmd.Flags().GetString("password")
-		memoryFlag, _ := cmd.Flags().GetInt("memory")
-		diskspaceFlag, _ := cmd.Flags().GetInt("diskspace")
-		vcpuFlag, _ := cmd.Flags().GetInt("vcpu")
-		backupIdFlag, _ := cmd.Flags().GetInt("backup-id")
-		imageIdFlag, _ := cmd.Flags().GetInt("image-id")
+		params := &api.CloudServerCreateParams{}
 
-		// sanity check flags
-		if configIdFlag == 0 && privateParentFlag == "" {
-			lwCliInst.Die(fmt.Errorf("--config_id is a required flag without --private-parent"))
-		}
-		if templateFlag == "" && backupIdFlag == -1 && imageIdFlag == -1 {
-			lwCliInst.Die(fmt.Errorf("at least one of the following flags must be set --template --image-id --backup-id"))
-		}
-
-		validateFields := map[interface{}]interface{}{
-			zoneFlag:       map[string]string{"type": "PositiveInt", "optional": "true"},
-			hostnameFlag:   "NonEmptyString",
-			typeFlag:       "NonEmptyString",
-			ipsFlag:        "PositiveInt",
-			passwordFlag:   "NonEmptyString",
-			backupPlanFlag: "NonEmptyString",
-		}
-		if backupIdFlag != -1 {
-			validateFields[backupIdFlag] = "PositiveInt"
-		}
-		if imageIdFlag != -1 {
-			validateFields[imageIdFlag] = "PositiveInt"
-		}
-		if vcpuFlag == -1 {
-			validateFields[configIdFlag] = "PositiveInt"
-		}
-		if configIdFlag == -1 {
-			validateFields[vcpuFlag] = "PositiveInt"
-			validateFields[memoryFlag] = "PositiveInt"
-			validateFields[diskspaceFlag] = "PositiveInt"
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
+		params.Template, _ = cmd.Flags().GetString("template")
+		params.Type, _ = cmd.Flags().GetString("type")
+		params.Hostname, _ = cmd.Flags().GetString("hostname")
+		params.Ips, _ = cmd.Flags().GetInt("ips")
+		pubSshKey, _ := cmd.Flags().GetString("public-ssh-key")
+		params.ConfigId, _ = cmd.Flags().GetInt("config_id")
+		params.BackupPlan, _ = cmd.Flags().GetString("backup-plan")
+		params.BackupPlanQuota, _ = cmd.Flags().GetInt("backup-plan-quota")
+		params.Bandwidth, _ = cmd.Flags().GetString("bandwidth")
+		params.Zone, _ = cmd.Flags().GetInt("zone")
+		params.Winav, _ = cmd.Flags().GetString("winav")
+		params.MsSql, _ = cmd.Flags().GetString("ms_sql")
+		params.PrivateParent, _ = cmd.Flags().GetString("private-parent")
+		params.Password, _ = cmd.Flags().GetString("password")
+		params.Memory, _ = cmd.Flags().GetInt("memory")
+		params.Diskspace, _ = cmd.Flags().GetInt("diskspace")
+		params.Vcpu, _ = cmd.Flags().GetInt("vcpu")
+		params.BackupId, _ = cmd.Flags().GetInt("backup-id")
+		params.ImageId, _ = cmd.Flags().GetInt("image-id")
 
 		var publicSshKeyContents string
-		sshPkeyContents, err := ioutil.ReadFile(pubSshKeyFlag)
+		sshPkeyContents, err := ioutil.ReadFile(pubSshKey)
 		if err == nil {
-			publicSshKeyContents = cast.ToString(sshPkeyContents)
+			params.PublicSshKey = cast.ToString(sshPkeyContents)
 		}
 
 		// if passed a private-parent flag, derive its uniq_id
 		var privateParentUniqId string
 		if privateParentFlag != "" {
-			privateParentUniqId, err = derivePrivateParentUniqId(privateParentFlag)
+			privateParentUniqId, err = lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
 			if err != nil {
 				lwCliInst.Die(err)
 			}
 		}
 
-		// buildout args for bleed/server/create
-		createArgs := map[string]interface{}{
-			"domain":   hostnameFlag,
-			"type":     typeFlag,
-			"pool_ips": cloudServerCreateCmdPoolIpsFlag,
-			"new_ips":  ipsFlag,
-			"zone":     zoneFlag,
-			"password": passwordFlag,
-			"features": map[string]interface{}{
-				"Bandwidth": bandwidthFlag,
-				"ConfigId":  configIdFlag,
-				"ExtraIp": map[string]interface{}{
-					"value": ipsFlag,
-					"count": 0,
-				},
-				"LiquidWebBackupPlan": backupPlanFlag,
-			},
-		}
-
-		var isWindows bool
-		if templateFlag != "" {
-			createArgs["features"].(map[string]interface{})["Template"] = templateFlag
-			if strings.Contains(strings.ToUpper(templateFlag), "WINDOWS") {
-				isWindows = true
-			}
-		}
-		if backupIdFlag != -1 {
-			// check backup and see if its windows
-			apiArgs := map[string]interface{}{"id": backupIdFlag}
-			var details apiTypes.CloudBackupDetails
-			err := lwCliInst.CallLwApiInto("bleed/storm/backup/details", apiArgs, &details)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-			if strings.Contains(strings.ToUpper(details.Template), "WINDOWS") {
-				isWindows = true
-			}
-			createArgs["backup_id"] = backupIdFlag
-		}
-		if imageIdFlag != -1 {
-			// check image and see if its windows
-			apiArgs := map[string]interface{}{"id": imageIdFlag}
-			var details apiTypes.CloudImageDetails
-			err := lwCliInst.CallLwApiInto("bleed/storm/image/details", apiArgs, &details)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-			if strings.Contains(strings.ToUpper(details.Template), "WINDOWS") {
-				isWindows = true
-			}
-			createArgs["image_id"] = imageIdFlag
-		}
-
-		// windows servers need special arguments
-		if isWindows {
-			if winavFlag == "" {
-				winavFlag = "None"
-			}
-			createArgs["features"].(map[string]interface{})["WinAV"] = winavFlag
-			createArgs["features"].(map[string]interface{})["WindowsLicense"] = "Windows"
-			if typeFlag == "SS.VPS" {
-				createArgs["type"] = "SS.VPS.WIN"
-			}
-			if msSqlFlag == "" {
-				msSqlFlag = "None"
-			}
-			var coreCnt int
-			if vcpuFlag == -1 {
-				// standard config_id create, fetch configs core count and use it
-				var details apiTypes.CloudConfigDetails
-				if err := lwCliInst.CallLwApiInto("bleed/storm/config/details",
-					map[string]interface{}{"id": configIdFlag}, &details); err != nil {
-					lwCliInst.Die(err)
-				}
-				coreCnt = cast.ToInt(details.Vcpu)
-			} else {
-				// private parent, use vcpu flag
-				coreCnt = vcpuFlag
-			}
-			createArgs["features"].(map[string]interface{})["MsSQL"] = map[string]interface{}{
-				"value": msSqlFlag,
-				"count": coreCnt,
-			}
-		}
-
-		if privateParentUniqId != "" {
-			// create on a private parent. diskspace, memory, vcpu are now required.
-			if memoryFlag == -1 || diskspaceFlag == -1 || vcpuFlag == -1 {
-				lwCliInst.Die(fmt.Errorf("flags --diskspace --memory --vcpu are required when --private-parent is passed"))
-			}
-
-			createArgs["parent"] = privateParentUniqId
-			createArgs["vcpu"] = vcpuFlag
-			createArgs["diskspace"] = diskspaceFlag
-			createArgs["memory"] = memoryFlag
-		}
-
-		if backupPlanFlag == "Quota" {
-			createArgs["features"].(map[string]interface{})["BackupQuota"] = backupPlanQuotaFlag
-		}
-
-		if publicSshKeyContents != "" {
-			createArgs["public_ssh_key"] = publicSshKeyContents
-		}
-
-		result, err := lwCliInst.LwCliApiClient.Call("bleed/server/create", createArgs)
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-
-		resultUniqId := result.(map[string]interface{})["uniq_id"]
+		uniqId, _ := lwCliInst.CloudServerCreate(params)
 		fmt.Printf(
 			"Cloud server with uniq_id [%s] creating. Check status with 'cloud server status --uniq_id %s'\n",
-			resultUniqId, resultUniqId)
+			uniqId, uniqId)
 	},
 }
 
