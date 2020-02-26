@@ -82,6 +82,12 @@ will be up to the administrator to configure the IP address(es) within the serve
 		}
 
 		fmt.Printf("Adding [%s] to Cloud Server\n", details.Adding)
+
+		if rebootFlag {
+			fmt.Println("Server will be rebooted and IP(s) automatically configured.")
+		} else {
+			fmt.Println("Server will not be rebooted.  IP's will need to be manually configured.")
+		}
 	},
 }
 
