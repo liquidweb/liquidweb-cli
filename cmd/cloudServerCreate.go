@@ -23,6 +23,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
+	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
@@ -56,7 +57,7 @@ For a list of images, see 'cloud images list'
 For a list of backups, see 'cloud backups list'
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		params := &api.CloudServerCreateParams{}
+		params := &instance.CloudServerCreateParams{}
 
 		params.Template, _ = cmd.Flags().GetString("template")
 		params.Type, _ = cmd.Flags().GetString("type")
@@ -93,7 +94,7 @@ For a list of backups, see 'cloud backups list'
 			}
 		}
 
-		uniqId, _ := lwCliInst.CloudServerCreate(params)
+		uniqId := lwCliInst.CloudServerCreate(params)
 		fmt.Printf(
 			"Cloud server with uniq_id [%s] creating. Check status with 'cloud server status --uniq_id %s'\n",
 			uniqId, uniqId)

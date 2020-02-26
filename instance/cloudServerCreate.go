@@ -43,12 +43,13 @@ type CloudServerCreateParams struct {
 	Password        string
 	Memory          int64 // required only if private parent
 	Diskspace       int64 // required only if private parent
-	Vcpu            int64 // required only if private parent
+	Vcpu            int   // required only if private parent
 	BackupId        int64 // create from backup
 	ImageId         int64 // create from image
 }
 
-func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, error) {
+func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
+	var err error
 
 	// sanity check flags
 	if params.PrivateParent != "" {
@@ -72,7 +73,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 
 	}
 
-	if params.template == "" && parms.BackupId == -1 && params.ImageId == -1 {
+	if params.Template == "" && params.BackupId == -1 && params.ImageId == -1 {
 		ci.Die(fmt.Errorf("at least one of the following flags must be set --template --image-id --backup-id"))
 	}
 
@@ -168,10 +169,10 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 
 	// windows servers need special arguments
 	if isWindows {
-		if params.Winav == "" {
-			params.Winav = "None"
+		if params.WinAv == "" {
+			params.WinAv = "None"
 		}
-		createArgs["features"].(map[string]interface{})["WinAV"] = params.Winav
+		createArgs["features"].(map[string]interface{})["WinAV"] = params.WinAv
 		createArgs["features"].(map[string]interface{})["WindowsLicense"] = "Windows"
 		if params.Type == "SS.VPS" {
 			createArgs["type"] = "SS.VPS.WIN"
@@ -218,5 +219,5 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		ci.Die(err)
 	}
 
-	return result.(map[string]interface{})["uniq_id"], nil
+	return cast.ToString(result.(map[string]interface{})["uniq_id"])
 }
