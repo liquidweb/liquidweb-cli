@@ -26,9 +26,8 @@ import (
 )
 
 func (client *Client) RemoveContext(context string) error {
-	// this function should be deleted and Unset in viper used instead once
+	// review this function once Unset (or similar) in viper is available
 	// https://github.com/spf13/viper/pull/519
-	// is merged or similar functionality is added.
 	if context == "" {
 		return fmt.Errorf("context cannot be empty")
 	}
