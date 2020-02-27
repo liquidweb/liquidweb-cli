@@ -22,37 +22,56 @@ import (
 	"github.com/spf13/cast"
 
 	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 type CloudServerCreateParams struct {
-	Template            string
-	Type                string
-	Hostname            string
-	Ips                 int
-	PoolIps             []string
-	PublicSshKey        string
-	ConfigId            int
-	BackupPlan          string
-	BackupPlanQuota     int
-	Bandwidth           string
-	Zone                int
-	WinAv               string
-	MsSql               string // windows
-	PrivateParentUniqId string
-	Password            string
-	Memory              int // required only if private parent
-	Diskspace           int // required only if private parent
-	Vcpu                int // required only if private parent
-	BackupId            int // create from backup
-	ImageId             int // create from image
+	Template        string   `yaml:"template"`
+	Type            string   `yaml:"type"`
+	Hostname        string   `yaml:"hostname"`
+	Ips             int      `yaml:"ips"`
+	PoolIps         []string `yaml:"pool-ips"`
+	PublicSshKey    string   `yaml:"public-ssh-key"`
+	ConfigId        int      `yaml:"config-id"`
+	BackupPlan      string   `yaml:"backup-plan"`
+	BackupPlanQuota int      `yaml:"backup-plan-quota"`
+	Bandwidth       string   `yaml:"bandwidth"`
+	Zone            int      `yaml:"zone"`
+	WinAv           string   `yaml:"winav"`  // windows
+	MsSql           string   `yaml:"ms-sql"` // windows
+	PrivateParent   string   `yaml:"private-parent"`
+	Password        string   `yaml:"password"`
+	Memory          int      `yaml:"memory"`    // required only if private parent
+	Diskspace       int      `yaml:"diskspace"` // required only if private parent
+	Vcpu            int      `yaml:"vcpu"`      // required only if private parent
+	BackupId        int      `yaml:"backup-id"` //create from backup
+	ImageId         int      `yaml:"image-id"`  // create from image
 }
 
 func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 	var err error
 
+	// if passed a private-parent flag, derive its uniq_id
+	if params.PrivateParent != "" {
+		params.PrivateParent, err = ci.DerivePrivateParentUniqId(params.PrivateParent)
+		if err != nil {
+			ci.Die(err)
+		}
+	}
+
+	// default password
+	if params.Password == "" {
+		params.Password = utils.RandomString(25)
+	}
+
+	//default hostname
+	if params.Hostname == "" {
+		params.Hostname = fmt.Sprintf("%s.%s.io", utils.RandomString(4), utils.RandomString(10))
+	}
+
 	// sanity check flags
-	if params.PrivateParentUniqId != "" {
+	if params.PrivateParent != "" {
 		if params.ConfigId > 0 {
 			ci.Die(fmt.Errorf("--config_id must be 0 or omitted when specifying --private-parent"))
 		}
@@ -190,8 +209,8 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 		}
 	}
 
-	if params.PrivateParentUniqId != "" {
-		createArgs["parent"] = params.PrivateParentUniqId
+	if params.PrivateParent != "" {
+		createArgs["parent"] = params.PrivateParent
 		createArgs["vcpu"] = params.Vcpu
 		createArgs["diskspace"] = params.Diskspace
 		createArgs["memory"] = params.Memory

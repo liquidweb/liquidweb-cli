@@ -24,7 +24,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
-	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var cloudServerCreateCmdPoolIpsFlag []string
@@ -71,7 +70,7 @@ For a list of backups, see 'cloud backups list'
 		params.Zone, _ = cmd.Flags().GetInt("zone")
 		params.WinAv, _ = cmd.Flags().GetString("winav")
 		params.MsSql, _ = cmd.Flags().GetString("ms_sql")
-		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
+		params.PrivateParent, _ = cmd.Flags().GetString("private-parent")
 		params.Password, _ = cmd.Flags().GetString("password")
 		params.Memory, _ = cmd.Flags().GetInt("memory")
 		params.Diskspace, _ = cmd.Flags().GetInt("diskspace")
@@ -82,14 +81,6 @@ For a list of backups, see 'cloud backups list'
 		sshPkeyContents, err := ioutil.ReadFile(pubSshKey)
 		if err == nil {
 			params.PublicSshKey = cast.ToString(sshPkeyContents)
-		}
-
-		// if passed a private-parent flag, derive its uniq_id
-		if privateParentFlag != "" {
-			params.PrivateParentUniqId, err = lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
 		}
 
 		uniqId := lwCliInst.CloudServerCreate(params)
@@ -108,12 +99,9 @@ func init() {
 		sshPubKeyFile = fmt.Sprintf("%s/.ssh/id_rsa.pub", home)
 	}
 
-	randomHostname := fmt.Sprintf("%s.%s.io", utils.RandomString(4), utils.RandomString(10))
-	randomPassword := utils.RandomString(25)
-
 	cloudServerCreateCmd.Flags().String("template", "", "template to use (see 'cloud server options --templates')")
 	cloudServerCreateCmd.Flags().String("type", "SS.VPS", "some examples of types; SS.VPS, SS.VPS.WIN, SS.VM, SS.VM.WIN")
-	cloudServerCreateCmd.Flags().String("hostname", randomHostname, "hostname to set")
+	cloudServerCreateCmd.Flags().String("hostname", "", "hostname to set")
 	cloudServerCreateCmd.Flags().Int("ips", 1, "amount of IP addresses")
 	cloudServerCreateCmd.Flags().String("public-ssh-key", sshPubKeyFile,
 		"path to file containing the public ssh key you wish to be on the new Cloud Server")
@@ -122,7 +110,7 @@ func init() {
 	cloudServerCreateCmd.Flags().Int("backup-plan-quota", 300, "Quota amount. Should only be used with '--backup-plan Quota'")
 	cloudServerCreateCmd.Flags().String("bandwidth", "SS.10000", "bandwidth package to use")
 	cloudServerCreateCmd.Flags().Int("zone", 0, "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
-	cloudServerCreateCmd.Flags().String("password", randomPassword, "root or administrator password to set")
+	cloudServerCreateCmd.Flags().String("password", "", "root or administrator password to set")
 
 	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of backup to create from (see 'cloud backup list')")
 	cloudServerCreateCmd.Flags().Int("image-id", -1, "id of image to create from (see 'cloud image list')")
