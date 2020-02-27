@@ -31,29 +31,6 @@ type PlanCloudServer struct {
 	Create []CloudServerCreateParams
 }
 
-type xCloudServerCreateParams struct {
-	Template            string
-	Type                string
-	Hostname            string
-	Ips                 int
-	PoolIps             []string
-	PublicSshKey        string
-	ConfigId            int
-	BackupPlan          string
-	BackupPlanQuota     int
-	Bandwidth           string
-	Zone                int
-	WinAv               string
-	MsSql               string // windows
-	PrivateParentUniqId string
-	Password            string
-	Memory              int // required only if private parent
-	Diskspace           int // required only if private parent
-	Vcpu                int // required only if private parent
-	BackupId            int // create from backup
-	ImageId             int // create from image
-}
-
 //func ProcessPlan(plan *map[string]interface{}) error {
 func (ci *Client) ProcessPlan(plan *Plan) error {
 
