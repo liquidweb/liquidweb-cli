@@ -1,0 +1,28 @@
+---
+cloud:
+   server:
+      create:
+         - type: "SS.VPS.WIN"
+           password: "1fk4ds$jktl43u90dsa"
+           template: "WINDOWS_2019_UNMANAGED"
+           zone: 40460
+           hostname: "db1.dev.addictmud.org"
+           ips: 1
+           public-ssh-key: ""
+           config_id: 88
+           backup-plan: "daily"
+           backup-plan-quota: 5
+           bandwidth: "SS.5000"
+           backup-id: -1
+           image-id: -1
+           pool-ips:
+              - "10.111.12.13"
+              - "10.12.13.14"
+           private-parent: "my pp"
+           memory: 0
+           diskspace: 0
+           vcpu: 0
+           winav: ""
+           ms-sql: ""
+
+
