@@ -30,6 +30,7 @@ import (
 
 var cfgFile string
 var lwCliInst instance.Client
+var useContext string
 
 var rootCmd = &cobra.Command{
 	Use:   "lw",
@@ -63,6 +64,7 @@ func init() {
 	cobra.OnInitialize(initConfig)
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.liquidweb-cli.yaml)")
+	rootCmd.PersistentFlags().StringVar(&useContext, "use-context", "", "forces current context, without persisting the context change")
 }
 
 func initConfig() {
@@ -85,6 +87,15 @@ func initConfig() {
 
 	vp.AutomaticEnv()
 	vp.ReadInConfig()
+
+	if useContext != "" {
+		if err := instance.ValidateContext(useContext, vp); err != nil {
+			utils.PrintRed("error using auth context:\n\n")
+			fmt.Printf("%s\n\n", err)
+			os.Exit(1)
+		}
+		vp.Set("liquidweb.api.current_context", useContext)
+	}
 
 	var lwCliInstErr error
 	lwCliInst, lwCliInstErr = instance.New(vp)

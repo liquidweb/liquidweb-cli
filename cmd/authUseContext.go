@@ -22,7 +22,6 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
-	"github.com/liquidweb/liquidweb-cli/types/cmd"
 )
 
 var authUseContextCmd = &cobra.Command{
@@ -46,22 +45,8 @@ If you've never setup any contexts, check "auth init".`,
 		wantedContext := args[0]
 
 		// verify wantedContext is valid
-		isValid := false
-		contexts := lwCliInst.Viper.GetStringMap("liquidweb.api.contexts")
-		for _, contextInter := range contexts {
-			var context cmdTypes.AuthContext
-			if err := instance.CastFieldTypes(contextInter, &context); err != nil {
-				lwCliInst.Die(err)
-			}
-
-			if context.ContextName == wantedContext {
-				isValid = true
-				break
-			}
-		}
-
-		if !isValid {
-			lwCliInst.Die(fmt.Errorf("given context [%s] is not a valid context", wantedContext))
+		if err := instance.ValidateContext(wantedContext, lwCliInst.Viper); err != nil {
+			lwCliInst.Die(err)
 		}
 
 		// looks valid, set
