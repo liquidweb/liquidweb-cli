@@ -9,7 +9,7 @@ cloud:
            hostname: "db1.dev.addictmud.org"
            ips: 1
            public-ssh-key: ""
-           config_id: 88
+           config-id: 88
            backup-plan: "daily"
            backup-plan-quota: 5
            bandwidth: "SS.5000"
