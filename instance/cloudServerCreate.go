@@ -117,8 +117,6 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 		ci.Die(fmt.Errorf("at least one of the following flags must be set --template --image-id --backup-id"))
 	}
 
-	// TODO - not sure if input validation belongs here or in the command...
-
 	validateFields := map[interface{}]interface{}{
 		params.Zone:       map[string]string{"type": "PositiveInt", "optional": "true"},
 		params.Hostname:   "NonEmptyString",
