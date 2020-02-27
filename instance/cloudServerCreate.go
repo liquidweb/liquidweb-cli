@@ -49,6 +49,27 @@ type CloudServerCreateParams struct {
 	ImageId         int      `yaml:"image-id"`  // create from image
 }
 
+func (s *CloudServerCreateParams) UnmarshalYAML(unmarshal func(interface{}) error) error {
+	// define defaults
+	type rawType CloudServerCreateParams
+	raw := rawType{
+		BackupId:   -1,
+		ImageId:    -1,
+		Vcpu:       -1,
+		Memory:     -1,
+		Diskspace:  -1,
+		Bandwidth:  "SS.5000",
+		BackupPlan: "None",
+		Ips:        1,
+		Type:       "SS.VPS",
+	} // Put your defaults here
+	if err := unmarshal(&raw); err != nil {
+		return err
+	}
+	*s = CloudServerCreateParams(raw)
+	return nil
+}
+
 func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 	var err error
 
