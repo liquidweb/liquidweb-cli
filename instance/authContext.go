@@ -37,8 +37,7 @@ func (client *Client) RemoveContext(context string) error {
 		return fmt.Errorf("cannot remove context currently set as current context")
 	}
 
-	contexts := client.Viper.GetStringMap("liquidweb.api.contexts")
-	if _, exists := contexts[context]; !exists {
+	if err := ValidateContext(context, client.Viper); err != nil {
 		return fmt.Errorf("context %s doesnt exist, cannot remove", context)
 	}
 
