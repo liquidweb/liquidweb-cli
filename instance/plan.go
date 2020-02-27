@@ -56,7 +56,6 @@ type xCloudServerCreateParams struct {
 
 //func ProcessPlan(plan *map[string]interface{}) error {
 func (ci *Client) ProcessPlan(plan *Plan) error {
-	fmt.Printf("%#v\n", plan)
 
 	if plan.Cloud != nil {
 		if err := ci.processPlanCloud(plan.Cloud); err != nil {
@@ -92,13 +91,10 @@ func (ci *Client) processPlanCloudServer(server *PlanCloudServer) error {
 }
 
 func (ci *Client) processPlanCloudServerCreate(params *CloudServerCreateParams) error {
-	fmt.Println(" cloud server create", params.Template, params.Hostname)
-	fmt.Printf("%#v\n", params)
 
 	uniqId := ci.CloudServerCreate(params)
 	fmt.Printf(
 		"Cloud server with uniq_id [%s] creating. Check status with 'cloud server status --uniq_id %s'\n",
 		uniqId, uniqId)
-
 	return nil
 }
