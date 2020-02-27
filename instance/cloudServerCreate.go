@@ -26,33 +26,33 @@ import (
 )
 
 type CloudServerCreateParams struct {
-	Template        string
-	Type            string
-	Hostname        string
-	Ips             int64
-	PoolIps         []string
-	PublicSshKey    string
-	ConfigId        int64
-	BackupPlan      string
-	BackupPlanQuota int64
-	Bandwidth       string
-	Zone            int64
-	WinAv           string
-	MsSql           string // windows
-	PrivateParent   string
-	Password        string
-	Memory          int64 // required only if private parent
-	Diskspace       int64 // required only if private parent
-	Vcpu            int   // required only if private parent
-	BackupId        int64 // create from backup
-	ImageId         int64 // create from image
+	Template            string
+	Type                string
+	Hostname            string
+	Ips                 int
+	PoolIps             []string
+	PublicSshKey        string
+	ConfigId            int
+	BackupPlan          string
+	BackupPlanQuota     int
+	Bandwidth           string
+	Zone                int
+	WinAv               string
+	MsSql               string // windows
+	PrivateParentUniqId string
+	Password            string
+	Memory              int // required only if private parent
+	Diskspace           int // required only if private parent
+	Vcpu                int // required only if private parent
+	BackupId            int // create from backup
+	ImageId             int // create from image
 }
 
 func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 	var err error
 
 	// sanity check flags
-	if params.PrivateParent != "" {
+	if params.PrivateParentUniqId != "" {
 		if params.ConfigId > 0 {
 			ci.Die(fmt.Errorf("--config_id must be 0 or omitted when specifying --private-parent"))
 		}
@@ -103,15 +103,6 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 	}
 	if err := validate.Validate(validateFields); err != nil {
 		ci.Die(err)
-	}
-
-	// if passed a private-parent flag, derive its uniq_id
-	var privateParentUniqId string
-	if params.PrivateParent != "" {
-		privateParentUniqId, err = ci.DerivePrivateParentUniqId(params.PrivateParent)
-		if err != nil {
-			ci.Die(err)
-		}
 	}
 
 	// buildout args for bleed/server/create
@@ -199,8 +190,8 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 		}
 	}
 
-	if privateParentUniqId != "" {
-		createArgs["parent"] = privateParentUniqId
+	if params.PrivateParentUniqId != "" {
+		createArgs["parent"] = params.PrivateParentUniqId
 		createArgs["vcpu"] = params.Vcpu
 		createArgs["diskspace"] = params.Diskspace
 		createArgs["memory"] = params.Memory

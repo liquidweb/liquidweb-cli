@@ -69,9 +69,9 @@ For a list of backups, see 'cloud backups list'
 		params.BackupPlanQuota, _ = cmd.Flags().GetInt("backup-plan-quota")
 		params.Bandwidth, _ = cmd.Flags().GetString("bandwidth")
 		params.Zone, _ = cmd.Flags().GetInt("zone")
-		params.Winav, _ = cmd.Flags().GetString("winav")
+		params.WinAv, _ = cmd.Flags().GetString("winav")
 		params.MsSql, _ = cmd.Flags().GetString("ms_sql")
-		params.PrivateParent, _ = cmd.Flags().GetString("private-parent")
+		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
 		params.Password, _ = cmd.Flags().GetString("password")
 		params.Memory, _ = cmd.Flags().GetInt("memory")
 		params.Diskspace, _ = cmd.Flags().GetInt("diskspace")
@@ -79,16 +79,14 @@ For a list of backups, see 'cloud backups list'
 		params.BackupId, _ = cmd.Flags().GetInt("backup-id")
 		params.ImageId, _ = cmd.Flags().GetInt("image-id")
 
-		var publicSshKeyContents string
 		sshPkeyContents, err := ioutil.ReadFile(pubSshKey)
 		if err == nil {
 			params.PublicSshKey = cast.ToString(sshPkeyContents)
 		}
 
 		// if passed a private-parent flag, derive its uniq_id
-		var privateParentUniqId string
 		if privateParentFlag != "" {
-			privateParentUniqId, err = lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
+			params.PrivateParentUniqId, err = lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
 			if err != nil {
 				lwCliInst.Die(err)
 			}
