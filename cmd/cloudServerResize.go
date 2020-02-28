@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -48,7 +48,7 @@ configuration.
 
 If this is a resize of a Cloud Server on a private parent, pass --private-parent
 with a value of either the name of the private parent, or the private parents
-uniq_id. When passing --private-parent, at least one of the following flags
+uniq-id. When passing --private-parent, at least one of the following flags
 are required:
 
   --diskspace
@@ -68,7 +68,7 @@ going to a config with more diskspace, and --skip-fs-resize wasn't passed.
 During all resizes, the Cloud Server is online as the disk synchronizes.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		diskspaceFlag, _ := cmd.Flags().GetInt64("diskspace")
 		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
 		memoryFlag, _ := cmd.Flags().GetInt64("memory")
@@ -246,7 +246,7 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("server resized started! You can check progress with 'cloud server status --uniq_id %s'\n\n", uniqIdFlag)
+		fmt.Printf("server resized started! You can check progress with 'cloud server status --uniq-id %s'\n\n", uniqIdFlag)
 
 		if liveResize {
 			fmt.Printf("\nthis resize will be performed live without downtime.\n")
@@ -270,8 +270,8 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerResizeCmd)
 
 	cloudServerResizeCmd.Flags().String("private-parent", "",
-		"name or uniq_id of the private-parent. Must use when adding/removing resources to a Cloud Server on a private parent.")
-	cloudServerResizeCmd.Flags().String("uniq_id", "", "uniq_id of server to resize")
+		"name or uniq-id of the private-parent. Must use when adding/removing resources to a Cloud Server on a private parent.")
+	cloudServerResizeCmd.Flags().String("uniq-id", "", "uniq-id of server to resize")
 	cloudServerResizeCmd.Flags().Int64("diskspace", -1, "desired diskspace (when private-parent)")
 	cloudServerResizeCmd.Flags().Int64("memory", -1, "desired memory (when private-parent)")
 	cloudServerResizeCmd.Flags().Bool("skip-fs-resize", false, "whether or not to skip the fs resize")
@@ -279,5 +279,5 @@ func init() {
 	cloudServerResizeCmd.Flags().Int64("config_id", -1,
 		"config_id of your desired config (when !private-parent) (see 'cloud server options --configs')")
 
-	cloudServerResizeCmd.MarkFlagRequired("uniq_id")
+	cloudServerResizeCmd.MarkFlagRequired("uniq-id")
 }

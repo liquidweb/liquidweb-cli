@@ -18,9 +18,8 @@ package cmd
 import (
 	"fmt"
 
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/spf13/cobra"
-
-	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudPrivateParentDetailsCmd = &cobra.Command{
@@ -59,6 +58,6 @@ as well as how many resources each Cloud Server gets.`,
 func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentDetailsCmd)
 
-	cloudPrivateParentDetailsCmd.Flags().String("name", "", "name or uniq_id of the Private Parent")
+	cloudPrivateParentDetailsCmd.Flags().String("name", "", "name or uniq-id of the Private Parent")
 	cloudPrivateParentDetailsCmd.MarkFlagRequired("name")
 }

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -32,7 +32,7 @@ var networkIpPoolDetailsCmd = &cobra.Command{
 An IP Pool is a range of nonintersecting, reusable IP addresses reserved to
 your account.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		freeOnlyFlag, _ := cmd.Flags().GetBool("free-only")
 
 		validateFields := map[interface{}]interface{}{
@@ -59,8 +59,8 @@ your account.`,
 func init() {
 	networkIpPoolCmd.AddCommand(networkIpPoolDetailsCmd)
 
-	networkIpPoolDetailsCmd.Flags().String("uniq_id", "", "uniq_id of IP Pool")
+	networkIpPoolDetailsCmd.Flags().String("uniq-id", "", "uniq-id of IP Pool")
 	networkIpPoolDetailsCmd.Flags().Bool("free-only", false, "return only unassigned IPs in the IP Pool")
 
-	networkIpPoolDetailsCmd.MarkFlagRequired("uniq_id")
+	networkIpPoolDetailsCmd.MarkFlagRequired("uniq-id")
 }

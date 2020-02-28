@@ -21,7 +21,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -30,7 +30,7 @@ var networkLoadBalancerDeleteCmd = &cobra.Command{
 	Short: "Delete a Load Balancer",
 	Long:  `Delete a Load Balancer.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		forceFlag, _ := cmd.Flags().GetBool("force")
 
 		// if force flag wasn't passed
@@ -64,8 +64,8 @@ var networkLoadBalancerDeleteCmd = &cobra.Command{
 
 func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerDeleteCmd)
-	networkLoadBalancerDeleteCmd.Flags().String("uniq_id", "", "uniq_id of Load Balancer")
+	networkLoadBalancerDeleteCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
 	networkLoadBalancerDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
-	networkLoadBalancerDeleteCmd.MarkFlagRequired("uniq_id")
+	networkLoadBalancerDeleteCmd.MarkFlagRequired("uniq-id")
 }

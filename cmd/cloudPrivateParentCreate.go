@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -61,7 +61,7 @@ of configs, check 'cloud server options --configs'.`,
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Private Parent with name [%s] uniq_id [%s] created!\n", details.Domain, details.UniqId)
+		fmt.Printf("Private Parent with name [%s] uniq-id [%s] created!\n", details.Domain, details.UniqId)
 		fmt.Printf("\tYou can now provision Cloud Servers on this Private Parent. See 'help cloud server create'\n")
 	},
 }

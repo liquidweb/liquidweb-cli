@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -33,7 +33,7 @@ A node is an ip address. You can only add ip addresses that are assigned to
 your account.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		nodeFlag, _ := cmd.Flags().GetString("node")
 
 		validateFields := map[interface{}]interface{}{
@@ -61,8 +61,8 @@ your account.
 
 func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerAddNodeCmd)
-	networkLoadBalancerAddNodeCmd.Flags().String("uniq_id", "", "uniq_id of Load Balancer")
+	networkLoadBalancerAddNodeCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
 	networkLoadBalancerAddNodeCmd.Flags().String("node", "", "node (ip) to add to the Load Balancer")
-	networkLoadBalancerAddNodeCmd.MarkFlagRequired("uniq_id")
+	networkLoadBalancerAddNodeCmd.MarkFlagRequired("uniq-id")
 	networkLoadBalancerAddNodeCmd.MarkFlagRequired("node")
 }

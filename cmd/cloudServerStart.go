@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -31,7 +31,7 @@ var cloudServerStartCmd = &cobra.Command{
 
 Boot a server. If the server is already running, this will do nothing.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
 		validateFields := map[interface{}]interface{}{
@@ -66,7 +66,7 @@ Boot a server. If the server is already running, this will do nothing.`,
 func init() {
 	cloudServerCmd.AddCommand(cloudServerStartCmd)
 	cloudServerStartCmd.Flags().Bool("json", false, "output in json format")
-	cloudServerStartCmd.Flags().String("uniq_id", "", "uniq_id of server to start")
+	cloudServerStartCmd.Flags().String("uniq-id", "", "uniq-id of server to start")
 
-	cloudServerStartCmd.MarkFlagRequired("uniq_id")
+	cloudServerStartCmd.MarkFlagRequired("uniq-id")
 }

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -34,7 +34,7 @@ will be able to provision Cloud Servers on a Private Parent. In addition, with P
 Parents you have total control of how many instances can live on the Private Parent,
 as well as how many resources each Cloud Server gets.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 
 		validateFields := map[interface{}]interface{}{
@@ -63,9 +63,9 @@ as well as how many resources each Cloud Server gets.`,
 func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentRenameCmd)
 
-	cloudPrivateParentRenameCmd.Flags().String("uniq_id", "", "uniq_id of the Private Parent")
+	cloudPrivateParentRenameCmd.Flags().String("uniq-id", "", "uniq-id of the Private Parent")
 	cloudPrivateParentRenameCmd.Flags().String("name", "", "name to give the Private Parent")
 
-	cloudPrivateParentRenameCmd.MarkFlagRequired("uniq_id")
+	cloudPrivateParentRenameCmd.MarkFlagRequired("uniq-id")
 	cloudPrivateParentRenameCmd.MarkFlagRequired("name")
 }

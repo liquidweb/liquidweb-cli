@@ -18,9 +18,8 @@ package cmd
 import (
 	"fmt"
 
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/spf13/cobra"
-
-	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudImageRenameCmd = &cobra.Command{

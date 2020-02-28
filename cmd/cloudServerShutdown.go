@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -32,7 +32,7 @@ var cloudServerShutdownCmd = &cobra.Command{
 Stop a server. The 'force' flag will do a hard stop of the server from the parent server. Otherwise, it
 will issue a halt command to the server and shutdown normally.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
 		validateFields := map[interface{}]interface{}{
@@ -67,7 +67,7 @@ will issue a halt command to the server and shutdown normally.`,
 func init() {
 	cloudServerCmd.AddCommand(cloudServerShutdownCmd)
 	cloudServerShutdownCmd.Flags().Bool("json", false, "output in json format")
-	cloudServerShutdownCmd.Flags().String("uniq_id", "", "uniq_id of server to shutdown")
+	cloudServerShutdownCmd.Flags().String("uniq-id", "", "uniq-id of server to shutdown")
 
-	cloudServerShutdownCmd.MarkFlagRequired("uniq_id")
+	cloudServerShutdownCmd.MarkFlagRequired("uniq-id")
 }

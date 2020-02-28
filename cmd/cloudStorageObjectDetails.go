@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -29,7 +29,7 @@ var cloudStorageObjectDetailsCmd = &cobra.Command{
 	Short: "Get details of a Object Store",
 	Long:  `Get details of a Object Store`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -52,7 +52,7 @@ var cloudStorageObjectDetailsCmd = &cobra.Command{
 
 func init() {
 	cloudStorageObjectCmd.AddCommand(cloudStorageObjectDetailsCmd)
-	cloudStorageObjectDetailsCmd.Flags().String("uniq_id", "", "uniq_id of the object store")
+	cloudStorageObjectDetailsCmd.Flags().String("uniq-id", "", "uniq-id of the object store")
 
-	cloudStorageObjectDetailsCmd.MarkFlagRequired("uniq_id")
+	cloudStorageObjectDetailsCmd.MarkFlagRequired("uniq-id")
 }

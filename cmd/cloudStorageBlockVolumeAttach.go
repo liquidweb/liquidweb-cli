@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -33,7 +33,7 @@ Block storage offers a method to attach additional storage to Cloud Server.
 Once attached, volumes appear as normal block devices, and can be used as such.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		attachToFlag, _ := cmd.Flags().GetString("attach-to")
 
 		validateFields := map[interface{}]interface{}{
@@ -64,11 +64,11 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 func init() {
 	cloudStorageBlockVolumeCmd.AddCommand(cloudStorageBlockVolumeAttachCmd)
 
-	cloudStorageBlockVolumeAttachCmd.Flags().String("uniq_id", "",
-		"uniq_id of Cloud Block Storage Volume")
+	cloudStorageBlockVolumeAttachCmd.Flags().String("uniq-id", "",
+		"uniq-id of Cloud Block Storage Volume")
 	cloudStorageBlockVolumeAttachCmd.Flags().String("attach-to", "",
-		"uniq_id of Cloud Server to attach to")
+		"uniq-id of Cloud Server to attach to")
 
-	cloudStorageBlockVolumeAttachCmd.MarkFlagRequired("uniq_id")
+	cloudStorageBlockVolumeAttachCmd.MarkFlagRequired("uniq-id")
 	cloudStorageBlockVolumeAttachCmd.MarkFlagRequired("attach-to")
 }

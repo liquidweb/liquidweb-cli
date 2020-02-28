@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -29,7 +29,7 @@ var cloudImageCreateCmd = &cobra.Command{
 	Short: "Create a Cloud Image",
 	Long:  `Create a Cloud Image.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 
 		validateFields := map[interface{}]interface{}{
@@ -56,9 +56,9 @@ var cloudImageCreateCmd = &cobra.Command{
 func init() {
 	cloudImageCmd.AddCommand(cloudImageCreateCmd)
 
-	cloudImageCreateCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Server")
+	cloudImageCreateCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server")
 	cloudImageCreateCmd.Flags().String("name", "", "name for the Cloud Image")
 
-	cloudImageCreateCmd.MarkFlagRequired("uniq_id")
+	cloudImageCreateCmd.MarkFlagRequired("uniq-id")
 	cloudImageCreateCmd.MarkFlagRequired("name")
 }

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -29,7 +29,7 @@ var cloudBackupRestoreCmd = &cobra.Command{
 	Short: "Restore a Cloud Backup on a Cloud Server",
 	Long:  `Restore a Cloud Backup on a Cloud Server.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		rebuildFsFlag, _ := cmd.Flags().GetBool("rebuild-fs")
 		backupIdFlag, _ := cmd.Flags().GetInt64("backup-id")
 
@@ -53,17 +53,17 @@ var cloudBackupRestoreCmd = &cobra.Command{
 		}
 
 		fmt.Printf("Restoring backup! %+v\n", details)
-		fmt.Printf("\tcheck progress with 'cloud server status --uniq_id %s'\n", uniqIdFlag)
+		fmt.Printf("\tcheck progress with 'cloud server status --uniq-id %s'\n", uniqIdFlag)
 	},
 }
 
 func init() {
 	cloudBackupCmd.AddCommand(cloudBackupRestoreCmd)
 
-	cloudBackupRestoreCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Server")
+	cloudBackupRestoreCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server")
 	cloudBackupRestoreCmd.Flags().Int64("backup-id", -1, "id of the Cloud Backup")
 	cloudBackupRestoreCmd.Flags().Bool("rebuild-fs", false, "rebuild filesystem before restoring")
 
-	cloudBackupRestoreCmd.MarkFlagRequired("uniq_id")
+	cloudBackupRestoreCmd.MarkFlagRequired("uniq-id")
 	cloudBackupRestoreCmd.MarkFlagRequired("backup-id")
 }

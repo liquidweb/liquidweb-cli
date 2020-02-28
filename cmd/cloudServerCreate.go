@@ -24,7 +24,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -240,7 +240,7 @@ For a list of backups, see 'cloud backups list'
 
 		resultUniqId := result.(map[string]interface{})["uniq_id"]
 		fmt.Printf(
-			"Cloud server with uniq_id [%s] creating. Check status with 'cloud server status --uniq_id %s'\n",
+			"Cloud server with uniq-id [%s] creating. Check status with 'cloud server status --uniq-id %s'\n",
 			resultUniqId, resultUniqId)
 	},
 }
@@ -278,7 +278,7 @@ func init() {
 
 	// private parent specific
 	cloudServerCreateCmd.Flags().String("private-parent", "",
-		"name or uniq_id of the private-parent. Must use when creating a Cloud Server on a private parent.")
+		"name or uniq-id of the private-parent. Must use when creating a Cloud Server on a private parent.")
 	cloudServerCreateCmd.Flags().Int("memory", -1, "memory (ram) value use with --private-parent")
 	cloudServerCreateCmd.Flags().Int("diskspace", -1, "diskspace value use with --private-parent")
 	cloudServerCreateCmd.Flags().Int("vcpu", -1, "vcpu value use with --private-parent")
