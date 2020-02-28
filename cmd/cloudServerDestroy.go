@@ -21,7 +21,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -82,13 +82,13 @@ server.`,
 func init() {
 	cloudServerCmd.AddCommand(cloudServerDestroyCmd)
 
-	cloudServerDestroyCmd.Flags().StringSliceVar(&cloudServerDestroyCmdUniqIdFlag, "uniq_id",
-		[]string{}, "uniq_ids separated by ',' of server(s) to destroy")
+	cloudServerDestroyCmd.Flags().StringSliceVar(&cloudServerDestroyCmdUniqIdFlag, "uniq-id",
+		[]string{}, "uniq-ids separated by ',' of server(s) to destroy")
 	cloudServerDestroyCmd.Flags().String("comment", "initiated from liquidweb-cli",
 		"comment related to the cancellation")
 	cloudServerDestroyCmd.Flags().String("reason", "",
 		"reason for the cancellation (optional)")
 	cloudServerDestroyCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
-	cloudServerDestroyCmd.MarkFlagRequired("uniq_id")
+	cloudServerDestroyCmd.MarkFlagRequired("uniq-id")
 }

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -33,7 +33,7 @@ Block storage offers a method to attach additional storage to Cloud Server.
 Once attached, volumes appear as normal block devices, and can be used as such.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
 		validateFields := map[interface{}]interface{}{
@@ -68,7 +68,7 @@ func init() {
 	cloudStorageBlockVolumeCmd.AddCommand(cloudStorageBlockVolumeDetailsCmd)
 
 	cloudStorageBlockVolumeDetailsCmd.Flags().Bool("json", false, "output in json format")
-	cloudStorageBlockVolumeDetailsCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Block Storage volume")
+	cloudStorageBlockVolumeDetailsCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Block Storage volume")
 
-	cloudStorageBlockVolumeDetailsCmd.MarkFlagRequired("uniq_id")
+	cloudStorageBlockVolumeDetailsCmd.MarkFlagRequired("uniq-id")
 }

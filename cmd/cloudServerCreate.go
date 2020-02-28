@@ -40,14 +40,14 @@ Examples:
 # Create a Cloud Server on a Private Parent named "private"
 'cloud server create --private-parent private --memory 1024 --diskspace 40 --vcpu 2 --zone 40460 --template DEBIAN_10_UNMANAGED'
 
-# Create a Cloud Server on config_id 1
-'cloud server create --config_id 1 --template DEBIAN_10_UNMANAGED --zone 40460'
+# Create a Cloud Server on config-id 1
+'cloud server create --config-id 1 --template DEBIAN_10_UNMANAGED --zone 40460'
 
 # Create a Cloud Server from image id 111
-'cloud server create --image-id 111 --zone 40460 --config_id 1'
+'cloud server create --image-id 111 --zone 40460 --config-id 1'
 
 # Create a Cloud Server from backup id 111
-'cloud server create --backup-id 111 --zone 40460 --config_id 1'
+'cloud server create --backup-id 111 --zone 40460 --config-id 1'
 
 These examples use default values for various flags, such as password, type, ssh-key, hostname, etc.
 
@@ -63,13 +63,13 @@ For a list of backups, see 'cloud backups list'
 		params.Hostname, _ = cmd.Flags().GetString("hostname")
 		params.Ips, _ = cmd.Flags().GetInt("ips")
 		pubSshKey, _ := cmd.Flags().GetString("public-ssh-key")
-		params.ConfigId, _ = cmd.Flags().GetInt("config_id")
+		params.ConfigId, _ = cmd.Flags().GetInt("config-id")
 		params.BackupPlan, _ = cmd.Flags().GetString("backup-plan")
 		params.BackupPlanQuota, _ = cmd.Flags().GetInt("backup-plan-quota")
 		params.Bandwidth, _ = cmd.Flags().GetString("bandwidth")
 		params.Zone, _ = cmd.Flags().GetInt("zone")
 		params.WinAv, _ = cmd.Flags().GetString("winav")
-		params.MsSql, _ = cmd.Flags().GetString("ms_sql")
+		params.MsSql, _ = cmd.Flags().GetString("ms-sql")
 		params.PrivateParent, _ = cmd.Flags().GetString("private-parent")
 		params.Password, _ = cmd.Flags().GetString("password")
 		params.Memory, _ = cmd.Flags().GetInt("memory")
@@ -89,7 +89,7 @@ For a list of backups, see 'cloud backups list'
 		}
 
 		fmt.Printf(
-			"Cloud server with uniq_id [%s] creating. Check status with 'cloud server status --uniq_id %s'\n",
+			"Cloud server with uniq-id [%s] creating. Check status with 'cloud server status --uniq-id %s'\n",
 			uniqId, uniqId)
 	},
 }
@@ -109,7 +109,7 @@ func init() {
 	cloudServerCreateCmd.Flags().Int("ips", 1, "amount of IP addresses")
 	cloudServerCreateCmd.Flags().String("public-ssh-key", sshPubKeyFile,
 		"path to file containing the public ssh key you wish to be on the new Cloud Server")
-	cloudServerCreateCmd.Flags().Int("config_id", 0, "config_id to use")
+	cloudServerCreateCmd.Flags().Int("config-id", 0, "config-id to use")
 	cloudServerCreateCmd.Flags().String("backup-plan", "None", "Cloud Server backup plan to use")
 	cloudServerCreateCmd.Flags().Int("backup-plan-quota", 300, "Quota amount. Should only be used with '--backup-plan Quota'")
 	cloudServerCreateCmd.Flags().String("bandwidth", "SS.10000", "bandwidth package to use")
@@ -124,7 +124,7 @@ func init() {
 
 	// private parent specific
 	cloudServerCreateCmd.Flags().String("private-parent", "",
-		"name or uniq_id of the private-parent. Must use when creating a Cloud Server on a private parent.")
+		"name or uniq-id of the private-parent. Must use when creating a Cloud Server on a private parent.")
 	cloudServerCreateCmd.Flags().Int("memory", -1, "memory (ram) value use with --private-parent")
 	cloudServerCreateCmd.Flags().Int("diskspace", -1, "diskspace value use with --private-parent")
 	cloudServerCreateCmd.Flags().Int("vcpu", -1, "vcpu value use with --private-parent")

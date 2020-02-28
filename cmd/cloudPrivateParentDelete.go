@@ -21,7 +21,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudPrivateParentDeleteCmd = &cobra.Command{
@@ -69,7 +69,7 @@ as well as how many resources each Cloud Server gets.`,
 func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentDeleteCmd)
 
-	cloudPrivateParentDeleteCmd.Flags().String("name", "", "name or uniq_id of the Private Parent")
+	cloudPrivateParentDeleteCmd.Flags().String("name", "", "name or uniq-id of the Private Parent")
 	cloudPrivateParentDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
 	cloudPrivateParentDeleteCmd.MarkFlagRequired("name")

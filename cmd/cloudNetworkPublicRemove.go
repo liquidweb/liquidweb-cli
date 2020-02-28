@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -41,7 +41,7 @@ configuration.
 
 Note that you cannot remove the Cloud Servers primary ip with this command.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		rebootFlag, _ := cmd.Flags().GetBool("reboot")
 
 		validateFields := map[interface{}]interface{}{
@@ -79,12 +79,12 @@ Note that you cannot remove the Cloud Servers primary ip with this command.`,
 
 func init() {
 	cloudNetworkPublicCmd.AddCommand(cloudNetworkPublicRemoveCmd)
-	cloudNetworkPublicRemoveCmd.Flags().String("uniq_id", "", "uniq_id of the Cloud Server")
+	cloudNetworkPublicRemoveCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
 	cloudNetworkPublicRemoveCmd.Flags().Bool("reboot", false,
 		"whether or not to automatically remove the IP address(es) in the server config (requires reboot)")
 	cloudNetworkPublicRemoveCmd.Flags().StringSliceVar(&cloudNetworkPublicRemoveCmdIpsFlag, "ips", []string{},
 		"ips separated by ',' to remove from the Cloud Server")
 
-	cloudNetworkPublicRemoveCmd.MarkFlagRequired("uniq_id")
+	cloudNetworkPublicRemoveCmd.MarkFlagRequired("uniq-id")
 	cloudNetworkPublicRemoveCmd.MarkFlagRequired("ips")
 }

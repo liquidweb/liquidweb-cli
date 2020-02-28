@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -61,7 +61,7 @@ Pacemaker
 Heartbeat
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -86,7 +86,7 @@ Heartbeat
 
 func init() {
 	cloudNetworkVipCmd.AddCommand(cloudNetworkVipDeleteCmd)
-	cloudNetworkVipDeleteCmd.Flags().String("uniq_id", "", "uniq_id of VIP to delete")
+	cloudNetworkVipDeleteCmd.Flags().String("uniq-id", "", "uniq-id of VIP to delete")
 
-	cloudNetworkVipDeleteCmd.MarkFlagRequired("uniq_id")
+	cloudNetworkVipDeleteCmd.MarkFlagRequired("uniq-id")
 }

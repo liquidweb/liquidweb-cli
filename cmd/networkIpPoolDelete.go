@@ -21,7 +21,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -33,7 +33,7 @@ var networkIpPoolDeleteCmd = &cobra.Command{
 An IP Pool is a range of nonintersecting, reusable IP addresses reserved to
 your account.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		forceFlag, _ := cmd.Flags().GetBool("force")
 
 		// if force flag wasn't passed
@@ -67,8 +67,8 @@ your account.`,
 func init() {
 	networkIpPoolCmd.AddCommand(networkIpPoolDeleteCmd)
 
-	networkIpPoolDeleteCmd.Flags().String("uniq_id", "", "uniq_id of IP Pool")
+	networkIpPoolDeleteCmd.Flags().String("uniq-id", "", "uniq-id of IP Pool")
 	networkIpPoolDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
-	networkIpPoolDeleteCmd.MarkFlagRequired("uniq_id")
+	networkIpPoolDeleteCmd.MarkFlagRequired("uniq-id")
 }

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -84,7 +84,7 @@ func init() {
 	cloudStorageBlockVolumeCreateCmd.Flags().String("name", fmt.Sprintf("bsv-%s", utils.RandomString(5)),
 		"Name for Block Storage volume")
 	cloudStorageBlockVolumeCreateCmd.Flags().Bool("cross-attach", false, "Enable cross attach for Block Storage volume")
-	cloudStorageBlockVolumeCreateCmd.Flags().String("attach", "", "uniq_id to attach created Block Storage volume to")
+	cloudStorageBlockVolumeCreateCmd.Flags().String("attach", "", "uniq-id to attach created Block Storage volume to")
 
 	cloudStorageBlockVolumeCreateCmd.MarkFlagRequired("size")
 }

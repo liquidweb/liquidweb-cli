@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -84,8 +84,8 @@ Heartbeat
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Created VIP [%s] with uniq_id [%s]\n", details.Domain, details.UniqId)
-		fmt.Printf("\nsee 'cloud network vip details --uniq_id %s' for further details\n", details.UniqId)
+		fmt.Printf("Created VIP [%s] with uniq-id [%s]\n", details.Domain, details.UniqId)
+		fmt.Printf("\nsee 'cloud network vip details --uniq-id %s' for further details\n", details.UniqId)
 	},
 }
 

@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -39,7 +39,7 @@ You can check this methods API documentation for what the returned fields mean:
 https://cart.liquidweb.com/storm/api/docs/bleed/Storm/Server.html#method_details
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
 		validateFields := map[interface{}]interface{}{
@@ -122,7 +122,7 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerDetailsCmd)
 
 	cloudServerDetailsCmd.Flags().Bool("json", false, "output in json format")
-	cloudServerDetailsCmd.Flags().String("uniq_id", "", "get details of this uniq_id")
+	cloudServerDetailsCmd.Flags().String("uniq-id", "", "get details of this uniq-id")
 
-	cloudServerDetailsCmd.MarkFlagRequired("uniq_id")
+	cloudServerDetailsCmd.MarkFlagRequired("uniq-id")
 }

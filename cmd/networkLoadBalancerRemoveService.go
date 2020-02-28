@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -31,7 +31,7 @@ var networkLoadBalancerRemoveServiceCmd = &cobra.Command{
 
 A service represents a service to load balance.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		srcPortFlag, _ := cmd.Flags().GetInt("src-port")
 
 		validateFields := map[interface{}]interface{}{
@@ -59,9 +59,9 @@ A service represents a service to load balance.`,
 
 func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerRemoveServiceCmd)
-	networkLoadBalancerRemoveServiceCmd.Flags().String("uniq_id", "", "uniq_id of Load Balancer")
+	networkLoadBalancerRemoveServiceCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
 	networkLoadBalancerRemoveServiceCmd.Flags().Int("src-port", -1,
 		"source port of service to remove from the Load Balancer")
-	networkLoadBalancerRemoveServiceCmd.MarkFlagRequired("uniq_id")
+	networkLoadBalancerRemoveServiceCmd.MarkFlagRequired("uniq-id")
 	networkLoadBalancerRemoveServiceCmd.MarkFlagRequired("src-port")
 }

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -41,22 +41,22 @@ Server where possible.
 
 ** Cloning to a Private Parent: **
 
---private-parent must be passed containing either the uniq_id of the Private Parent,
+--private-parent must be passed containing either the uniq-id of the Private Parent,
 or its name.
 
 The flags --diskspace --vcpu --memory must all be passed if the source Cloud
 Server is not on a Private Parent.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		passwordFlag, _ := cmd.Flags().GetString("password")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
-		newIpsFlag, _ := cmd.Flags().GetInt64("new_ips")
+		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 		hostnameFlag, _ := cmd.Flags().GetString("hostname")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
 		diskspaceFlag, _ := cmd.Flags().GetInt64("diskspace")
 		memoryFlag, _ := cmd.Flags().GetInt64("memory")
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
-		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
+		configIdFlag, _ := cmd.Flags().GetInt64("config-id")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -65,10 +65,10 @@ Server is not on a Private Parent.`,
 		}
 
 		if privateParentFlag != "" && configIdFlag != -1 {
-			lwCliInst.Die(fmt.Errorf("cant pass both --config_id and --private-parent flags"))
+			lwCliInst.Die(fmt.Errorf("cant pass both --config-id and --private-parent flags"))
 		}
 		if privateParentFlag == "" && configIdFlag == -1 {
-			lwCliInst.Die(fmt.Errorf("must pass --config_id or --private-parent"))
+			lwCliInst.Die(fmt.Errorf("must pass --config-id or --private-parent"))
 		}
 
 		var privateParentUniqId string
@@ -129,7 +129,7 @@ Server is not on a Private Parent.`,
 		}
 
 		fmt.Printf(
-			"Success! Cloning existing Cloud Server [%s] to new Cloud Server [%s]. Check status with 'cloud server status --uniq_id %s'\n",
+			"Success! Cloning existing Cloud Server [%s] to new Cloud Server [%s]. Check status with 'cloud server status --uniq-id %s'\n",
 			uniqIdFlag, details.UniqId, uniqIdFlag)
 
 	},
@@ -139,10 +139,10 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerCloneCmd)
 
 	// General
-	cloudServerCloneCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Server to clone")
+	cloudServerCloneCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server to clone")
 	cloudServerCloneCmd.Flags().String("password", "", "root or administrator password for new Cloud Server")
 	cloudServerCloneCmd.Flags().Int64("zone", -1, "zone for new Cloud Server")
-	cloudServerCloneCmd.Flags().Int64("new_ips", 1, "amount of IP addresses for new Cloud Server")
+	cloudServerCloneCmd.Flags().Int64("new-ips", 1, "amount of IP addresses for new Cloud Server")
 	cloudServerCloneCmd.Flags().String("hostname", fmt.Sprintf("%s.%s.io", utils.RandomString(4),
 		utils.RandomString(10)), "hostname for new Cloud Server")
 	cloudServerCloneCmd.Flags().StringSliceVar(&cloudServerCloneCmdPoolIpsFlag, "pool-ips", []string{},
@@ -150,14 +150,14 @@ func init() {
 
 	// Private Parent
 	cloudServerCloneCmd.Flags().String("private-parent", "",
-		"name or uniq_id of the Private Parent to place new Cloud Server on (see: 'cloud private-parent list')")
+		"name or uniq-id of the Private Parent to place new Cloud Server on (see: 'cloud private-parent list')")
 	cloudServerCloneCmd.Flags().Int64("diskspace", -1, "diskspace for new Cloud Server (when private-parent)")
 	cloudServerCloneCmd.Flags().Int64("memory", -1, "memory for new Cloud Server (when private-parent)")
 	cloudServerCloneCmd.Flags().Int64("vcpu", -1, "amount of vcpus for new Cloud Server (when private-parent)")
 
 	// Non Private Parent
-	cloudServerCloneCmd.Flags().Int64("config_id", -1,
-		"config_id for new Cloud Server (when !private-parent) (see: 'cloud server options --configs')")
+	cloudServerCloneCmd.Flags().Int64("config-id", -1,
+		"config-id for new Cloud Server (when !private-parent) (see: 'cloud server options --configs')")
 
-	cloudServerCloneCmd.MarkFlagRequired("uniq_id")
+	cloudServerCloneCmd.MarkFlagRequired("uniq-id")
 }

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -33,7 +33,7 @@ Block storage offers a method to attach additional storage to Cloud Server.
 Once attached, volumes appear as normal block devices, and can be used as such.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 		enableCrossAttachFlag, _ := cmd.Flags().GetBool("enable-cross-attach")
 		disableCrossAttachFlag, _ := cmd.Flags().GetBool("disable-cross-attach")
@@ -77,8 +77,8 @@ Once attached, volumes appear as normal block devices, and can be used as such.
 func init() {
 	cloudStorageBlockVolumeCmd.AddCommand(cloudStorageBlockVolumeUpdateCmd)
 
-	cloudStorageBlockVolumeUpdateCmd.Flags().String("uniq_id", "",
-		"uniq_id of Cloud Block Storage Volume")
+	cloudStorageBlockVolumeUpdateCmd.Flags().String("uniq-id", "",
+		"uniq-id of Cloud Block Storage Volume")
 	cloudStorageBlockVolumeUpdateCmd.Flags().String("name", "",
 		"new name for the Cloud Block Storage Volume")
 	cloudStorageBlockVolumeUpdateCmd.Flags().Bool("enable-cross-attach", false,
@@ -86,5 +86,5 @@ func init() {
 	cloudStorageBlockVolumeUpdateCmd.Flags().Bool("disable-cross-attach", false,
 		"disable cross attach for Cloud Block Storage Volume")
 
-	cloudStorageBlockVolumeUpdateCmd.MarkFlagRequired("uniq_id")
+	cloudStorageBlockVolumeUpdateCmd.MarkFlagRequired("uniq-id")
 }

@@ -25,8 +25,8 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
-	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/types/cmd"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
+	cmdTypes "github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -94,12 +94,12 @@ A Load Balancer allows you to distribute traffic to multiple endpoints.
 To remove a health check from a service, simply call update for the service(s) omitting their --health-check entries. For example,
 this would remove any set health checks for services 443:443,80:80 (as well as remove any other services entirely):
 
-network load-balancer update --uniq_id ABC123 --services 443:443,80:80
+network load-balancer update --uniq-id ABC123 --services 443:443,80:80
 
 Similarly to remove a health check when using --health-check-file, simply remove the health check from the file.
 `, networkLoadBalancerServicesHealthChecksHelp, networkLoadBalancerServicesHealthCheckFileHelp),
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 		strategyFlag, _ := cmd.Flags().GetString("strategy")
 		enableSslTerminationFlag, _ := cmd.Flags().GetBool("enable-ssl-termination")
@@ -294,7 +294,7 @@ Similarly to remove a health check when using --health-check-file, simply remove
 
 func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerUpdateCmd)
-	networkLoadBalancerUpdateCmd.Flags().String("uniq_id", "", "uniq_id of Load Balancer")
+	networkLoadBalancerUpdateCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
 	networkLoadBalancerUpdateCmd.Flags().String("strategy", "", "Load Balancer strategy (see 'network load-balancer get-strategies')")
 	networkLoadBalancerUpdateCmd.Flags().String("name", "", "name of Load Balancer")
 	networkLoadBalancerUpdateCmd.Flags().Bool("enable-ssl-termination", false, "enable ssl termination")
@@ -317,5 +317,5 @@ func init() {
 	networkLoadBalancerUpdateCmd.Flags().String("health-check-file", "",
 		"A file containing valid yaml describing the LoadBalancer health checks to add for the service(s). Should not be combined with --health-check.")
 
-	networkLoadBalancerUpdateCmd.MarkFlagRequired("uniq_id")
+	networkLoadBalancerUpdateCmd.MarkFlagRequired("uniq-id")
 }

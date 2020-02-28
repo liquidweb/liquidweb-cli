@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -39,7 +39,7 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -68,6 +68,6 @@ and cost-savings.
 
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateDetailsCmd)
-	cloudNetworkPrivateDetailsCmd.Flags().String("uniq_id", "", "uniq_id of the Cloud Server")
-	cloudNetworkPrivateDetailsCmd.MarkFlagRequired("uniq_id")
+	cloudNetworkPrivateDetailsCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
+	cloudNetworkPrivateDetailsCmd.MarkFlagRequired("uniq-id")
 }

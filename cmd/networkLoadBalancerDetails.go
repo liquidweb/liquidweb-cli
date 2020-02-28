@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -29,7 +29,7 @@ var networkLoadBalancerDetailsCmd = &cobra.Command{
 	Short: "Get details of a Load Balancer",
 	Long:  `Get details of a Load Balancer.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -54,6 +54,6 @@ var networkLoadBalancerDetailsCmd = &cobra.Command{
 
 func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerDetailsCmd)
-	networkLoadBalancerDetailsCmd.Flags().String("uniq_id", "", "uniq_id of Load Balancer")
-	networkLoadBalancerDetailsCmd.MarkFlagRequired("uniq_id")
+	networkLoadBalancerDetailsCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
+	networkLoadBalancerDetailsCmd.MarkFlagRequired("uniq-id")
 }

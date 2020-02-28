@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -105,8 +105,8 @@ If nothing is currently running, only the 'status' field will be returned with o
 func init() {
 	cloudServerCmd.AddCommand(cloudServerStatusCmd)
 
-	cloudServerStatusCmd.Flags().StringSliceVar(&cloudServerStatusCmdUniqIdFlag, "uniq_id", []string{},
-		"uniq_id(s) to get status of. For multiple, must be ',' separated")
+	cloudServerStatusCmd.Flags().StringSliceVar(&cloudServerStatusCmdUniqIdFlag, "uniq-id", []string{},
+		"uniq-id(s) to get status of. For multiple, must be ',' separated")
 }
 
 func _printCloudServerStatus(uniqId string, domain string) {

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -36,7 +36,7 @@ on the server. It merely updates what our records show.
 bandwidth_plan is the bandwidth plan you wish to use.  A quota of 0 indicates that you want
 as-you-go, usage-based bandwidth charges.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		hostnameFlag, _ := cmd.Flags().GetString("hostname")
 		backupPlanFlag, _ := cmd.Flags().GetString("backup-plan")
 		disableBackupsFlag, _ := cmd.Flags().GetBool("disable-backups")
@@ -99,7 +99,7 @@ as-you-go, usage-based bandwidth charges.`,
 func init() {
 	cloudServerCmd.AddCommand(cloudServerUpdateCmd)
 
-	cloudServerUpdateCmd.Flags().String("uniq_id", "", "uniq_id of the Cloud Server")
+	cloudServerUpdateCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
 	cloudServerUpdateCmd.Flags().String("hostname", "", "hostname to set")
 	cloudServerUpdateCmd.Flags().String("backup-plan", "", "Name of the backup plan")
 	cloudServerUpdateCmd.Flags().Int64("backup-quota", -1, "Quota to set for Quota type backup-plan")
@@ -107,5 +107,5 @@ func init() {
 	cloudServerUpdateCmd.Flags().Int64("bandwidth-quota", -1,
 		"bandwidth quota (0 indicates as-you-go, usage-based bandwidth charges)")
 
-	cloudServerUpdateCmd.MarkFlagRequired("uniq_id")
+	cloudServerUpdateCmd.MarkFlagRequired("uniq-id")
 }

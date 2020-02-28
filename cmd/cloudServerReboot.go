@@ -20,18 +20,18 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var cloudServerRebootCmd = &cobra.Command{
 	Use:   "reboot",
 	Short: "Reboot a Cloud Server",
-	Long: `Reboots the cloud server as specified by the uniq_id flag.
+	Long: `Reboots the cloud server as specified by the uniq-id flag.
 
 To perform a forced a reboot, you must use --force`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqId, _ := cmd.Flags().GetString("uniq_id")
+		uniqId, _ := cmd.Flags().GetString("uniq-id")
 		jsonOutput, _ := cmd.Flags().GetBool("json")
 		force, _ := cmd.Flags().GetBool("force")
 
@@ -65,7 +65,7 @@ func init() {
 
 	cloudServerRebootCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerRebootCmd.Flags().Bool("force", false, "perform a forced reboot")
-	cloudServerRebootCmd.Flags().String("uniq_id", "", "uniq_id of server to reboot")
+	cloudServerRebootCmd.Flags().String("uniq-id", "", "uniq-id of server to reboot")
 
-	cloudServerRebootCmd.MarkFlagRequired("uniq_id")
+	cloudServerRebootCmd.MarkFlagRequired("uniq-id")
 }

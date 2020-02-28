@@ -18,9 +18,8 @@ package cmd
 import (
 	"fmt"
 
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/spf13/cobra"
-
-	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudImageRenameCmd = &cobra.Command{
@@ -28,7 +27,7 @@ var cloudImageRenameCmd = &cobra.Command{
 	Short: "Renames a Cloud Image",
 	Long:  `Renames a Cloud Image.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		imageIdFlag, _ := cmd.Flags().GetInt64("image_id")
+		imageIdFlag, _ := cmd.Flags().GetInt64("image-id")
 		nameFlag, _ := cmd.Flags().GetString("name")
 
 		apiArgs := map[string]interface{}{"id": imageIdFlag, "name": nameFlag}
@@ -46,10 +45,10 @@ var cloudImageRenameCmd = &cobra.Command{
 func init() {
 	cloudImageCmd.AddCommand(cloudImageRenameCmd)
 
-	cloudImageRenameCmd.Flags().Int64("image_id", -1,
+	cloudImageRenameCmd.Flags().Int64("image-id", -1,
 		"id number of the image (see 'cloud image list')")
 	cloudImageRenameCmd.Flags().String("name", "", "new name for the Cloud Image")
 
-	cloudImageRenameCmd.MarkFlagRequired("image_id")
+	cloudImageRenameCmd.MarkFlagRequired("image-id")
 	cloudImageRenameCmd.MarkFlagRequired("name")
 }
