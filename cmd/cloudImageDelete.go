@@ -29,7 +29,7 @@ var cloudImageDeleteCmd = &cobra.Command{
 	Short: "Delete a Cloud Image",
 	Long:  `Delete a Cloud Image`,
 	Run: func(cmd *cobra.Command, args []string) {
-		imageIdFlag, _ := cmd.Flags().GetInt64("image_id")
+		imageIdFlag, _ := cmd.Flags().GetInt64("image-id")
 		forceFlag, _ := cmd.Flags().GetBool("force")
 
 		// if force flag wasn't passed
@@ -55,8 +55,8 @@ var cloudImageDeleteCmd = &cobra.Command{
 func init() {
 	cloudImageCmd.AddCommand(cloudImageDeleteCmd)
 
-	cloudImageDeleteCmd.Flags().Int64("image_id", -1,
+	cloudImageDeleteCmd.Flags().Int64("image-id", -1,
 		"id number of the image (see 'cloud image list')")
 	cloudImageDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
-	cloudImageDeleteCmd.MarkFlagRequired("image_id")
+	cloudImageDeleteCmd.MarkFlagRequired("image-id")
 }

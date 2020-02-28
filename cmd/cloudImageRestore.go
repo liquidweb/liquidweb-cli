@@ -31,7 +31,7 @@ var cloudImageRestoreCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
 		rebuildFsFlag, _ := cmd.Flags().GetBool("rebuild-fs")
-		imageIdFlag, _ := cmd.Flags().GetInt64("image_id")
+		imageIdFlag, _ := cmd.Flags().GetInt64("image-id")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag:  "UniqId",
@@ -61,9 +61,9 @@ func init() {
 	cloudImageCmd.AddCommand(cloudImageRestoreCmd)
 
 	cloudImageRestoreCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Server")
-	cloudImageRestoreCmd.Flags().Int64("image_id", -1, "id of the Cloud Image")
+	cloudImageRestoreCmd.Flags().Int64("image-id", -1, "id of the Cloud Image")
 	cloudImageRestoreCmd.Flags().Bool("rebuild-fs", false, "rebuild filesystem before restoring")
 
 	cloudImageRestoreCmd.MarkFlagRequired("uniq_id")
-	cloudImageRestoreCmd.MarkFlagRequired("image_id")
+	cloudImageRestoreCmd.MarkFlagRequired("image-id")
 }
