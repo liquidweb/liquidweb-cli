@@ -85,7 +85,7 @@ func (ci *Client) DerivePrivateParentUniqId(name string) (string, error) {
 	}
 
 	if privateParentUniqId == "" {
-		return "", fmt.Errorf("failed deriving uniq_id of private parent from [%s]: %s", name, privateParentDetailsErr)
+		return "", fmt.Errorf("failed deriving uniq-id of private parent from [%s]: %s", name, privateParentDetailsErr)
 	}
 
 	return privateParentUniqId, nil

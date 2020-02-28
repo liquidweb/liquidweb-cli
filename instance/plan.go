@@ -77,7 +77,7 @@ func (ci *Client) processPlanCloudServerCreate(params *CloudServerCreateParams) 
 	}
 
 	fmt.Printf(
-		"Cloud server with uniq_id [%s] creating. Check status with 'cloud server status --uniq_id %s'\n",
+		"Cloud server with uniq-id [%s] creating. Check status with 'cloud server status --uniq-id %s'\n",
 		uniqId, uniqId)
 	return nil
 }
