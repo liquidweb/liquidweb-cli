@@ -68,25 +68,27 @@ cloud:
 		varSliceFlag, err := cmd.Flags().GetStringSlice("var")
 
 		if err != nil {
-			panic(err)
+			lwCliInst.Die(err)
 		}
 
 		_, err = os.Stat(planFile)
 		if err != nil {
 			if os.IsNotExist(err) {
-				fmt.Printf("Plan file \"%s\" does not exist.\n", planFile)
-				os.Exit(1)
+				lwCliInst.Die(fmt.Errorf("Plan file \"%s\" does not exist.\n", planFile))
 			} else {
-				panic(err)
+				lwCliInst.Die(err)
 			}
 		}
 
 		planYaml, err := ioutil.ReadFile(planFile)
 		if err != nil {
-			panic(err)
+			lwCliInst.Die(err)
 		}
 
-		planYaml = processTemplate(varSliceFlag, planYaml)
+		planYaml, err = processTemplate(varSliceFlag, planYaml)
+		if err != nil {
+			lwCliInst.Die(err)
+		}
 
 		var plan instance.Plan
 		err = yaml.Unmarshal(planYaml, &plan)
@@ -95,7 +97,7 @@ cloud:
 		}
 
 		if err := lwCliInst.ProcessPlan(&plan); err != nil {
-			panic(err)
+			lwCliInst.Die(err)
 		}
 	},
 }
@@ -121,7 +123,7 @@ func varsToMap(vars []string) map[string]string {
 	return varMap
 }
 
-func processTemplate(varSliceFlag []string, planYaml []byte) []byte {
+func processTemplate(varSliceFlag []string, planYaml []byte) ([]byte, error) {
 	type TemplateVars struct {
 		Var map[string]string
 		Env map[string]string
@@ -135,14 +137,14 @@ func processTemplate(varSliceFlag []string, planYaml []byte) []byte {
 	var tmplBytes bytes.Buffer
 	tmpl, err := template.New("plan.yaml").Parse(string(planYaml))
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 	err = tmpl.Execute(&tmplBytes, tmplVars)
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
-	return tmplBytes.Bytes()
+	return tmplBytes.Bytes(), nil
 }
 
 func init() {
