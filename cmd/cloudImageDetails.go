@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudImageDetailsCmd = &cobra.Command{
@@ -28,7 +28,7 @@ var cloudImageDetailsCmd = &cobra.Command{
 	Short: "Get details of a Cloud Image",
 	Long:  `Get details of a Cloud Image`,
 	Run: func(cmd *cobra.Command, args []string) {
-		imageIdFlag, _ := cmd.Flags().GetInt64("image_id")
+		imageIdFlag, _ := cmd.Flags().GetInt64("image-id")
 
 		apiArgs := map[string]interface{}{"id": imageIdFlag}
 
@@ -45,7 +45,7 @@ var cloudImageDetailsCmd = &cobra.Command{
 func init() {
 	cloudImageCmd.AddCommand(cloudImageDetailsCmd)
 
-	cloudImageDetailsCmd.Flags().Int64("image_id", -1,
+	cloudImageDetailsCmd.Flags().Int64("image-id", -1,
 		"id number of the image (see 'cloud image list')")
-	cloudImageDetailsCmd.MarkFlagRequired("image_id")
+	cloudImageDetailsCmd.MarkFlagRequired("image-id")
 }

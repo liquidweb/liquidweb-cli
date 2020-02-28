@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -39,7 +39,7 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -66,12 +66,12 @@ and cost-savings.
 		}
 
 		fmt.Printf("Attaching %s to private network\n", details.Attached)
-		fmt.Printf("\n\nYou can check progress with 'cloud server status --uniq_id %s'\n", uniqIdFlag)
+		fmt.Printf("\n\nYou can check progress with 'cloud server status --uniq-id %s'\n", uniqIdFlag)
 	},
 }
 
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateAttachCmd)
-	cloudNetworkPrivateAttachCmd.Flags().String("uniq_id", "", "uniq_id of the Cloud Server")
-	cloudNetworkPrivateAttachCmd.MarkFlagRequired("uniq_id")
+	cloudNetworkPrivateAttachCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
+	cloudNetworkPrivateAttachCmd.MarkFlagRequired("uniq-id")
 }

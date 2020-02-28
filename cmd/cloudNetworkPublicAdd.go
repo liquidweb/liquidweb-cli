@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -38,7 +38,7 @@ When the reboot flag is not passed, the IP will be assigned to the server, but i
 will be up to the administrator to configure the IP address(es) within the server.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		rebootFlag, _ := cmd.Flags().GetBool("reboot")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 
@@ -93,12 +93,12 @@ will be up to the administrator to configure the IP address(es) within the serve
 
 func init() {
 	cloudNetworkPublicCmd.AddCommand(cloudNetworkPublicAddCmd)
-	cloudNetworkPublicAddCmd.Flags().String("uniq_id", "", "uniq_id of the Cloud Server")
+	cloudNetworkPublicAddCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
 	cloudNetworkPublicAddCmd.Flags().Bool("reboot", false,
 		"wheter or not to automatically configure the new IP address(es) in the server (requires reboot)")
 	cloudNetworkPublicAddCmd.Flags().Int64("new-ips", 0, "amount of new ips to (randomly) grab")
 	cloudNetworkPublicAddCmd.Flags().StringSliceVar(&cloudNetworkPublicAddCmdPoolIpsFlag, "pool-ips", []string{},
 		"ips from your IP Pool separated by ',' to assign to the Cloud Server")
 
-	cloudNetworkPublicAddCmd.MarkFlagRequired("uniq_id")
+	cloudNetworkPublicAddCmd.MarkFlagRequired("uniq-id")
 }

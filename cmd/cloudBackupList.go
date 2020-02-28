@@ -22,7 +22,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -32,7 +32,7 @@ var cloudBackupListCmd = &cobra.Command{
 	Long:  `List Cloud Backups on your account`,
 	Run: func(cmd *cobra.Command, args []string) {
 		jsonFlag, _ := cmd.Flags().GetBool("json")
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 
 		if uniqIdFlag != "" {
 			validateFields := map[interface{}]interface{}{
@@ -83,5 +83,5 @@ func init() {
 	cloudBackupCmd.AddCommand(cloudBackupListCmd)
 
 	cloudBackupListCmd.Flags().Bool("json", false, "output in json format")
-	cloudBackupListCmd.Flags().String("uniq_id", "", "only fetch backups made from this uniq_id")
+	cloudBackupListCmd.Flags().String("uniq-id", "", "only fetch backups made from this uniq-id")
 }

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -38,7 +38,7 @@ Private Parents must use a config of category 'bare-metal' or 'bare-metal-r'. Fo
 of configs, check 'cloud server options --configs'.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		nameFlag, _ := cmd.Flags().GetString("name")
-		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
+		configIdFlag, _ := cmd.Flags().GetInt64("config-id")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 
 		validateFields := map[interface{}]interface{}{
@@ -61,7 +61,7 @@ of configs, check 'cloud server options --configs'.`,
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Private Parent with name [%s] uniq_id [%s] created!\n", details.Domain, details.UniqId)
+		fmt.Printf("Private Parent with name [%s] uniq-id [%s] created!\n", details.Domain, details.UniqId)
 		fmt.Printf("\tYou can now provision Cloud Servers on this Private Parent. See 'help cloud server create'\n")
 	},
 }
@@ -69,11 +69,11 @@ of configs, check 'cloud server options --configs'.`,
 func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentCreateCmd)
 
-	cloudPrivateParentCreateCmd.Flags().Int64("config_id", -1, "config_id (category must be bare-metal or bare-metal-r)")
+	cloudPrivateParentCreateCmd.Flags().Int64("config-id", -1, "config-id (category must be bare-metal or bare-metal-r)")
 	cloudPrivateParentCreateCmd.Flags().String("name", "", "name for your Private Parent")
 	cloudPrivateParentCreateCmd.Flags().Int64("zone", -1, "id number of the zone to provision the Private Parent in ('cloud server options --zones')")
 
-	cloudPrivateParentCreateCmd.MarkFlagRequired("config_id")
+	cloudPrivateParentCreateCmd.MarkFlagRequired("config-id")
 	cloudPrivateParentCreateCmd.MarkFlagRequired("zone")
 	cloudPrivateParentCreateCmd.MarkFlagRequired("name")
 }

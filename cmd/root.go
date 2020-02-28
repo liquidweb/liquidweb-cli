@@ -26,7 +26,7 @@ import (
 	"github.com/spf13/viper"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
@@ -121,7 +121,7 @@ func derivePrivateParentUniqId(name string) (string, error) {
 			privateParentUniqId = name
 		} else {
 			privateParentDetailsErr = fmt.Errorf(
-				"failed fetching parent details treating given --private-parent arg as a uniq_id [%s]: %s",
+				"failed fetching parent details treating given --private-parent arg as a uniq-id [%s]: %s",
 				name, err)
 		}
 	}
@@ -152,7 +152,7 @@ func derivePrivateParentUniqId(name string) (string, error) {
 					&privateParentDetails)
 				if err != nil {
 					privateParentDetailsErr = fmt.Errorf(
-						"failed fetching private parent details for discovered uniq_id [%s] error: %s %w",
+						"failed fetching private parent details for discovered uniq-id [%s] error: %s %w",
 						privateParentDetails.UniqId, err, privateParentDetailsErr)
 					return "", privateParentDetailsErr
 				}
@@ -163,7 +163,7 @@ func derivePrivateParentUniqId(name string) (string, error) {
 	}
 
 	if privateParentUniqId == "" {
-		return "", fmt.Errorf("failed deriving uniq_id of private parent from [%s]: %s", name, privateParentDetailsErr)
+		return "", fmt.Errorf("failed deriving uniq-id of private parent from [%s]: %s", name, privateParentDetailsErr)
 	}
 
 	return privateParentUniqId, nil

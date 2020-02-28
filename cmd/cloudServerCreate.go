@@ -24,7 +24,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -43,14 +43,14 @@ Examples:
 # Create a Cloud Server on a Private Parent named "private"
 'cloud server create --private-parent private --memory 1024 --diskspace 40 --vcpu 2 --zone 40460 --template DEBIAN_10_UNMANAGED'
 
-# Create a Cloud Server on config_id 1
-'cloud server create --config_id 1 --template DEBIAN_10_UNMANAGED --zone 40460'
+# Create a Cloud Server on config-id 1
+'cloud server create --config-id 1 --template DEBIAN_10_UNMANAGED --zone 40460'
 
 # Create a Cloud Server from image id 111
-'cloud server create --image-id 111 --zone 40460 --config_id 1'
+'cloud server create --image-id 111 --zone 40460 --config-id 1'
 
 # Create a Cloud Server from backup id 111
-'cloud server create --backup-id 111 --zone 40460 --config_id 1'
+'cloud server create --backup-id 111 --zone 40460 --config-id 1'
 
 These examples use default values for various flags, such as password, type, ssh-key, hostname, etc.
 
@@ -64,13 +64,13 @@ For a list of backups, see 'cloud backups list'
 		hostnameFlag, _ := cmd.Flags().GetString("hostname")
 		ipsFlag, _ := cmd.Flags().GetInt("ips")
 		pubSshKeyFlag, _ := cmd.Flags().GetString("public-ssh-key")
-		configIdFlag, _ := cmd.Flags().GetInt("config_id")
+		configIdFlag, _ := cmd.Flags().GetInt("config-id")
 		backupPlanFlag, _ := cmd.Flags().GetString("backup-plan")
 		backupPlanQuotaFlag, _ := cmd.Flags().GetInt("backup-plan-quota")
 		bandwidthFlag, _ := cmd.Flags().GetString("bandwidth")
 		zoneFlag, _ := cmd.Flags().GetInt("zone")
 		winavFlag, _ := cmd.Flags().GetString("winav")
-		msSqlFlag, _ := cmd.Flags().GetString("ms_sql")
+		msSqlFlag, _ := cmd.Flags().GetString("ms-sql")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
 		passwordFlag, _ := cmd.Flags().GetString("password")
 		memoryFlag, _ := cmd.Flags().GetInt("memory")
@@ -81,7 +81,7 @@ For a list of backups, see 'cloud backups list'
 
 		// sanity check flags
 		if configIdFlag == 0 && privateParentFlag == "" {
-			lwCliInst.Die(fmt.Errorf("--config_id is a required flag without --private-parent"))
+			lwCliInst.Die(fmt.Errorf("--config-id is a required flag without --private-parent"))
 		}
 		if templateFlag == "" && backupIdFlag == -1 && imageIdFlag == -1 {
 			lwCliInst.Die(fmt.Errorf("at least one of the following flags must be set --template --image-id --backup-id"))
@@ -240,7 +240,7 @@ For a list of backups, see 'cloud backups list'
 
 		resultUniqId := result.(map[string]interface{})["uniq_id"]
 		fmt.Printf(
-			"Cloud server with uniq_id [%s] creating. Check status with 'cloud server status --uniq_id %s'\n",
+			"Cloud server with uniq-id [%s] creating. Check status with 'cloud server status --uniq-id %s'\n",
 			resultUniqId, resultUniqId)
 	},
 }
@@ -263,7 +263,7 @@ func init() {
 	cloudServerCreateCmd.Flags().Int("ips", 1, "amount of IP addresses")
 	cloudServerCreateCmd.Flags().String("public-ssh-key", sshPubKeyFile,
 		"path to file containing the public ssh key you wish to be on the new Cloud Server")
-	cloudServerCreateCmd.Flags().Int("config_id", 0, "config_id to use")
+	cloudServerCreateCmd.Flags().Int("config-id", 0, "config-id to use")
 	cloudServerCreateCmd.Flags().String("backup-plan", "None", "Cloud Server backup plan to use")
 	cloudServerCreateCmd.Flags().Int("backup-plan-quota", 300, "Quota amount. Should only be used with '--backup-plan Quota'")
 	cloudServerCreateCmd.Flags().String("bandwidth", "SS.10000", "bandwidth package to use")
@@ -278,7 +278,7 @@ func init() {
 
 	// private parent specific
 	cloudServerCreateCmd.Flags().String("private-parent", "",
-		"name or uniq_id of the private-parent. Must use when creating a Cloud Server on a private parent.")
+		"name or uniq-id of the private-parent. Must use when creating a Cloud Server on a private parent.")
 	cloudServerCreateCmd.Flags().Int("memory", -1, "memory (ram) value use with --private-parent")
 	cloudServerCreateCmd.Flags().Int("diskspace", -1, "diskspace value use with --private-parent")
 	cloudServerCreateCmd.Flags().Int("vcpu", -1, "vcpu value use with --private-parent")

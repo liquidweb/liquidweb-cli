@@ -21,7 +21,7 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudNetworkPublicListCmdPoolIpsFlag []string
@@ -31,7 +31,7 @@ var cloudNetworkPublicListCmd = &cobra.Command{
 	Short: "List a Cloud Servers Public IP(s)",
 	Long:  `List a Cloud Servers Public IP(s).`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 
 		methodArgs := instance.AllPaginatedResultsArgs{
 			Method:         "bleed/network/ip/list",
@@ -61,6 +61,6 @@ var cloudNetworkPublicListCmd = &cobra.Command{
 
 func init() {
 	cloudNetworkPublicCmd.AddCommand(cloudNetworkPublicListCmd)
-	cloudNetworkPublicListCmd.Flags().String("uniq_id", "", "uniq_id of the Cloud Server")
-	cloudNetworkPublicListCmd.MarkFlagRequired("uniq_id")
+	cloudNetworkPublicListCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
+	cloudNetworkPublicListCmd.MarkFlagRequired("uniq-id")
 }

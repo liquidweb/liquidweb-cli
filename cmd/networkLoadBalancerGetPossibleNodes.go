@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -29,11 +29,11 @@ var networkLoadBalancerGetPossibleNodesCmd = &cobra.Command{
 	Short: "Get possible Load Balancer nodes",
 	Long: `Get possible nodes on the account.
 
-When --region_id is passed, it will only list possible Load Balancer nodes
+When --region-id is passed, it will only list possible Load Balancer nodes
 in that region.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		regionIdFlag, _ := cmd.Flags().GetInt("region_id")
+		regionIdFlag, _ := cmd.Flags().GetInt("region-id")
 
 		apiArgs := map[string]interface{}{}
 
@@ -59,6 +59,6 @@ in that region.
 
 func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerGetPossibleNodesCmd)
-	networkLoadBalancerGetPossibleNodesCmd.Flags().Int("region_id", -1,
+	networkLoadBalancerGetPossibleNodesCmd.Flags().Int("region-id", -1,
 		"when passed only shows possible Load Balancer nodes in this region")
 }

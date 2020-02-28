@@ -35,7 +35,7 @@ Use this when you need to get a list of available:
 
 *) Regions/Zones
 *) Templates (cloud server images provided by LiquidWeb)
-*) config_id's (a config_id represents a type of server, for example, config_id 1234 might
+*) config-id's (a config-id represents a type of server, for example, config-id 1234 might
    represent a configuration with the following hardware specifications:
      *) 16GB RAM
      *) 300GB Disk
@@ -190,7 +190,7 @@ Be sure to take a look at the flags section for specific flags to pass.`,
 				if configsFlag {
 					fmt.Printf("  configs:\n")
 					for _, cfgInfo := range info["configIds"].([]map[string]interface{}) {
-						fmt.Printf("    config_id: %d\n", cfgInfo["config_id"])
+						fmt.Printf("    config-id: %d\n", cfgInfo["config_id"])
 						fmt.Printf("      description: %s\n", cfgInfo["description"])
 						fmt.Printf("      active: %d\n", cfgInfo["active"])
 						fmt.Printf("      available: %d\n", cfgInfo["available"])
@@ -240,7 +240,7 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerOptionsCmd)
 
 	cloudServerOptionsCmd.Flags().Bool("json", false, "return data in json format. All template, config, zone, and region data will be returned with this option.")
-	cloudServerOptionsCmd.Flags().Bool("configs", false, "fetch a list of available configs (config_id)")
+	cloudServerOptionsCmd.Flags().Bool("configs", false, "fetch a list of available configs (config-id)")
 	cloudServerOptionsCmd.Flags().String("config-category", "all", "valid options for category are storm, ssd, bare-metal and all. Only relevent when --configs is passed.")
 	cloudServerOptionsCmd.Flags().Bool("zones", false, "fetch a list of available regions and their available zones")
 	cloudServerOptionsCmd.Flags().Bool("templates", false, "fetch a list of available templates (cloud server images provided by LiquidWeb)")

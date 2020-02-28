@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -29,7 +29,7 @@ var networkLoadBalancerRemoveNodeCmd = &cobra.Command{
 	Short: "Remove a node from an existing Load Balancer",
 	Long:  `Remove a node (ip) from an existing Load Balancer.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		nodeFlag, _ := cmd.Flags().GetString("node")
 
 		validateFields := map[interface{}]interface{}{
@@ -57,8 +57,8 @@ var networkLoadBalancerRemoveNodeCmd = &cobra.Command{
 
 func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerRemoveNodeCmd)
-	networkLoadBalancerRemoveNodeCmd.Flags().String("uniq_id", "", "uniq_id of Load Balancer")
+	networkLoadBalancerRemoveNodeCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
 	networkLoadBalancerRemoveNodeCmd.Flags().String("node", "", "node (ip) to remove from the Load Balancer")
-	networkLoadBalancerRemoveNodeCmd.MarkFlagRequired("uniq_id")
+	networkLoadBalancerRemoveNodeCmd.MarkFlagRequired("uniq-id")
 	networkLoadBalancerRemoveNodeCmd.MarkFlagRequired("node")
 }

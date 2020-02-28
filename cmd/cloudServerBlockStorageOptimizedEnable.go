@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -38,7 +38,7 @@ Storage Optimized.
 Enabling Cloud Block Storage will cause your Cloud Server to reboot.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -73,7 +73,7 @@ Enabling Cloud Block Storage will cause your Cloud Server to reboot.`,
 
 func init() {
 	cloudServerBlockStorageOptimizedCmd.AddCommand(cloudServerBlockStorageOptimizedEnableCmd)
-	cloudServerBlockStorageOptimizedEnableCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Server")
+	cloudServerBlockStorageOptimizedEnableCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server")
 
-	cloudServerBlockStorageOptimizedEnableCmd.MarkFlagRequired("uniq_id")
+	cloudServerBlockStorageOptimizedEnableCmd.MarkFlagRequired("uniq-id")
 }

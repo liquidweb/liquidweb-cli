@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -36,7 +36,7 @@ to the Cloud Server to give more to the hypervisor. We call this Cloud Block
 Storage Optimized.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -65,7 +65,7 @@ Storage Optimized.`,
 
 func init() {
 	cloudServerBlockStorageOptimizedCmd.AddCommand(cloudServerBlockStorageOptimizedCheckCmd)
-	cloudServerBlockStorageOptimizedCheckCmd.Flags().String("uniq_id", "", "uniq_id of Cloud Server")
+	cloudServerBlockStorageOptimizedCheckCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server")
 
-	cloudServerBlockStorageOptimizedCheckCmd.MarkFlagRequired("uniq_id")
+	cloudServerBlockStorageOptimizedCheckCmd.MarkFlagRequired("uniq-id")
 }

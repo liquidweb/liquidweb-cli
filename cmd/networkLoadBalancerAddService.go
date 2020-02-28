@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
+	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
@@ -31,7 +31,7 @@ var networkLoadBalancerAddServiceCmd = &cobra.Command{
 
 A service represents a service to load balance.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq_id")
+		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		srcPortFlag, _ := cmd.Flags().GetInt("src-port")
 		destPortFlag, _ := cmd.Flags().GetInt("dest-port")
 
@@ -62,11 +62,11 @@ A service represents a service to load balance.`,
 
 func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerAddServiceCmd)
-	networkLoadBalancerAddServiceCmd.Flags().String("uniq_id", "", "uniq_id of Load Balancer")
+	networkLoadBalancerAddServiceCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
 	networkLoadBalancerAddServiceCmd.Flags().Int("src-port", -1, "source port")
 	networkLoadBalancerAddServiceCmd.Flags().Int("dest-port", -1, "destination port")
 
-	networkLoadBalancerAddServiceCmd.MarkFlagRequired("uniq_id")
+	networkLoadBalancerAddServiceCmd.MarkFlagRequired("uniq-id")
 	networkLoadBalancerAddServiceCmd.MarkFlagRequired("src-port")
 	networkLoadBalancerAddServiceCmd.MarkFlagRequired("dest-port")
 }
