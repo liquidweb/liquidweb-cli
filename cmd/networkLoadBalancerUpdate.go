@@ -25,8 +25,8 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
-	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
-	cmdTypes "github.com/liquidweb/liquidweb-cli/types/cmd"
+	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 

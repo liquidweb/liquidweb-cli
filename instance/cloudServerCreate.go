@@ -21,7 +21,7 @@ import (
 
 	"github.com/spf13/cast"
 
-	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )

@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )

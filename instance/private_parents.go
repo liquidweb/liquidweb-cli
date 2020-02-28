@@ -19,7 +19,7 @@ import (
 	"fmt"
 	"strings"
 
-	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 // it helped package scope and getting access to the global client variable to
