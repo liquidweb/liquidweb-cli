@@ -35,7 +35,7 @@ var planCmd = &cobra.Command{
 	Long: `Process YAML plan file.
 
 Examples:
-'lw plan --file plan.yaml'
+'lw plan --file plan.yaml --var env=dev'
 
 Example plan file to create a cloud server:
 
@@ -49,14 +49,14 @@ cloud:
            hostname: "db1.somedomain.com"
            ips: 1
            public-ssh-key: "public ssh key string here "
-           config_id: 88
+           config-id: 88
          - type: "SS.VPS"
            template: "UBUNTU_1804_UNMANAGED"
            zone: 40460
            hostname: "web1.somedomain.com"
            ips: 1
            public-ssh-key: "public ssh key string here "
-           config_id: 88
+           config-id: 88
 
 `,
 	Run: func(cmd *cobra.Command, args []string) {
