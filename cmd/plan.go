@@ -82,26 +82,7 @@ cloud:
 			panic(err)
 		}
 
-		type TemplateVars struct {
-			Var map[string]string
-			Env map[string]string
-		}
-
-		tmplVars := &TemplateVars{
-			Var: varsToMap(varSliceFlag),
-			Env: envToMap(),
-		}
-
-		var tmplBytes bytes.Buffer
-		tmpl, err := template.New("plan.yaml").Parse(string(planYaml))
-		if err != nil {
-			panic(err)
-		}
-		err = tmpl.Execute(&tmplBytes, tmplVars)
-		if err != nil {
-			panic(err)
-		}
-		planYaml = tmplBytes.Bytes()
+		planYaml = processTemplate(varSliceFlag, planYaml)
 
 		var plan instance.Plan
 		err = yaml.Unmarshal(planYaml, &plan)
@@ -134,6 +115,30 @@ func varsToMap(vars []string) map[string]string {
 	}
 
 	return varMap
+}
+
+func processTemplate(varSliceFlag []string, planYaml []byte) []byte {
+	type TemplateVars struct {
+		Var map[string]string
+		Env map[string]string
+	}
+
+	tmplVars := &TemplateVars{
+		Var: varsToMap(varSliceFlag),
+		Env: envToMap(),
+	}
+
+	var tmplBytes bytes.Buffer
+	tmpl, err := template.New("plan.yaml").Parse(string(planYaml))
+	if err != nil {
+		panic(err)
+	}
+	err = tmpl.Execute(&tmplBytes, tmplVars)
+	if err != nil {
+		panic(err)
+	}
+
+	return tmplBytes.Bytes()
 }
 
 func init() {
