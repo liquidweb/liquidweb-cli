@@ -50,7 +50,7 @@ Server is not on a Private Parent.`,
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		passwordFlag, _ := cmd.Flags().GetString("password")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
-		newIpsFlag, _ := cmd.Flags().GetInt64("new_ips")
+		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 		hostnameFlag, _ := cmd.Flags().GetString("hostname")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
 		diskspaceFlag, _ := cmd.Flags().GetInt64("diskspace")
@@ -142,7 +142,7 @@ func init() {
 	cloudServerCloneCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server to clone")
 	cloudServerCloneCmd.Flags().String("password", "", "root or administrator password for new Cloud Server")
 	cloudServerCloneCmd.Flags().Int64("zone", -1, "zone for new Cloud Server")
-	cloudServerCloneCmd.Flags().Int64("new_ips", 1, "amount of IP addresses for new Cloud Server")
+	cloudServerCloneCmd.Flags().Int64("new-ips", 1, "amount of IP addresses for new Cloud Server")
 	cloudServerCloneCmd.Flags().String("hostname", fmt.Sprintf("%s.%s.io", utils.RandomString(4),
 		utils.RandomString(10)), "hostname for new Cloud Server")
 	cloudServerCloneCmd.Flags().StringSliceVar(&cloudServerCloneCmdPoolIpsFlag, "pool-ips", []string{},
