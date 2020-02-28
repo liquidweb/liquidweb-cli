@@ -61,7 +61,7 @@ cloud:
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		planFile, _ := cmd.Flags().GetString("file")
-		varFlag, err := cmd.Flags().GetStringSlice("var")
+		varSliceFlag, err := cmd.Flags().GetStringSlice("var")
 
 		if err != nil {
 			panic(err)
@@ -82,24 +82,26 @@ cloud:
 			panic(err)
 		}
 
-		if len(varFlag) > 0 {
-			vars := make(map[string]string)
-			for _, v := range varFlag {
-				s := strings.Split(v, "=")
-				vars[s[0]] = s[1]
-			}
-
-			var tmplBytes bytes.Buffer
-			tmpl, err := template.New("plan.yaml").Parse(string(planYaml))
-			if err != nil {
-				panic(err)
-			}
-			err = tmpl.Execute(&tmplBytes, vars)
-			if err != nil {
-				panic(err)
-			}
-			planYaml = tmplBytes.Bytes()
+		type TemplateVars struct {
+			Var map[string]string
+			Env map[string]string
 		}
+
+		tmplVars := &TemplateVars{
+			Var: varsToMap(varSliceFlag),
+			Env: envToMap(),
+		}
+
+		var tmplBytes bytes.Buffer
+		tmpl, err := template.New("plan.yaml").Parse(string(planYaml))
+		if err != nil {
+			panic(err)
+		}
+		err = tmpl.Execute(&tmplBytes, tmplVars)
+		if err != nil {
+			panic(err)
+		}
+		planYaml = tmplBytes.Bytes()
 
 		var plan instance.Plan
 		err = yaml.Unmarshal(planYaml, &plan)
@@ -111,6 +113,27 @@ cloud:
 			panic(err)
 		}
 	},
+}
+
+func envToMap() map[string]string {
+	envMap := make(map[string]string)
+
+	for _, v := range os.Environ() {
+		split_v := strings.Split(v, "=")
+		envMap[split_v[0]] = split_v[1]
+	}
+
+	return envMap
+}
+
+func varsToMap(vars []string) map[string]string {
+	varMap := make(map[string]string)
+	for _, v := range vars {
+		s := strings.Split(v, "=")
+		varMap[s[0]] = s[1]
+	}
+
+	return varMap
 }
 
 func init() {
