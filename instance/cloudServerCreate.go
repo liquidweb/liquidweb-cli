@@ -70,14 +70,14 @@ func (s *CloudServerCreateParams) UnmarshalYAML(unmarshal func(interface{}) erro
 	return nil
 }
 
-func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
+func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, error) {
 	var err error
 
 	// if passed a private-parent flag, derive its uniq_id
 	if params.PrivateParent != "" {
 		params.PrivateParent, err = ci.DerivePrivateParentUniqId(params.PrivateParent)
 		if err != nil {
-			ci.Die(err)
+			return "", err
 		}
 	}
 
@@ -94,27 +94,27 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 	// sanity check flags
 	if params.PrivateParent != "" {
 		if params.ConfigId > 0 {
-			ci.Die(fmt.Errorf("--config_id must be 0 or omitted when specifying --private-parent"))
+			return "", fmt.Errorf("--config_id must be 0 or omitted when specifying --private-parent")
 		}
 		// create on a private parent. diskspace, memory, vcpu are required.
 		if params.Memory == -1 {
-			ci.Die(fmt.Errorf("--memory is required when specifying --private-parent"))
+			return "", fmt.Errorf("--memory is required when specifying --private-parent")
 		}
 		if params.Diskspace == -1 {
-			ci.Die(fmt.Errorf("--diskspace is required when specifying --private-parent"))
+			return "", fmt.Errorf("--diskspace is required when specifying --private-parent")
 		}
 		if params.Vcpu == -1 {
-			ci.Die(fmt.Errorf("--vcpu is required when specifying --private-parent"))
+			return "", fmt.Errorf("--vcpu is required when specifying --private-parent")
 		}
 	} else {
 		if params.ConfigId <= 0 {
-			ci.Die(fmt.Errorf("--config_id is required when not specifying --private-parent"))
+			return "", fmt.Errorf("--config_id is required when not specifying --private-parent")
 		}
 
 	}
 
 	if params.Template == "" && params.BackupId == -1 && params.ImageId == -1 {
-		ci.Die(fmt.Errorf("at least one of the following flags must be set --template --image-id --backup-id"))
+		return "", fmt.Errorf("at least one of the following flags must be set --template --image-id --backup-id")
 	}
 
 	validateFields := map[interface{}]interface{}{
@@ -140,7 +140,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 		validateFields[params.Diskspace] = "PositiveInt"
 	}
 	if err := validate.Validate(validateFields); err != nil {
-		ci.Die(err)
+		return "", err
 	}
 
 	// buildout args for bleed/server/create
@@ -175,7 +175,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 		var details apiTypes.CloudBackupDetails
 		err := ci.CallLwApiInto("bleed/storm/backup/details", apiArgs, &details)
 		if err != nil {
-			ci.Die(err)
+			return "", err
 		}
 		if strings.Contains(strings.ToUpper(details.Template), "WINDOWS") {
 			isWindows = true
@@ -188,7 +188,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 		var details apiTypes.CloudImageDetails
 		err := ci.CallLwApiInto("bleed/storm/image/details", apiArgs, &details)
 		if err != nil {
-			ci.Die(err)
+			return "", err
 		}
 		if strings.Contains(strings.ToUpper(details.Template), "WINDOWS") {
 			isWindows = true
@@ -215,7 +215,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 			var details apiTypes.CloudConfigDetails
 			if err := ci.CallLwApiInto("bleed/storm/config/details",
 				map[string]interface{}{"id": params.ConfigId}, &details); err != nil {
-				ci.Die(err)
+				return "", err
 			}
 			coreCnt = cast.ToInt(details.Vcpu)
 		} else {
@@ -245,8 +245,10 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) string {
 
 	result, err := ci.LwCliApiClient.Call("bleed/server/create", createArgs)
 	if err != nil {
-		ci.Die(err)
+		return "", err
 	}
 
-	return cast.ToString(result.(map[string]interface{})["uniq_id"])
+	params.uniqId = cast.ToString(result.(map[string]interface{})["uniq_id"])
+
+	return params.uniqId, nil
 }

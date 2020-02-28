@@ -83,7 +83,11 @@ For a list of backups, see 'cloud backups list'
 			params.PublicSshKey = cast.ToString(sshPkeyContents)
 		}
 
-		uniqId := lwCliInst.CloudServerCreate(params)
+		uniqId, err := lwCliInst.CloudServerCreate(params)
+		if err != nil {
+			lwCliInst.Die(err)
+		}
+
 		fmt.Printf(
 			"Cloud server with uniq_id [%s] creating. Check status with 'cloud server status --uniq_id %s'\n",
 			uniqId, uniqId)

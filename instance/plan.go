@@ -17,6 +17,7 @@ package instance
 
 import (
 	"fmt"
+	"os"
 )
 
 type Plan struct {
@@ -69,7 +70,12 @@ func (ci *Client) processPlanCloudServer(server *PlanCloudServer) error {
 
 func (ci *Client) processPlanCloudServerCreate(params *CloudServerCreateParams) error {
 
-	uniqId := ci.CloudServerCreate(params)
+	uniqId, err := ci.CloudServerCreate(params)
+	if err != nil {
+		fmt.Print(err)
+		os.Exit(1)
+	}
+
 	fmt.Printf(
 		"Cloud server with uniq_id [%s] creating. Check status with 'cloud server status --uniq_id %s'\n",
 		uniqId, uniqId)
