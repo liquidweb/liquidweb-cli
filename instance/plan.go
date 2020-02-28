@@ -32,7 +32,6 @@ type PlanCloudServer struct {
 	Create []CloudServerCreateParams
 }
 
-//func ProcessPlan(plan *map[string]interface{}) error {
 func (ci *Client) ProcessPlan(plan *Plan) error {
 
 	if plan.Cloud != nil {
