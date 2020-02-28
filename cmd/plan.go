@@ -16,9 +16,12 @@ limitations under the License.
 package cmd
 
 import (
+	"bytes"
 	"fmt"
+	"html/template"
 	"io/ioutil"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
@@ -58,9 +61,13 @@ cloud:
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		planFile, _ := cmd.Flags().GetString("file")
-		fmt.Println("Here we go!", planFile)
+		varFlag, err := cmd.Flags().GetStringSlice("var")
 
-		_, err := os.Stat(planFile)
+		if err != nil {
+			panic(err)
+		}
+
+		_, err = os.Stat(planFile)
 		if err != nil {
 			if os.IsNotExist(err) {
 				fmt.Printf("Plan file \"%s\" does not exist.\n", planFile)
@@ -73,6 +80,25 @@ cloud:
 		planYaml, err := ioutil.ReadFile(planFile)
 		if err != nil {
 			panic(err)
+		}
+
+		if len(varFlag) > 0 {
+			vars := make(map[string]string)
+			for _, v := range varFlag {
+				s := strings.Split(v, "=")
+				vars[s[0]] = s[1]
+			}
+
+			var tmplBytes bytes.Buffer
+			tmpl, err := template.New("plan.yaml").Parse(string(planYaml))
+			if err != nil {
+				panic(err)
+			}
+			err = tmpl.Execute(&tmplBytes, vars)
+			if err != nil {
+				panic(err)
+			}
+			planYaml = tmplBytes.Bytes()
 		}
 
 		var plan instance.Plan
@@ -91,5 +117,6 @@ func init() {
 	rootCmd.AddCommand(planCmd)
 
 	planCmd.Flags().String("file", "", "YAML file used to define a plan")
+	planCmd.Flags().StringSlice("var", nil, "define variable name")
 	planCmd.MarkFlagRequired("file")
 }
