@@ -248,7 +248,5 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		return "", err
 	}
 
-	params.uniqId = cast.ToString(result.(map[string]interface{})["uniq_id"])
-
-	return params.uniqId, nil
+	return cast.ToString(result.(map[string]interface{})["uniq_id"]), nil
 }
