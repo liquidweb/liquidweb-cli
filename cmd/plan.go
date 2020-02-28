@@ -35,7 +35,11 @@ var planCmd = &cobra.Command{
 	Long: `Process YAML plan file.
 
 Examples:
-'lw plan --file plan.yaml --var env=dev'
+'lw plan --file plan.yaml --var envname=dev'
+
+Any value in the plan can optionally utilitize variables in Golang's template 
+style.  To access environment variables use .Env.VARNAME (i.e. .Env.USER )
+
 
 Example plan file to create a cloud server:
 
@@ -53,7 +57,7 @@ cloud:
          - type: "SS.VPS"
            template: "UBUNTU_1804_UNMANAGED"
            zone: 40460
-           hostname: "web1.somedomain.com"
+           hostname: "web1.{{- .Var.envname -}}.somedomain.com"
            ips: 1
            public-ssh-key: "public ssh key string here "
            config-id: 88
