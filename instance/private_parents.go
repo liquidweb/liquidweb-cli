@@ -37,7 +37,7 @@ func (ci *Client) DerivePrivateParentUniqId(name string) (string, error) {
 			privateParentUniqId = name
 		} else {
 			privateParentDetailsErr = fmt.Errorf(
-				"failed fetching parent details treating given --private-parent arg as a uniq_id [%s]: %s",
+				"failed fetching parent details treating given --private-parent arg as a uniq-id [%s]: %s",
 				name, err)
 		}
 	}
@@ -68,7 +68,7 @@ func (ci *Client) DerivePrivateParentUniqId(name string) (string, error) {
 					&privateParentDetails)
 				if err != nil {
 					privateParentDetailsErr = fmt.Errorf(
-						"failed fetching private parent details for discovered uniq_id [%s] error: %s %w",
+						"failed fetching private parent details for discovered uniq-id [%s] error: %s %w",
 						privateParentDetails.UniqId, err, privateParentDetailsErr)
 					return "", privateParentDetailsErr
 				}
