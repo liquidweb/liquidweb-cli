@@ -22,6 +22,11 @@ import (
 	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 )
 
+// it helped package scope and getting access to the global client variable to
+// put functions within this package... I'm not sure if a bigger package is
+// more appropos that Client is a member of, or if this is actually fine..
+// feedback is welcome
+
 func (ci *Client) DerivePrivateParentUniqId(name string) (string, error) {
 	var (
 		privateParentUniqId     string
