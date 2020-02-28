@@ -93,7 +93,7 @@ cloud:
 		var plan instance.Plan
 		err = yaml.Unmarshal(planYaml, &plan)
 		if err != nil {
-			fmt.Printf("Error parsing YAML file: %s\n", err)
+			lwCliInst.Die(fmt.Errorf("Error parsing YAML file: %s\n", err))
 		}
 
 		if err := lwCliInst.ProcessPlan(&plan); err != nil {
