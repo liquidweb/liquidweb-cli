@@ -38,7 +38,7 @@ Private Parents must use a config of category 'bare-metal' or 'bare-metal-r'. Fo
 of configs, check 'cloud server options --configs'.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		nameFlag, _ := cmd.Flags().GetString("name")
-		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
+		configIdFlag, _ := cmd.Flags().GetInt64("config-id")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 
 		validateFields := map[interface{}]interface{}{
@@ -69,11 +69,11 @@ of configs, check 'cloud server options --configs'.`,
 func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentCreateCmd)
 
-	cloudPrivateParentCreateCmd.Flags().Int64("config_id", -1, "config_id (category must be bare-metal or bare-metal-r)")
+	cloudPrivateParentCreateCmd.Flags().Int64("config-id", -1, "config-id (category must be bare-metal or bare-metal-r)")
 	cloudPrivateParentCreateCmd.Flags().String("name", "", "name for your Private Parent")
 	cloudPrivateParentCreateCmd.Flags().Int64("zone", -1, "id number of the zone to provision the Private Parent in ('cloud server options --zones')")
 
-	cloudPrivateParentCreateCmd.MarkFlagRequired("config_id")
+	cloudPrivateParentCreateCmd.MarkFlagRequired("config-id")
 	cloudPrivateParentCreateCmd.MarkFlagRequired("zone")
 	cloudPrivateParentCreateCmd.MarkFlagRequired("name")
 }

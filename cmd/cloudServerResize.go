@@ -29,7 +29,7 @@ var cloudServerResizeCmd = &cobra.Command{
 	Short: "Resize a Cloud Server",
 	Long: `Resize a Cloud Server.
 
-Resize a Cloud Server to a new config. Available config_ids can be found in
+Resize a Cloud Server to a new config. Available config-id's can be found in
 'cloud server options --configs'
 
 You will be billed for the prorated difference of the price of the new
@@ -70,7 +70,7 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		diskspaceFlag, _ := cmd.Flags().GetInt64("diskspace")
-		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
+		configIdFlag, _ := cmd.Flags().GetInt64("config-id")
 		memoryFlag, _ := cmd.Flags().GetInt64("memory")
 		skipFsResizeFlag, _ := cmd.Flags().GetBool("skip-fs-resize")
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
@@ -91,7 +91,7 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 		}
 
 		if configIdFlag == -1 && privateParentFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --config_id required when --private-parent is not given"))
+			lwCliInst.Die(fmt.Errorf("flag --config-id required when --private-parent is not given"))
 		}
 
 		resizeArgs := map[string]interface{}{
@@ -118,7 +118,7 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 
 			// if already on the given config, nothing to do
 			if cloudServerDetails.ConfigId == configIdFlag {
-				lwCliInst.Die(fmt.Errorf("already on config_id [%d]; not initiating a resize", configIdFlag))
+				lwCliInst.Die(fmt.Errorf("already on config-id [%d]; not initiating a resize", configIdFlag))
 			}
 
 			validateFields[configIdFlag] = "PositiveInt64"
@@ -276,8 +276,8 @@ func init() {
 	cloudServerResizeCmd.Flags().Int64("memory", -1, "desired memory (when private-parent)")
 	cloudServerResizeCmd.Flags().Bool("skip-fs-resize", false, "whether or not to skip the fs resize")
 	cloudServerResizeCmd.Flags().Int64("vcpu", -1, "desired vcpu count (when private-parent)")
-	cloudServerResizeCmd.Flags().Int64("config_id", -1,
-		"config_id of your desired config (when !private-parent) (see 'cloud server options --configs')")
+	cloudServerResizeCmd.Flags().Int64("config-id", -1,
+		"config-id of your desired config (when !private-parent) (see 'cloud server options --configs')")
 
 	cloudServerResizeCmd.MarkFlagRequired("uniq-id")
 }

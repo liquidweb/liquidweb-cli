@@ -56,7 +56,7 @@ Server is not on a Private Parent.`,
 		diskspaceFlag, _ := cmd.Flags().GetInt64("diskspace")
 		memoryFlag, _ := cmd.Flags().GetInt64("memory")
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
-		configIdFlag, _ := cmd.Flags().GetInt64("config_id")
+		configIdFlag, _ := cmd.Flags().GetInt64("config-id")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -65,10 +65,10 @@ Server is not on a Private Parent.`,
 		}
 
 		if privateParentFlag != "" && configIdFlag != -1 {
-			lwCliInst.Die(fmt.Errorf("cant pass both --config_id and --private-parent flags"))
+			lwCliInst.Die(fmt.Errorf("cant pass both --config-id and --private-parent flags"))
 		}
 		if privateParentFlag == "" && configIdFlag == -1 {
-			lwCliInst.Die(fmt.Errorf("must pass --config_id or --private-parent"))
+			lwCliInst.Die(fmt.Errorf("must pass --config-id or --private-parent"))
 		}
 
 		var privateParentUniqId string
@@ -156,8 +156,8 @@ func init() {
 	cloudServerCloneCmd.Flags().Int64("vcpu", -1, "amount of vcpus for new Cloud Server (when private-parent)")
 
 	// Non Private Parent
-	cloudServerCloneCmd.Flags().Int64("config_id", -1,
-		"config_id for new Cloud Server (when !private-parent) (see: 'cloud server options --configs')")
+	cloudServerCloneCmd.Flags().Int64("config-id", -1,
+		"config-id for new Cloud Server (when !private-parent) (see: 'cloud server options --configs')")
 
 	cloudServerCloneCmd.MarkFlagRequired("uniq-id")
 }
