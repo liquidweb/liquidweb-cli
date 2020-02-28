@@ -70,7 +70,7 @@ For a list of backups, see 'cloud backups list'
 		bandwidthFlag, _ := cmd.Flags().GetString("bandwidth")
 		zoneFlag, _ := cmd.Flags().GetInt("zone")
 		winavFlag, _ := cmd.Flags().GetString("winav")
-		msSqlFlag, _ := cmd.Flags().GetString("ms_sql")
+		msSqlFlag, _ := cmd.Flags().GetString("ms-sql")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
 		passwordFlag, _ := cmd.Flags().GetString("password")
 		memoryFlag, _ := cmd.Flags().GetInt("memory")
