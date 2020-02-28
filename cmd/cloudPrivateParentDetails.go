@@ -18,8 +18,9 @@ package cmd
 import (
 	"fmt"
 
-	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/spf13/cobra"
+
+	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
 var cloudPrivateParentDetailsCmd = &cobra.Command{
@@ -36,7 +37,7 @@ as well as how many resources each Cloud Server gets.`,
 
 		// if passed a private-parent flag, derive its uniq_id
 		var privateParentUniqId string
-		privateParentUniqId, err := derivePrivateParentUniqId(nameFlag)
+		privateParentUniqId, err := lwCliInst.DerivePrivateParentUniqId(nameFlag)
 		if err != nil {
 			lwCliInst.Die(err)
 		}

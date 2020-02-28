@@ -20,7 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -74,7 +74,7 @@ Server is not on a Private Parent.`,
 		var privateParentUniqId string
 		if privateParentFlag != "" {
 			var err error
-			privateParentUniqId, err = derivePrivateParentUniqId(privateParentFlag)
+			privateParentUniqId, err = lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
 			if err != nil {
 				lwCliInst.Die(err)
 			}

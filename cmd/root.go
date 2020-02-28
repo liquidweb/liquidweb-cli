@@ -19,14 +19,12 @@ import (
 	"bufio"
 	"fmt"
 	"os"
-	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
-	apiTypes "github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
@@ -104,69 +102,6 @@ func initConfig() {
 	if lwCliInstErr != nil {
 		lwCliInst.Die(lwCliInstErr)
 	}
-}
-
-func derivePrivateParentUniqId(name string) (string, error) {
-	var (
-		privateParentUniqId     string
-		privateParentDetails    apiTypes.CloudPrivateParentDetails
-		privateParentDetailsErr error
-	)
-
-	// if name looks like a uniq_id, try it as a uniq_id first.
-	if len(name) == 6 && strings.ToUpper(name) == name {
-		if err := lwCliInst.CallLwApiInto("bleed/storm/private/parent/details",
-			map[string]interface{}{"uniq_id": name},
-			&privateParentDetails); err == nil {
-			privateParentUniqId = name
-		} else {
-			privateParentDetailsErr = fmt.Errorf(
-				"failed fetching parent details treating given --private-parent arg as a uniq-id [%s]: %s",
-				name, err)
-		}
-	}
-
-	// if we havent found the pp details yet, try assuming name is the name of the pp
-	if privateParentUniqId == "" {
-		methodArgs := instance.AllPaginatedResultsArgs{
-			Method:         "bleed/storm/private/parent/list",
-			ResultsPerPage: 100,
-		}
-		results, err := lwCliInst.AllPaginatedResults(&methodArgs)
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-
-		for _, item := range results.Items {
-			var privateParentDetails apiTypes.CloudPrivateParentDetails
-			if err := instance.CastFieldTypes(item, &privateParentDetails); err != nil {
-				lwCliInst.Die(err)
-			}
-
-			if privateParentDetails.Domain == name {
-				// found it get details
-				err := lwCliInst.CallLwApiInto("bleed/storm/private/parent/details",
-					map[string]interface{}{
-						"uniq_id": privateParentDetails.UniqId,
-					},
-					&privateParentDetails)
-				if err != nil {
-					privateParentDetailsErr = fmt.Errorf(
-						"failed fetching private parent details for discovered uniq-id [%s] error: %s %w",
-						privateParentDetails.UniqId, err, privateParentDetailsErr)
-					return "", privateParentDetailsErr
-				}
-				privateParentUniqId = privateParentDetails.UniqId
-				break // found the uniq_id so break
-			}
-		}
-	}
-
-	if privateParentUniqId == "" {
-		return "", fmt.Errorf("failed deriving uniq-id of private parent from [%s]: %s", name, privateParentDetailsErr)
-	}
-
-	return privateParentUniqId, nil
 }
 
 func dialogDesctructiveConfirmProceed() (proceed bool) {
