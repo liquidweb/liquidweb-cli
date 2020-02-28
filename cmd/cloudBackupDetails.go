@@ -28,7 +28,7 @@ var cloudBackupDetailsCmd = &cobra.Command{
 	Short: "Get details of a Cloud Backup",
 	Long:  `Get details of a Cloud Backup`,
 	Run: func(cmd *cobra.Command, args []string) {
-		backupIdFlag, _ := cmd.Flags().GetInt64("backup_id")
+		backupIdFlag, _ := cmd.Flags().GetInt64("backup-id")
 
 		apiArgs := map[string]interface{}{"id": backupIdFlag}
 
@@ -45,7 +45,7 @@ var cloudBackupDetailsCmd = &cobra.Command{
 func init() {
 	cloudBackupCmd.AddCommand(cloudBackupDetailsCmd)
 
-	cloudBackupDetailsCmd.Flags().Int64("backup_id", -1,
+	cloudBackupDetailsCmd.Flags().Int64("backup-id", -1,
 		"id number of the backup (see 'cloud backup list')")
-	cloudBackupDetailsCmd.MarkFlagRequired("backup_id")
+	cloudBackupDetailsCmd.MarkFlagRequired("backup-id")
 }
