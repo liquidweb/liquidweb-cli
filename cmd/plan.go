@@ -22,6 +22,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 	"gopkg.in/yaml.v2"
@@ -123,15 +124,32 @@ func varsToMap(vars []string) map[string]string {
 	return varMap
 }
 
+func systemVars() map[string]string {
+	sysMap := make(map[string]string)
+
+	currentTime := time.Now()
+
+	sysMap["YYYY"] = fmt.Sprintf("%0.4d", currentTime.Year())
+	sysMap["MM"] = fmt.Sprintf("%0.2d", currentTime.Month())
+	sysMap["DD"] = fmt.Sprintf("%0.2d", currentTime.Day())
+	sysMap["HH"] = fmt.Sprintf("%0.2d", currentTime.Hour())
+	sysMap["MM"] = fmt.Sprintf("%0.2d", currentTime.Minute())
+	sysMap["SS"] = fmt.Sprintf("%0.2d", currentTime.Second())
+
+	return sysMap
+}
+
 func processTemplate(varSliceFlag []string, planYaml []byte) ([]byte, error) {
 	type TemplateVars struct {
 		Var map[string]string
 		Env map[string]string
+		Sys map[string]string
 	}
 
 	tmplVars := &TemplateVars{
 		Var: varsToMap(varSliceFlag),
 		Env: envToMap(),
+		Sys: systemVars(),
 	}
 
 	var tmplBytes bytes.Buffer
