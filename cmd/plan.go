@@ -134,7 +134,7 @@ func systemVars() map[string]string {
 	sysMap["MM"] = fmt.Sprintf("%0.2d", currentTime.Month())
 	sysMap["DD"] = fmt.Sprintf("%0.2d", currentTime.Day())
 	sysMap["HH"] = fmt.Sprintf("%0.2d", currentTime.Hour())
-	sysMap["MM"] = fmt.Sprintf("%0.2d", currentTime.Minute())
+	sysMap["MI"] = fmt.Sprintf("%0.2d", currentTime.Minute())
 	sysMap["SS"] = fmt.Sprintf("%0.2d", currentTime.Second())
 
 	return sysMap
