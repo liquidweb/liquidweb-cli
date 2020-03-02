@@ -87,7 +87,7 @@ cloud:
            bandwidth: "SS.5000"
 ```
 
-### Template Variables
+### Plan Variables
 
 Plan yaml can make use of golang's template variables.  Allow variables can be passed on the
 command line, it can use environment variables, and it can pull limited system information.
