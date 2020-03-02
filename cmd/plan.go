@@ -158,6 +158,10 @@ func processTemplate(varSliceFlag []string, planYaml []byte) ([]byte, error) {
 		"generatePassword": func(length int) string {
 			return utils.RandomString(length)
 		},
+		"now": time.Now,
+		"hex": func(number int64) string {
+			return fmt.Sprintf("%X", number)
+		},
 	}).
 		Parse(string(planYaml))
 	if err != nil {
