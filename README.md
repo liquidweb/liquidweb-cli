@@ -133,3 +133,11 @@ For example, to generate a random 25 character password:
 
 ```password: "{{- generatePassword 25 -}}"```
 
+- now
+
+Gives access to a Golang `time` object set to the current time at invocation of the command.
+
+- hex
+
+Convert a number to hexidecimal.
+
