@@ -78,8 +78,8 @@ cloud:
          - type: "SS.VPS"
            password: "{{- generatePassword 25 -}}"
            template: "UBUNTU_1804_UNMANAGED"
-           zone: 40460
-           hostname: "web1.something.org"
+           zone: 27
+           hostname: "web1.somehost.org"
            ips: 1
            public-ssh-key: "your public ssh key here
            config-id: 88
@@ -89,8 +89,8 @@ cloud:
 
 ### Plan Variables
 
-Plan yaml can make use of golang's template variables.  Allow variables can be passed on the
-command line, it can use environment variables, and it can pull limited system information.
+Plan yaml can make use of golang's template variables.  Allows variables to be passed on the
+command line and it can access environment variables.
 
 #### Environment Variables
 Envonrment variables are defined as `.Env.VARNAME`.  On most linux systems and shells you can
@@ -107,21 +107,6 @@ If you wanted to pass user defined variables on the command line you would use t
     hostname: "{{- .Var.role -}}{{- .Var.node -}}.somehost.org"
 ```
 
-#### System Information
-
-Limited system information is also available.  The folloing variables can be used:
-
-- .Sys.YYYY = Current Year
-- .Sys.MM = Current Month
-- .Sys.DD = Curent Date
-- .Sys.HH = Current Hour
-- .Sys.MI = Current Minute
-- .Sys.SS = Current Section
-
-For example:
-```
-    hostname: "web1.{{- .Sys.YYYY -}}{{- .Sys.MM -}}{{- .Sys.DD -}}.somehost.org"
-```
 
 #### Functions
 
@@ -135,7 +120,13 @@ For example, to generate a random 25 character password:
 
 - now
 
-Gives access to a Golang `time` object set to the current time at invocation of the command.
+Gives access to a Golang `time` object using your local machine's clock.
+
+Simple example:
+
+```
+    hostname: "web1.{{- now.Year -}}{{- now.Month -}}{{- now.Day -}}.somehost.org"
+```
 
 - hex
 
