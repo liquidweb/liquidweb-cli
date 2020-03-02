@@ -28,6 +28,7 @@ import (
 	"gopkg.in/yaml.v2"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var planCmd = &cobra.Command{
@@ -153,7 +154,12 @@ func processTemplate(varSliceFlag []string, planYaml []byte) ([]byte, error) {
 	}
 
 	var tmplBytes bytes.Buffer
-	tmpl, err := template.New("plan.yaml").Parse(string(planYaml))
+	tmpl, err := template.New("plan.yaml").Funcs(template.FuncMap{
+		"generatePassword": func(length int) string {
+			return utils.RandomString(length)
+		},
+	}).
+		Parse(string(planYaml))
 	if err != nil {
 		return nil, err
 	}
