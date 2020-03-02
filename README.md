@@ -58,3 +58,77 @@ If you end up wanting to modify an auth context later on, you can do so with `au
 
 ## LiquidWeb Cloud
 The Cloud features you can use in manage.liquidweb.com on your Cloud Servers you can do with this command line tool. See `help cloud` for a full list of features and capabilities.
+
+## Plans
+
+A plan is a pre-defined yaml with optional template variables that can be used to
+repeate specific tasks.
+
+Currently only "lw cloud server create" is implemented.
+
+Example:
+
+`lw plan --file plan.yaml`
+
+```
+---
+cloud:
+   server:
+      create:
+         - type: "SS.VPS"
+           password: "{{- generatePassword 25 -}}"
+           template: "UBUNTU_1804_UNMANAGED"
+           zone: 40460
+           hostname: "web1.something.org"
+           ips: 1
+           public-ssh-key: "your public ssh key here
+           config-id: 88
+           backup-plan: "None"
+           bandwidth: "SS.5000"
+```
+
+### Template Variables
+
+Plan yaml can make use of golang's template variables.  Allow variables can be passed on the
+command line, it can use environment variables, and it can pull limited system information.
+
+#### Environment Variables
+Envonrment variables are defined as `.Env.VARNAME`.  On most linux systems and shells you can
+get the logged in user with `{{ .Env.USER }}`.
+
+#### User Defined Variables
+If you wanted to pass user defined variables on the command line you would use the `--var` flag
+(multiple `--var` flags can be passed).  For example, if you wanted to generate the hostname of
+`web3.somehost.org` you would use the following command and yaml:
+
+`lw plan --file play.yaml --var node=3 --var role=web`
+
+```
+    hostname: "{{- .Var.role -}}{{- .Var.node -}}.somehost.org"
+```
+
+#### System Information
+
+Limited system information is also available.  The folloing variables can be used:
+
+- .Sys.YYYY = Current Year
+- .Sys.MM = Current Month
+- .Sys.DD = Curent Date
+- .Sys.HH = Current Hour
+- .Sys.MI = Current Minute
+- .Sys.SS = Current Section
+
+For example:
+```
+    hostname: "web1.{{- .Sys.YYYY -}}{{- .Sys.MM -}}{{- .Sys.DD -}}.somehost.org"
+```
+
+#### Functions
+
+The following functions are defined to be called from a plan template:
+
+- generatePassword <length>
+
+For example: 
+```password: "{{- generatePassword 25 -}}"```
+
