@@ -129,6 +129,7 @@ The following functions are defined to be called from a plan template:
 
 - generatePassword <length>
 
-For example: 
+For example, to generate a 25 character password: 
+
 ```password: "{{- generatePassword 25 -}}"```
 
