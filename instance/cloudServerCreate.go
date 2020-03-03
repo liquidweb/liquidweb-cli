@@ -110,7 +110,16 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		if params.ConfigId <= 0 {
 			return "", fmt.Errorf("--config_id is required when not specifying --private-parent")
 		}
-
+		// not on a private parent, shouldnt pass private parent flags
+		if params.Memory != -1 {
+			return "", fmt.Errorf("--memory should not be passed with --config-id")
+		}
+		if params.Diskspace != -1 {
+			return "", fmt.Errorf("--diskspace should not be passed with --config-id")
+		}
+		if params.Vcpu != -1 {
+			return "", fmt.Errorf("--vcpu should not be passed with --config-id")
+		}
 	}
 
 	if params.Template == "" && params.BackupId == -1 && params.ImageId == -1 {
