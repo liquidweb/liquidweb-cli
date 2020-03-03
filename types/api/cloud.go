@@ -213,11 +213,11 @@ type CloudConfigDetails struct {
 	RamTotal          int64         `json:"ram_total,omitempty" mapstructure:"ram_total"`
 	RamAvailable      int64         `json:"ram_available,omitempty" mapstructure:"ram_available"`
 	RaidLevel         int64         `json:"raid_level,omitempty" mapstructure:"raid_level"`
-	DiskType          int64         `json:"disk_type,omitempty" mapstructure:"disk_type"`
+	DiskType          string        `json:"disk_type,omitempty" mapstructure:"disk_type"`
 	DiskTotal         int64         `json:"disk_total,omitempty" mapstructure:"disk_total"`
 	DiskCount         int64         `json:"disk_count,omitempty" mapstructure:"disk_count"`
 	CpuSpeed          int64         `json:"cpu_speed,omitempty" mapstructure:"cpu_speed"`
-	CpuModel          int64         `json:"cpu_model,omitempty" mapstructure:"cpu_model"`
+	CpuModel          string        `json:"cpu_model,omitempty" mapstructure:"cpu_model"`
 	CpuHyperthreading int64         `json:"cpu_hyperthreading,omitempty" mapstructure:"cpu_hyperthreading"`
 	CpuCount          int64         `json:"cpu_count,omitempty" mapstructure:"cpu_count"`
 	CpuCores          int64         `json:"cpu_cores,omitempty" mapstructure:"cpu_cores"`

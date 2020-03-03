@@ -110,7 +110,16 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		if params.ConfigId <= 0 {
 			return "", fmt.Errorf("--config_id is required when not specifying --private-parent")
 		}
-
+		// not on a private parent, shouldnt pass private parent flags
+		if params.Memory != -1 {
+			return "", fmt.Errorf("--memory should not be passed with --config-id")
+		}
+		if params.Diskspace != -1 {
+			return "", fmt.Errorf("--diskspace should not be passed with --config-id")
+		}
+		if params.Vcpu != -1 {
+			return "", fmt.Errorf("--vcpu should not be passed with --config-id")
+		}
 	}
 
 	if params.Template == "" && params.BackupId == -1 && params.ImageId == -1 {
@@ -146,7 +155,6 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 	// buildout args for bleed/server/create
 	createArgs := map[string]interface{}{
 		"domain":   params.Hostname,
-		"type":     params.Type,
 		"pool_ips": params.PoolIps,
 		"new_ips":  params.Ips,
 		"zone":     params.Zone,
@@ -196,6 +204,24 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		createArgs["image_id"] = params.ImageId
 	}
 
+	// when creating with a config-id, adjust the Type param for bare-metal types if blatantly wrong
+	var configDetails apiTypes.CloudConfigDetails
+	if params.ConfigId != -1 {
+		if err := ci.CallLwApiInto("bleed/storm/config/details",
+			map[string]interface{}{"id": params.ConfigId}, &configDetails); err != nil {
+			return "", err
+		}
+		if configDetails.Category == "bare-metal" {
+			if isWindows {
+				params.Type = "SS.VM.WIN"
+			} else {
+				params.Type = "SS.VM"
+			}
+		} else if configDetails.Category == "bare-metal-r" {
+			params.Type = "SS.VM.R"
+		}
+	}
+
 	// windows servers need special arguments
 	if isWindows {
 		if params.WinAv == "" {
@@ -204,7 +230,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		createArgs["features"].(map[string]interface{})["WinAV"] = params.WinAv
 		createArgs["features"].(map[string]interface{})["WindowsLicense"] = "Windows"
 		if params.Type == "SS.VPS" {
-			createArgs["type"] = "SS.VPS.WIN"
+			params.Type = "SS.VPS.WIN"
 		}
 		if params.MsSql == "" {
 			params.MsSql = "None"
@@ -212,12 +238,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		var coreCnt int
 		if params.Vcpu == -1 {
 			// standard config_id create, fetch configs core count and use it
-			var details apiTypes.CloudConfigDetails
-			if err := ci.CallLwApiInto("bleed/storm/config/details",
-				map[string]interface{}{"id": params.ConfigId}, &details); err != nil {
-				return "", err
-			}
-			coreCnt = cast.ToInt(details.Vcpu)
+			coreCnt = cast.ToInt(configDetails.Vcpu)
 		} else {
 			// private parent, use vcpu flag
 			coreCnt = params.Vcpu
@@ -227,6 +248,8 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 			"count": coreCnt,
 		}
 	}
+
+	createArgs["type"] = params.Type
 
 	if params.PrivateParent != "" {
 		createArgs["parent"] = params.PrivateParent
