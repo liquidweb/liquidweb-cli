@@ -203,12 +203,10 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 			return "", err
 		}
 		if configDetails.Category == "bare-metal" {
-			if strings.Contains(params.Type, "SS.VPS") {
-				if isWindows {
-					params.Type = "SS.VM.WIN"
-				} else {
-					params.Type = "SS.VM"
-				}
+			if isWindows {
+				params.Type = "SS.VM.WIN"
+			} else {
+				params.Type = "SS.VM"
 			}
 		} else if configDetails.Category == "bare-metal-r" {
 			params.Type = "SS.VM.R"
