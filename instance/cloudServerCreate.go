@@ -94,7 +94,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 	// sanity check flags
 	if params.PrivateParent != "" {
 		if params.ConfigId > 0 {
-			return "", fmt.Errorf("--config_id must be 0 or omitted when specifying --private-parent")
+			return "", fmt.Errorf("--config-id must be 0 or omitted when specifying --private-parent")
 		}
 		// create on a private parent. diskspace, memory, vcpu are required.
 		if params.Memory == -1 {
@@ -108,7 +108,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		}
 	} else {
 		if params.ConfigId <= 0 {
-			return "", fmt.Errorf("--config_id is required when not specifying --private-parent")
+			return "", fmt.Errorf("--config-id is required when not specifying --private-parent")
 		}
 		// not on a private parent, shouldnt pass private parent flags
 		if params.Memory != -1 {
