@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/spf13/cobra"
 
@@ -67,39 +68,59 @@ If nothing is currently running, only the 'status' field will be returned with o
 	Stopped
 `,
 	Run: func(cmd *cobra.Command, args []string) {
+		watchFlag, _ := cmd.Flags().GetBool("watch")
+		intervalFlag, _ := cmd.Flags().GetInt("interval")
 
-		if len(cloudServerStatusCmdUniqIdFlag) == 0 {
-			// fetch status of all cloud servers on account
-			methodArgs := instance.AllPaginatedResultsArgs{
-				Method:         "bleed/storm/server/list",
-				ResultsPerPage: 100,
+		if watchFlag {
+			if intervalFlag <= 0 {
+				lwCliInst.Die(fmt.Errorf("You must specify an interval greater than zero."))
 			}
-			results, err := lwCliInst.AllPaginatedResults(&methodArgs)
-			if err != nil {
+
+			for {
+				fmt.Println("\nDisplaying server status (CTRL-C to exit):")
+				displayCloudSErverStatus(cloudServerStatusCmdUniqIdFlag)
+				time.Sleep(time.Duration(intervalFlag) * time.Second)
+			}
+		} else {
+			displayCloudSErverStatus(cloudServerStatusCmdUniqIdFlag)
+		}
+	},
+}
+
+func displayCloudSErverStatus(uniqIdList []string) {
+
+	if len(uniqIdList) == 0 {
+		// fetch status of all cloud servers on account
+		methodArgs := instance.AllPaginatedResultsArgs{
+			Method:         "bleed/storm/server/list",
+			ResultsPerPage: 100,
+		}
+		results, err := lwCliInst.AllPaginatedResults(&methodArgs)
+		if err != nil {
+			lwCliInst.Die(err)
+		}
+
+		for _, item := range results.Items {
+			var details apiTypes.CloudServerDetails
+			if err := instance.CastFieldTypes(item, &details); err != nil {
 				lwCliInst.Die(err)
 			}
 
-			for _, item := range results.Items {
-				var details apiTypes.CloudServerDetails
-				if err := instance.CastFieldTypes(item, &details); err != nil {
-					lwCliInst.Die(err)
-				}
-
-				_printCloudServerStatus(details.UniqId, details.Domain)
-			}
-		} else {
-			for _, uid := range cloudServerStatusCmdUniqIdFlag {
-				validateFields := map[interface{}]interface{}{
-					uid: "UniqId",
-				}
-				if err := validate.Validate(validateFields); err != nil {
-					fmt.Printf("%s ... skipping\n", err)
-					continue
-				}
-				_printCloudServerStatus(uid, "")
-			}
+			_printCloudServerStatus(details.UniqId, details.Domain)
 		}
-	},
+	} else {
+		for _, uid := range uniqIdList {
+			validateFields := map[interface{}]interface{}{
+				uid: "UniqId",
+			}
+			if err := validate.Validate(validateFields); err != nil {
+				fmt.Printf("%s ... skipping\n", err)
+				continue
+			}
+			_printCloudServerStatus(uid, "")
+		}
+	}
+
 }
 
 func init() {
@@ -107,6 +128,8 @@ func init() {
 
 	cloudServerStatusCmd.Flags().StringSliceVar(&cloudServerStatusCmdUniqIdFlag, "uniq-id", []string{},
 		"uniq-id(s) to get status of. For multiple, must be ',' separated")
+	cloudServerStatusCmd.Flags().Bool("watch", false, "continue to redisplay status at --interval")
+	cloudServerStatusCmd.Flags().Int("interval", 10, "the interval to fetch the status when --watch is specified")
 }
 
 func _printCloudServerStatus(uniqId string, domain string) {
