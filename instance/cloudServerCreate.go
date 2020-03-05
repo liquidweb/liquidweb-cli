@@ -282,9 +282,6 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		createArgs["public_ssh_key"] = params.PublicSshKey
 	}
 
-	//pretty, _ := ci.JsonEncodeAndPrettyPrint(createArgs)
-	//fmt.Println(pretty)
-
 	result, err := ci.LwCliApiClient.Call("bleed/server/create", createArgs)
 	if err != nil {
 		return "", err
