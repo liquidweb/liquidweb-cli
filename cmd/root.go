@@ -65,6 +65,7 @@ func init() {
 
 	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.liquidweb-cli.yaml)")
 	rootCmd.PersistentFlags().StringVar(&useContext, "use-context", "", "forces current context, without persisting the context change")
+	rootCmd.PersistentFlags().String("o", "", "Specifies the output format")
 }
 
 func initConfig() {

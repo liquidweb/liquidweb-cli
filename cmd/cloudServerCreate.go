@@ -16,6 +16,7 @@ limitations under the License.
 package cmd
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 
@@ -56,6 +57,8 @@ For a list of images, see 'cloud images list'
 For a list of backups, see 'cloud backups list'
 `,
 	Run: func(cmd *cobra.Command, args []string) {
+		outputFlag, _ := cmd.Flags().GetString("o")
+
 		params := &instance.CloudServerCreateParams{}
 
 		params.Template, _ = cmd.Flags().GetString("template")
@@ -88,9 +91,18 @@ For a list of backups, see 'cloud backups list'
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf(
-			"Cloud server with uniq-id [%s] creating. Check status with 'cloud server status --uniq-id %s'\n",
-			uniqId, uniqId)
+		if outputFlag == "json" {
+			output := map[string]interface{}{
+				"uniq-id": uniqId,
+			}
+			j, _ := json.MarshalIndent(output, "", "   ")
+			fmt.Println(j)
+
+		} else if outputFlag == "" {
+			fmt.Printf(
+				"Cloud server with uniq-id [%s] creating. Check status with 'cloud server status --uniq-id %s'\n",
+				uniqId, uniqId)
+		}
 	},
 }
 
