@@ -26,11 +26,13 @@ Available Commands:
   cloud       Interact with LiquidWeb's Cloud platform.
   help        Help about any command
   network     network actions
+  plan        Process YAML plan file
   version     show build information
 
 Flags:
-      --config string   config file (default is $HOME/.liquidweb-cli.yaml)
-  -h, --help            help for lw
+      --config string        config file (default is $HOME/.liquidweb-cli.yaml)
+  -h, --help                 help for lw
+      --use-context string   forces current context, without persisting the context change
 
 Use "lw [command] --help" for more information about a command.
 ```
@@ -83,7 +85,6 @@ cloud:
            ips: 1
            public-ssh-key: "your public ssh key here
            config-id: 88
-           backup-plan: "None"
            bandwidth: "SS.5000"
 ```
 

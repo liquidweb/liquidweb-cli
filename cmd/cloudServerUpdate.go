@@ -34,13 +34,19 @@ Update details about your server, including the backup and bandwidth plans, and 
 on the server. It merely updates what our records show.
 
 bandwidth_plan is the bandwidth plan you wish to use.  A quota of 0 indicates that you want
-as-you-go, usage-based bandwidth charges.`,
+as-you-go, usage-based bandwidth charges.
+
+A quota backup plan allows you to save daily backups up to your set quota.
+A daily backup plan will save backups of a server up to your set days.
+
+Either backup plan has a maximum retention of 90 days.
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		hostnameFlag, _ := cmd.Flags().GetString("hostname")
-		backupPlanFlag, _ := cmd.Flags().GetString("backup-plan")
 		disableBackupsFlag, _ := cmd.Flags().GetBool("disable-backups")
 		bandwidthQuotaFlag, _ := cmd.Flags().GetInt64("bandwidth-quota")
+		backupDaysFlag, _ := cmd.Flags().GetInt64("backup-days")
 		backupQuotaFlag, _ := cmd.Flags().GetInt64("backup-quota")
 
 		validateFields := map[interface{}]interface{}{
@@ -50,19 +56,19 @@ as-you-go, usage-based bandwidth charges.`,
 			lwCliInst.Die(err)
 		}
 
-		if backupPlanFlag == "Quota" {
-			if backupQuotaFlag == -1 {
-				lwCliInst.Die(fmt.Errorf("cannot enable Quota backups without --backup-quota"))
-			}
+		if backupDaysFlag != -1 && backupQuotaFlag != -1 {
+			lwCliInst.Die(fmt.Errorf("--backup-days and --backup-quota are conflicting flags"))
 		}
 
-		if backupPlanFlag == "" && !disableBackupsFlag && hostnameFlag == "" &&
-			bandwidthQuotaFlag == -1 {
+		if backupDaysFlag == -1 && backupQuotaFlag == -1 && !disableBackupsFlag &&
+			hostnameFlag == "" && bandwidthQuotaFlag == -1 {
 			lwCliInst.Die(fmt.Errorf(
-				"must pass one of: enable-backups disable-backups hostname bandwidth-quota"))
+				"must pass a valid flag; check 'help cloud server update' for usage"))
 		}
-		if backupPlanFlag != "" && disableBackupsFlag {
-			lwCliInst.Die(fmt.Errorf("cant both enable and disable backups"))
+		if disableBackupsFlag {
+			if backupDaysFlag != -1 || backupQuotaFlag != -1 {
+				lwCliInst.Die(fmt.Errorf("cant both enable and disable backups"))
+			}
 		}
 
 		apiArgs := map[string]interface{}{
@@ -76,14 +82,13 @@ as-you-go, usage-based bandwidth charges.`,
 			apiArgs["bandwidth_quota"] = bandwidthQuotaFlag
 		}
 
-		if backupPlanFlag != "" {
-			apiArgs["backup_plan"] = backupPlanFlag
-			if backupPlanFlag == "Quota" {
-				apiArgs["backup_quota"] = backupQuotaFlag
-			}
-		}
-
-		if disableBackupsFlag {
+		if backupDaysFlag != -1 {
+			apiArgs["backup_plan"] = "daily"
+			apiArgs["backup_quota"] = backupDaysFlag
+		} else if backupQuotaFlag != -1 {
+			apiArgs["backup_plan"] = "quota"
+			apiArgs["backup_quota"] = backupQuotaFlag
+		} else if disableBackupsFlag {
 			apiArgs["backup_plan"] = "None"
 		}
 
@@ -100,9 +105,9 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerUpdateCmd)
 
 	cloudServerUpdateCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
-	cloudServerUpdateCmd.Flags().String("hostname", "", "hostname to set")
-	cloudServerUpdateCmd.Flags().String("backup-plan", "", "Name of the backup plan")
-	cloudServerUpdateCmd.Flags().Int64("backup-quota", -1, "Quota to set for Quota type backup-plan")
+	cloudServerUpdateCmd.Flags().String("hostname", "", "hostname to set (will only update record at LiquidWeb)")
+	cloudServerUpdateCmd.Flags().Int64("backup-days", -1, "Enable daily backup plan. This is the amount of days to keep a backup")
+	cloudServerUpdateCmd.Flags().Int64("backup-quota", -1, "Enable quota backup plan. This is the total amount of GB to keep.")
 	cloudServerUpdateCmd.Flags().Bool("disable-backups", false, "disable backups")
 	cloudServerUpdateCmd.Flags().Int64("bandwidth-quota", -1,
 		"bandwidth quota (0 indicates as-you-go, usage-based bandwidth charges)")
