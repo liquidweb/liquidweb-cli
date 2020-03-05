@@ -129,7 +129,7 @@ func init() {
 	cloudServerStatusCmd.Flags().StringSliceVar(&cloudServerStatusCmdUniqIdFlag, "uniq-id", []string{},
 		"uniq-id(s) to get status of. For multiple, must be ',' separated")
 	cloudServerStatusCmd.Flags().Bool("watch", false, "continue to redisplay status at --interval")
-	cloudServerStatusCmd.Flags().Int("interval", 10, "the interval to fetch the status when --watch is specified")
+	cloudServerStatusCmd.Flags().Int("interval", 10, "the interval (in seconds) to fetch the status when --watch is specified")
 }
 
 func _printCloudServerStatus(uniqId string, domain string) {
