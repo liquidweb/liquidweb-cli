@@ -64,8 +64,8 @@ For a list of backups, see 'cloud backups list'
 		params.Ips, _ = cmd.Flags().GetInt("ips")
 		pubSshKey, _ := cmd.Flags().GetString("public-ssh-key")
 		params.ConfigId, _ = cmd.Flags().GetInt("config-id")
-		params.BackupPlan, _ = cmd.Flags().GetString("backup-plan")
-		params.BackupPlanQuota, _ = cmd.Flags().GetInt("backup-plan-quota")
+		params.BackupDays, _ = cmd.Flags().GetInt("backup-days")
+		params.BackupQuota, _ = cmd.Flags().GetInt("backup-quota")
 		params.Bandwidth, _ = cmd.Flags().GetString("bandwidth")
 		params.Zone, _ = cmd.Flags().GetInt("zone")
 		params.WinAv, _ = cmd.Flags().GetString("winav")
@@ -110,14 +110,14 @@ func init() {
 	cloudServerCreateCmd.Flags().String("public-ssh-key", sshPubKeyFile,
 		"path to file containing the public ssh key you wish to be on the new Cloud Server")
 	cloudServerCreateCmd.Flags().Int("config-id", 0, "config-id to use")
-	cloudServerCreateCmd.Flags().String("backup-plan", "None", "Cloud Server backup plan to use")
-	cloudServerCreateCmd.Flags().Int("backup-plan-quota", 300, "Quota amount. Should only be used with '--backup-plan Quota'")
+	cloudServerCreateCmd.Flags().Int("backup-days", -1, "Enable daily backup plan. This is the amount of days to keep a backup")
+	cloudServerCreateCmd.Flags().Int("backup-quota", -1, "Enable quota backup plan. This is the total amount of GB to keep.")
 	cloudServerCreateCmd.Flags().String("bandwidth", "SS.10000", "bandwidth package to use")
 	cloudServerCreateCmd.Flags().Int("zone", 0, "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
 	cloudServerCreateCmd.Flags().String("password", "", "root or administrator password to set")
 
-	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of backup to create from (see 'cloud backup list')")
-	cloudServerCreateCmd.Flags().Int("image-id", -1, "id of image to create from (see 'cloud image list')")
+	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of cloud backup to create from (see 'cloud backup list')")
+	cloudServerCreateCmd.Flags().Int("image-id", -1, "id of cloud image to create from (see 'cloud image list')")
 
 	cloudServerCreateCmd.Flags().StringSliceVar(&cloudServerCreateCmdPoolIpsFlag, "pool-ips", []string{},
 		"ips from your IP Pool separated by ',' to assign to the new Cloud Server")

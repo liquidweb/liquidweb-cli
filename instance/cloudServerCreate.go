@@ -27,41 +27,42 @@ import (
 )
 
 type CloudServerCreateParams struct {
-	Template        string   `yaml:"template"`
-	Type            string   `yaml:"type"`
-	Hostname        string   `yaml:"hostname"`
-	Ips             int      `yaml:"ips"`
-	PoolIps         []string `yaml:"pool-ips"`
-	PublicSshKey    string   `yaml:"public-ssh-key"`
-	ConfigId        int      `yaml:"config-id"`
-	BackupPlan      string   `yaml:"backup-plan"`
-	BackupPlanQuota int      `yaml:"backup-plan-quota"`
-	Bandwidth       string   `yaml:"bandwidth"`
-	Zone            int      `yaml:"zone"`
-	WinAv           string   `yaml:"winav"`  // windows
-	MsSql           string   `yaml:"ms-sql"` // windows
-	PrivateParent   string   `yaml:"private-parent"`
-	Password        string   `yaml:"password"`
-	Memory          int      `yaml:"memory"`    // required only if private parent
-	Diskspace       int      `yaml:"diskspace"` // required only if private parent
-	Vcpu            int      `yaml:"vcpu"`      // required only if private parent
-	BackupId        int      `yaml:"backup-id"` //create from backup
-	ImageId         int      `yaml:"image-id"`  // create from image
+	Template      string   `yaml:"template"`
+	Type          string   `yaml:"type"`
+	Hostname      string   `yaml:"hostname"`
+	Ips           int      `yaml:"ips"`
+	PoolIps       []string `yaml:"pool-ips"`
+	PublicSshKey  string   `yaml:"public-ssh-key"`
+	ConfigId      int      `yaml:"config-id"`
+	BackupDays    int      `yaml:"backup-days"`  // daily backup plan; how many days to keep a backup
+	BackupQuota   int      `yaml:"backup-quota"` // backup quota plan; how many gb of backups to keep
+	Bandwidth     string   `yaml:"bandwidth"`
+	Zone          int      `yaml:"zone"`
+	WinAv         string   `yaml:"winav"`  // windows
+	MsSql         string   `yaml:"ms-sql"` // windows
+	PrivateParent string   `yaml:"private-parent"`
+	Password      string   `yaml:"password"`
+	Memory        int      `yaml:"memory"`    // required only if private parent
+	Diskspace     int      `yaml:"diskspace"` // required only if private parent
+	Vcpu          int      `yaml:"vcpu"`      // required only if private parent
+	BackupId      int      `yaml:"backup-id"` //create from backup
+	ImageId       int      `yaml:"image-id"`  // create from image
 }
 
 func (s *CloudServerCreateParams) UnmarshalYAML(unmarshal func(interface{}) error) error {
 	// define defaults
 	type rawType CloudServerCreateParams
 	raw := rawType{
-		BackupId:   -1,
-		ImageId:    -1,
-		Vcpu:       -1,
-		Memory:     -1,
-		Diskspace:  -1,
-		Bandwidth:  "SS.5000",
-		BackupPlan: "None",
-		Ips:        1,
-		Type:       "SS.VPS",
+		BackupId:    -1,
+		BackupDays:  -1,
+		BackupQuota: -1,
+		ImageId:     -1,
+		Vcpu:        -1,
+		Memory:      -1,
+		Diskspace:   -1,
+		Bandwidth:   "SS.5000",
+		Ips:         1,
+		Type:        "SS.VPS",
 	} // Put your defaults here
 	if err := unmarshal(&raw); err != nil {
 		return err
@@ -126,13 +127,16 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		return "", fmt.Errorf("at least one of the following flags must be set --template --image-id --backup-id")
 	}
 
+	if params.BackupDays != -1 && params.BackupQuota != -1 {
+		return "", fmt.Errorf("flags --backup-days and --backup-quota conflict")
+	}
+
 	validateFields := map[interface{}]interface{}{
-		params.Zone:       map[string]string{"type": "PositiveInt", "optional": "true"},
-		params.Hostname:   "NonEmptyString",
-		params.Type:       "NonEmptyString",
-		params.Ips:        "PositiveInt",
-		params.Password:   "NonEmptyString",
-		params.BackupPlan: "NonEmptyString",
+		params.Zone:     map[string]string{"type": "PositiveInt", "optional": "true"},
+		params.Hostname: "NonEmptyString",
+		params.Type:     "NonEmptyString",
+		params.Ips:      "PositiveInt",
+		params.Password: "NonEmptyString",
 	}
 	if params.BackupId != -1 {
 		validateFields[params.BackupId] = "PositiveInt"
@@ -152,6 +156,13 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		return "", err
 	}
 
+	cloudBackupPlan := "None"
+	if params.BackupDays != -1 {
+		cloudBackupPlan = "Daily"
+	} else if params.BackupQuota != -1 {
+		cloudBackupPlan = "Quota"
+	}
+
 	// buildout args for bleed/server/create
 	createArgs := map[string]interface{}{
 		"domain":   params.Hostname,
@@ -166,7 +177,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 				"value": params.Ips,
 				"count": 0,
 			},
-			"LiquidWebBackupPlan": params.BackupPlan,
+			"LiquidWebBackupPlan": cloudBackupPlan,
 		},
 	}
 
@@ -258,13 +269,21 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		createArgs["memory"] = params.Memory
 	}
 
-	if params.BackupPlan == "Quota" {
-		createArgs["features"].(map[string]interface{})["BackupQuota"] = params.BackupPlanQuota
+	if cloudBackupPlan == "Quota" {
+		createArgs["features"].(map[string]interface{})["BackupQuota"] = params.BackupQuota
+	} else if cloudBackupPlan == "Daily" {
+		createArgs["features"].(map[string]interface{})["BackupDay"] = map[string]int{
+			"value":     1,
+			"num_units": params.BackupDays,
+		}
 	}
 
 	if params.PublicSshKey != "" {
 		createArgs["public_ssh_key"] = params.PublicSshKey
 	}
+
+	//pretty, _ := ci.JsonEncodeAndPrettyPrint(createArgs)
+	//fmt.Println(pretty)
 
 	result, err := ci.LwCliApiClient.Call("bleed/server/create", createArgs)
 	if err != nil {
