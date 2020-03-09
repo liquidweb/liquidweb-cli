@@ -25,11 +25,16 @@ type Plan struct {
 }
 
 type PlanCloud struct {
-	Server *PlanCloudServer
+	Server   *PlanCloudServer
+	Template *PlanCloudTemplate
 }
 
 type PlanCloudServer struct {
 	Create []CloudServerCreateParams
+}
+
+type PlanCloudTemplate struct {
+	Restore []CloudTemplateRestoreParams
 }
 
 func (ci *Client) ProcessPlan(plan *Plan) error {
@@ -47,6 +52,12 @@ func (ci *Client) processPlanCloud(cloud *PlanCloud) error {
 
 	if cloud.Server != nil {
 		if err := ci.processPlanCloudServer(cloud.Server); err != nil {
+			return err
+		}
+	}
+
+	if cloud.Template != nil {
+		if err := ci.processPlanCloudTemplate(cloud.Template); err != nil {
 			return err
 		}
 	}
@@ -78,5 +89,31 @@ func (ci *Client) processPlanCloudServerCreate(params *CloudServerCreateParams) 
 	fmt.Printf(
 		"Cloud server with uniq-id [%s] creating. Check status with 'cloud server status --uniq-id %s'\n",
 		uniqId, uniqId)
+	return nil
+}
+
+func (ci *Client) processPlanCloudTemplate(template *PlanCloudTemplate) error {
+
+	if template.Restore != nil {
+		for _, c := range template.Restore {
+			if err := ci.processPlanCloudTemplateRestore(&c); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (ci *Client) processPlanCloudTemplateRestore(params *CloudTemplateRestoreParams) error {
+
+	result, err := ci.CloudTemplateRestore(params)
+	if err != nil {
+		ci.Die(err)
+	}
+
+	fmt.Printf("Restoring template! %s\n", result)
+	fmt.Printf("\tcheck progress with 'cloud server status --uniq-id %s'\n", params.UniqId)
+
 	return nil
 }

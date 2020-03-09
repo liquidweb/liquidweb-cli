@@ -255,6 +255,10 @@ type CloudImageDeleteResponse struct {
 	Deleted int64 `json:"deleted" mapstructure:"deleted"`
 }
 
+type CloudTemplateRestoreResponse struct {
+	Reimaged string `json:"reimaged" mapstructure:"reimaged"`
+}
+
 type CloudServerIsBlockStorageOptimized struct {
 	IsOptimized bool `json:"is_optimized" mapstructure:"is_optimized"`
 }
