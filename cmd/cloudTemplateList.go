@@ -47,7 +47,6 @@ var cloudTemplateListCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("%#v\n", zonesResults)
 		type ZoneInfo struct {
 			Id         int
 			Name       string
@@ -109,7 +108,6 @@ var cloudTemplateListCmd = &cobra.Command{
 					fmt.Printf("    %5d - %s - %s\n", z.Id, z.Name, z.RegionName)
 				}
 
-				//	templatesByZone[templateZone] = append(templatesByZone[templateZone], templateData)
 			}
 
 			fmt.Println("")
