@@ -42,6 +42,31 @@ var cloudTemplateListCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
+		zonesResults, err := lwCliInst.LwCliApiClient.Call("bleed/network/zone/list", nil)
+		if err != nil {
+			lwCliInst.Die(err)
+		}
+
+		fmt.Printf("%#v\n", zonesResults)
+		type ZoneInfo struct {
+			Id         int
+			Name       string
+			RegionName string
+		}
+		zones := make(map[int]*ZoneInfo)
+		zoneMap := zonesResults.(map[string]interface{})
+
+		for _, item := range zoneMap["items"].([]interface{}) {
+			z := item.(map[string]interface{})
+
+			zone := &ZoneInfo{
+				Id:         cast.ToInt(z["id"]),
+				Name:       cast.ToString(z["name"]),
+				RegionName: cast.ToString(z["region"].(map[string]interface{})["name"]),
+			}
+			zones[zone.Id] = zone
+		}
+
 		for _, template := range templateList.Items {
 			if cast.ToBool(template["deprecated"]) {
 				continue
@@ -76,12 +101,18 @@ var cloudTemplateListCmd = &cobra.Command{
 			fmt.Println("  description: ", template["description"])
 			fmt.Print("  os: ", template["os"])
 			fmt.Println(", manage-level:", template["manage_level"])
-			fmt.Println("")
+			fmt.Println("  Zone Availibility:")
 
-			//for templateZoneStr, _ := range template["zone_availability"].(map[string]interface{}) {
-			//templateZone := cast.ToInt(templateZoneStr)
-			//templatesByZone[templateZone] = append(templatesByZone[templateZone], templateData)
-			//}
+			for templateZoneStr, _ := range template["zone_availability"].(map[string]interface{}) {
+				templateZone := cast.ToInt(templateZoneStr)
+				if z, ok := zones[templateZone]; ok {
+					fmt.Printf("    %5d - %s - %s\n", z.Id, z.Name, z.RegionName)
+				}
+
+				//	templatesByZone[templateZone] = append(templatesByZone[templateZone], templateData)
+			}
+
+			fmt.Println("")
 		}
 	},
 }
