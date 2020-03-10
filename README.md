@@ -64,9 +64,13 @@ The Cloud features you can use in manage.liquidweb.com on your Cloud Servers you
 ## Plans
 
 A plan is a pre-defined yaml with optional template variables that can be used to
-repeate specific tasks.
+repeate specific tasks.  Fields in the yaml file match the params you would send
+to the command.
 
-Currently only "lw cloud server create" is implemented.
+Current commands supported in a `plan` file:
+
+- cloud server create
+- cloud template restore
 
 Example:
 
