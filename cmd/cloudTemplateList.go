@@ -42,8 +42,6 @@ var cloudTemplateListCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		// determine template availability by zone
-		//templatesByZone := map[int][]map[string]interface{}{}
 		for _, template := range templateList.Items {
 			if cast.ToBool(template["deprecated"]) {
 				continue
