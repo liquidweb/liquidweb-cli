@@ -217,7 +217,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 
 	// when creating with a config-id, adjust the Type param for bare-metal types if blatantly wrong
 	var configDetails apiTypes.CloudConfigDetails
-	if params.ConfigId != -1 {
+	if params.ConfigId > 0 {
 		if err := ci.CallLwApiInto("bleed/storm/config/details",
 			map[string]interface{}{"id": params.ConfigId}, &configDetails); err != nil {
 			return "", err
