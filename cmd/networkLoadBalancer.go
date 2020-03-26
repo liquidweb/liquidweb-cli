@@ -30,7 +30,9 @@ A Load Balancer allows you to distribute traffic to multiple endpoints.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		if err := cmd.Help(); err != nil {
+			lwCliInst.Die(err)
+		}
 		os.Exit(1)
 	},
 }

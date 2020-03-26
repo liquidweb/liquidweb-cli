@@ -47,5 +47,7 @@ func init() {
 
 	cloudImageDetailsCmd.Flags().Int64("image-id", -1,
 		"id number of the image (see 'cloud image list')")
-	cloudImageDetailsCmd.MarkFlagRequired("image-id")
+	if err := cloudImageDetailsCmd.MarkFlagRequired("image-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

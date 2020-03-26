@@ -30,7 +30,9 @@ Block storage offers a method to attach additional storage to Cloud Server.
 Once attached, volumes appear as normal block devices, and can be used as such.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		if err := cmd.Help(); err != nil {
+			lwCliInst.Die(err)
+		}
 		os.Exit(1)
 	},
 }

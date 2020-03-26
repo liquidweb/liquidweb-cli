@@ -59,6 +59,10 @@ func init() {
 	cloudImageCreateCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server")
 	cloudImageCreateCmd.Flags().String("name", "", "name for the Cloud Image")
 
-	cloudImageCreateCmd.MarkFlagRequired("uniq-id")
-	cloudImageCreateCmd.MarkFlagRequired("name")
+	if err := cloudImageCreateCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudImageCreateCmd.MarkFlagRequired("name"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

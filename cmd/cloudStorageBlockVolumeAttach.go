@@ -69,6 +69,10 @@ func init() {
 	cloudStorageBlockVolumeAttachCmd.Flags().String("attach-to", "",
 		"uniq-id of Cloud Server to attach to")
 
-	cloudStorageBlockVolumeAttachCmd.MarkFlagRequired("uniq-id")
-	cloudStorageBlockVolumeAttachCmd.MarkFlagRequired("attach-to")
+	if err := cloudStorageBlockVolumeAttachCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudStorageBlockVolumeAttachCmd.MarkFlagRequired("attach-to"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

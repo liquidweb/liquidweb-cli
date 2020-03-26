@@ -62,5 +62,7 @@ func init() {
 	networkIpPoolDetailsCmd.Flags().String("uniq-id", "", "uniq-id of IP Pool")
 	networkIpPoolDetailsCmd.Flags().Bool("free-only", false, "return only unassigned IPs in the IP Pool")
 
-	networkIpPoolDetailsCmd.MarkFlagRequired("uniq-id")
+	if err := networkIpPoolDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

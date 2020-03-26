@@ -70,5 +70,7 @@ func init() {
 	cloudStorageBlockVolumeDetailsCmd.Flags().Bool("json", false, "output in json format")
 	cloudStorageBlockVolumeDetailsCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Block Storage volume")
 
-	cloudStorageBlockVolumeDetailsCmd.MarkFlagRequired("uniq-id")
+	if err := cloudStorageBlockVolumeDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

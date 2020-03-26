@@ -50,6 +50,10 @@ func init() {
 		"id number of the image (see 'cloud image list')")
 	cloudImageRenameCmd.Flags().String("name", "", "new name for the Cloud Image")
 
-	cloudImageRenameCmd.MarkFlagRequired("image-id")
-	cloudImageRenameCmd.MarkFlagRequired("name")
+	if err := cloudImageRenameCmd.MarkFlagRequired("image-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudImageRenameCmd.MarkFlagRequired("name"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

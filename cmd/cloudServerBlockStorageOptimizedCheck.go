@@ -67,5 +67,7 @@ func init() {
 	cloudServerBlockStorageOptimizedCmd.AddCommand(cloudServerBlockStorageOptimizedCheckCmd)
 	cloudServerBlockStorageOptimizedCheckCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server")
 
-	cloudServerBlockStorageOptimizedCheckCmd.MarkFlagRequired("uniq-id")
+	if err := cloudServerBlockStorageOptimizedCheckCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

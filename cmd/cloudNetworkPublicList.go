@@ -62,5 +62,7 @@ var cloudNetworkPublicListCmd = &cobra.Command{
 func init() {
 	cloudNetworkPublicCmd.AddCommand(cloudNetworkPublicListCmd)
 	cloudNetworkPublicListCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
-	cloudNetworkPublicListCmd.MarkFlagRequired("uniq-id")
+	if err := cloudNetworkPublicListCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

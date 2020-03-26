@@ -28,7 +28,9 @@ var cloudStorageObjectCmd = &cobra.Command{
 
 LiquidWeb Object storage is S3 compatible.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		if err := cmd.Help(); err != nil {
+			lwCliInst.Die(err)
+		}
 		os.Exit(1)
 	},
 }

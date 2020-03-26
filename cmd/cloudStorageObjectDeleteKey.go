@@ -71,6 +71,10 @@ func init() {
 	cloudStorageObjectDeleteKeyCmd.Flags().String("access-key", "", "the access key to remove from the Object Store")
 	cloudStorageObjectDeleteKeyCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
-	cloudStorageObjectDeleteKeyCmd.MarkFlagRequired("uniq-id")
-	cloudStorageObjectDeleteKeyCmd.MarkFlagRequired("access-key")
+	if err := cloudStorageObjectDeleteKeyCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudStorageObjectDeleteKeyCmd.MarkFlagRequired("access-key"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

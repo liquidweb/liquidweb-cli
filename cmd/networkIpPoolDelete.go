@@ -70,5 +70,7 @@ func init() {
 	networkIpPoolDeleteCmd.Flags().String("uniq-id", "", "uniq-id of IP Pool")
 	networkIpPoolDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
-	networkIpPoolDeleteCmd.MarkFlagRequired("uniq-id")
+	if err := networkIpPoolDeleteCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

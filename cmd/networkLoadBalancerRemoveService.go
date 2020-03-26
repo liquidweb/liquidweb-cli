@@ -62,6 +62,10 @@ func init() {
 	networkLoadBalancerRemoveServiceCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
 	networkLoadBalancerRemoveServiceCmd.Flags().Int("src-port", -1,
 		"source port of service to remove from the Load Balancer")
-	networkLoadBalancerRemoveServiceCmd.MarkFlagRequired("uniq-id")
-	networkLoadBalancerRemoveServiceCmd.MarkFlagRequired("src-port")
+	if err := networkLoadBalancerRemoveServiceCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := networkLoadBalancerRemoveServiceCmd.MarkFlagRequired("src-port"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

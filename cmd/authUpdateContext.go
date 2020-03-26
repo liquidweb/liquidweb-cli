@@ -116,5 +116,7 @@ func init() {
 	authUpdateContextCmd.Flags().Bool("set-insecure", false, "enable insecure SSL validation of api url")
 	authUpdateContextCmd.Flags().Bool("set-secure", false, "enable secure SSL validation of api url")
 
-	authUpdateContextCmd.MarkFlagRequired("context")
+	if err := authUpdateContextCmd.MarkFlagRequired("context"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

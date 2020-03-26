@@ -47,5 +47,7 @@ func init() {
 
 	cloudBackupDetailsCmd.Flags().Int64("backup-id", -1,
 		"id number of the backup (see 'cloud backup list')")
-	cloudBackupDetailsCmd.MarkFlagRequired("backup-id")
+	if err := cloudBackupDetailsCmd.MarkFlagRequired("backup-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

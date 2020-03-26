@@ -73,7 +73,13 @@ func init() {
 	cloudPrivateParentCreateCmd.Flags().String("name", "", "name for your Private Parent")
 	cloudPrivateParentCreateCmd.Flags().Int64("zone", -1, "id number of the zone to provision the Private Parent in ('cloud server options --zones')")
 
-	cloudPrivateParentCreateCmd.MarkFlagRequired("config-id")
-	cloudPrivateParentCreateCmd.MarkFlagRequired("zone")
-	cloudPrivateParentCreateCmd.MarkFlagRequired("name")
+	if err := cloudPrivateParentCreateCmd.MarkFlagRequired("config-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudPrivateParentCreateCmd.MarkFlagRequired("zone"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudPrivateParentCreateCmd.MarkFlagRequired("name"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

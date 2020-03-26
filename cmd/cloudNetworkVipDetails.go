@@ -88,5 +88,7 @@ func init() {
 	cloudNetworkVipCmd.AddCommand(cloudNetworkVipDetailsCmd)
 	cloudNetworkVipDetailsCmd.Flags().String("uniq-id", "", "uniq-id of VIP")
 
-	cloudNetworkVipDetailsCmd.MarkFlagRequired("uniq-id")
+	if err := cloudNetworkVipDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

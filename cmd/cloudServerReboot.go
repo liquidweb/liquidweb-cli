@@ -67,5 +67,7 @@ func init() {
 	cloudServerRebootCmd.Flags().Bool("force", false, "perform a forced reboot")
 	cloudServerRebootCmd.Flags().String("uniq-id", "", "uniq-id of server to reboot")
 
-	cloudServerRebootCmd.MarkFlagRequired("uniq-id")
+	if err := cloudServerRebootCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

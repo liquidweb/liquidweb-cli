@@ -59,6 +59,10 @@ func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerRemoveNodeCmd)
 	networkLoadBalancerRemoveNodeCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
 	networkLoadBalancerRemoveNodeCmd.Flags().String("node", "", "node (ip) to remove from the Load Balancer")
-	networkLoadBalancerRemoveNodeCmd.MarkFlagRequired("uniq-id")
-	networkLoadBalancerRemoveNodeCmd.MarkFlagRequired("node")
+	if err := networkLoadBalancerRemoveNodeCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := networkLoadBalancerRemoveNodeCmd.MarkFlagRequired("node"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

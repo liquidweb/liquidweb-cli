@@ -86,5 +86,7 @@ func init() {
 	cloudStorageBlockVolumeCreateCmd.Flags().Bool("cross-attach", false, "Enable cross attach for Block Storage volume")
 	cloudStorageBlockVolumeCreateCmd.Flags().String("attach", "", "uniq-id to attach created Block Storage volume to")
 
-	cloudStorageBlockVolumeCreateCmd.MarkFlagRequired("size")
+	if err := cloudStorageBlockVolumeCreateCmd.MarkFlagRequired("size"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

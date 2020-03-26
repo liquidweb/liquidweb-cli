@@ -70,5 +70,7 @@ func init() {
 	networkIpPoolCreateCmd.Flags().Int64("new-ips", -1, "amount of IPs to assign to the created IP Pool")
 	networkIpPoolCreateCmd.Flags().Int64("zone", -1, "zone id to create the IP Pool in")
 
-	networkIpPoolCreateCmd.MarkFlagRequired("zone")
+	if err := networkIpPoolCreateCmd.MarkFlagRequired("zone"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

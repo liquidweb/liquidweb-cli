@@ -76,8 +76,7 @@ func initConfig() {
 		// Find home directory.
 		home, err := homedir.Dir()
 		if err != nil {
-			fmt.Println(err)
-			os.Exit(1)
+			lwCliInst.Die(err)
 		}
 
 		// Search config in home directory with name ".liquidweb-cli" (without extension).
@@ -86,7 +85,9 @@ func initConfig() {
 	}
 
 	vp.AutomaticEnv()
-	vp.ReadInConfig()
+	if err := vp.ReadInConfig(); err != nil {
+		utils.PrintYellow("no config")
+	}
 
 	if useContext != "" {
 		if err := instance.ValidateContext(useContext, vp); err != nil {

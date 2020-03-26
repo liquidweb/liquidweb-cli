@@ -64,6 +64,10 @@ func init() {
 	cloudImageRestoreCmd.Flags().Int64("image-id", -1, "id of the Cloud Image")
 	cloudImageRestoreCmd.Flags().Bool("rebuild-fs", false, "rebuild filesystem before restoring")
 
-	cloudImageRestoreCmd.MarkFlagRequired("uniq-id")
-	cloudImageRestoreCmd.MarkFlagRequired("image-id")
+	if err := cloudImageRestoreCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudImageRestoreCmd.MarkFlagRequired("image-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

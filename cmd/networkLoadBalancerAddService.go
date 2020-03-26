@@ -66,7 +66,13 @@ func init() {
 	networkLoadBalancerAddServiceCmd.Flags().Int("src-port", -1, "source port")
 	networkLoadBalancerAddServiceCmd.Flags().Int("dest-port", -1, "destination port")
 
-	networkLoadBalancerAddServiceCmd.MarkFlagRequired("uniq-id")
-	networkLoadBalancerAddServiceCmd.MarkFlagRequired("src-port")
-	networkLoadBalancerAddServiceCmd.MarkFlagRequired("dest-port")
+	if err := networkLoadBalancerAddServiceCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := networkLoadBalancerAddServiceCmd.MarkFlagRequired("src-port"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := networkLoadBalancerAddServiceCmd.MarkFlagRequired("dest-port"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

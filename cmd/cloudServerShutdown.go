@@ -69,5 +69,7 @@ func init() {
 	cloudServerShutdownCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerShutdownCmd.Flags().String("uniq-id", "", "uniq-id of server to shutdown")
 
-	cloudServerShutdownCmd.MarkFlagRequired("uniq-id")
+	if err := cloudServerShutdownCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

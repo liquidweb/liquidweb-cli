@@ -64,6 +64,10 @@ func init() {
 	cloudBackupRestoreCmd.Flags().Int64("backup-id", -1, "id of the Cloud Backup")
 	cloudBackupRestoreCmd.Flags().Bool("rebuild-fs", false, "rebuild filesystem before restoring")
 
-	cloudBackupRestoreCmd.MarkFlagRequired("uniq-id")
-	cloudBackupRestoreCmd.MarkFlagRequired("backup-id")
+	if err := cloudBackupRestoreCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudBackupRestoreCmd.MarkFlagRequired("backup-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }
