@@ -86,7 +86,7 @@ func initConfig() {
 
 	vp.AutomaticEnv()
 	if err := vp.ReadInConfig(); err != nil {
-		utils.PrintYellow("no config")
+		utils.PrintYellow("no config\n")
 	}
 
 	if useContext != "" {
