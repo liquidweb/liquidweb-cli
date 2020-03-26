@@ -87,8 +87,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 	// warn before deleting config
 	var haveProceedAnswer bool
 	for !haveProceedAnswer {
-		if _, err := term.Write([]byte("Warning: This will delete all auth contexts. Continue (yes/[no])?: ")); err != nil {
-			lwCliInst.Die(err)
+		if _, err = term.Write([]byte("Warning: This will delete all auth contexts. Continue (yes/[no])?: ")); err != nil {
+			return
 		}
 		proceedBytes, readErr := term.ReadLine()
 		if readErr != nil {
@@ -97,8 +97,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 		}
 		proceedString := cast.ToString(proceedBytes)
 		if proceedString != "yes" && proceedString != "no" && proceedString != "" {
-			if _, err := term.Write([]byte("invalid input.\n")); err != nil {
-				lwCliInst.Die(err)
+			if _, err = term.Write([]byte("invalid input.\n")); err != nil {
+				return
 			}
 			continue
 		}
@@ -123,8 +123,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 	userInputExitEarly := make(chan bool)
 	userInputContext := make(chan cmdTypes.AuthContext)
 
-	if _, err := term.Write([]byte("\nTo exit early, type 'exit' or send EOF (ctrl+d)\n\n")); err != nil {
-		lwCliInst.Die(err)
+	if _, err = term.Write([]byte("\nTo exit early, type 'exit' or send EOF (ctrl+d)\n\n")); err != nil {
+		return
 	}
 
 	// start context add loop
@@ -146,7 +146,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 			// context name
 			for !haveContextNameAnswer {
 				if _, err := term.Write([]byte("Name this context: ")); err != nil {
-					lwCliInst.Die(err)
+					userInputError <- err
+					break WHILEMOREADDS
 				}
 				contextNameBytes, err := term.ReadLine()
 				if err != nil {
@@ -159,7 +160,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 					break WHILEMOREADDS
 				} else if contextNameAnswer == "" {
 					if _, err := term.Write([]byte("context name cannot be blank.\n")); err != nil {
-						lwCliInst.Die(err)
+						userInputError <- err
+						break WHILEMOREADDS
 					}
 				} else {
 					haveContextNameAnswer = true
@@ -170,7 +172,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 			// username
 			for !haveUsernameAnswer {
 				if _, err := term.Write([]byte("LiquidWeb username: ")); err != nil {
-					lwCliInst.Die(err)
+					userInputError <- err
+					break WHILEMOREADDS
 				}
 				usernameBytes, err := term.ReadLine()
 				if err != nil {
@@ -183,7 +186,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 					break WHILEMOREADDS
 				} else if usernameAnswer == "" {
 					if _, err := term.Write([]byte("username cannot be blank.\n")); err != nil {
-						lwCliInst.Die(err)
+						userInputError <- err
+						break WHILEMOREADDS
 					}
 				} else {
 					haveUsernameAnswer = true
@@ -204,7 +208,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 					break WHILEMOREADDS
 				} else if passwordAnswer == "" {
 					if _, err := term.Write([]byte("password cannot be blank.\n")); err != nil {
-						lwCliInst.Die(err)
+						userInputError <- err
+						break WHILEMOREADDS
 					}
 				} else {
 					havePasswordAnswer = true
@@ -215,7 +220,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 			// make current context?
 			for !haveMakeCurrentContextAnswer {
 				if _, err := term.Write([]byte("Make current context? ([yes]/no)")); err != nil {
-					lwCliInst.Die(err)
+					userInputError <- err
+					break WHILEMOREADDS
 				}
 				makeCurrentContextBytes, err := term.ReadLine()
 				if err != nil {
@@ -229,7 +235,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 				}
 				if makeCurrentContextString != "" && makeCurrentContextString != "yes" && makeCurrentContextString != "no" {
 					if _, err := term.Write([]byte("invalid input.\n")); err != nil {
-						lwCliInst.Die(err)
+						userInputError <- err
+						break WHILEMOREADDS
 					}
 					continue
 				}
@@ -243,7 +250,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 			// more contexts to add ?
 			for !haveMoreContextsToAddAnswer {
 				if _, err := term.Write([]byte("Add another context? (yes/[no]): ")); err != nil {
-					lwCliInst.Die(err)
+					userInputError <- err
+					break WHILEMOREADDS
 				}
 				moreContextsBytes, err := term.ReadLine()
 				if err != nil {
@@ -258,7 +266,8 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 				}
 				if answer != "" && answer != "yes" && answer != "no" {
 					if _, err := term.Write([]byte("invalid input.\n")); err != nil {
-						lwCliInst.Die(err)
+						userInputError <- err
+						break WHILEMOREADDS
 					}
 					continue
 				}
