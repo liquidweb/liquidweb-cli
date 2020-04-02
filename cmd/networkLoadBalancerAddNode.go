@@ -63,6 +63,10 @@ func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerAddNodeCmd)
 	networkLoadBalancerAddNodeCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
 	networkLoadBalancerAddNodeCmd.Flags().String("node", "", "node (ip) to add to the Load Balancer")
-	networkLoadBalancerAddNodeCmd.MarkFlagRequired("uniq-id")
-	networkLoadBalancerAddNodeCmd.MarkFlagRequired("node")
+	if err := networkLoadBalancerAddNodeCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := networkLoadBalancerAddNodeCmd.MarkFlagRequired("node"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

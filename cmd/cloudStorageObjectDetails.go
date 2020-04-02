@@ -54,5 +54,7 @@ func init() {
 	cloudStorageObjectCmd.AddCommand(cloudStorageObjectDetailsCmd)
 	cloudStorageObjectDetailsCmd.Flags().String("uniq-id", "", "uniq-id of the object store")
 
-	cloudStorageObjectDetailsCmd.MarkFlagRequired("uniq-id")
+	if err := cloudStorageObjectDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

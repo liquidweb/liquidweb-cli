@@ -58,5 +58,7 @@ func init() {
 	cloudImageDeleteCmd.Flags().Int64("image-id", -1,
 		"id number of the image (see 'cloud image list')")
 	cloudImageDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
-	cloudImageDeleteCmd.MarkFlagRequired("image-id")
+	if err := cloudImageDeleteCmd.MarkFlagRequired("image-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

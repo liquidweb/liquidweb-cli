@@ -29,7 +29,9 @@ var authCmd = &cobra.Command{
 Setup your LiquidWeb API credentials
 Test your LiquidWeb API credentials.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		if err := cmd.Help(); err != nil {
+			lwCliInst.Die(err)
+		}
 		os.Exit(1)
 	},
 }

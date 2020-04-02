@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cast"
@@ -78,7 +79,7 @@ For a list of backups, see 'cloud backups list'
 		params.BackupId, _ = cmd.Flags().GetInt("backup-id")
 		params.ImageId, _ = cmd.Flags().GetInt("image-id")
 
-		sshPkeyContents, err := ioutil.ReadFile(pubSshKey)
+		sshPkeyContents, err := ioutil.ReadFile(filepath.Clean(pubSshKey))
 		if err == nil {
 			params.PublicSshKey = cast.ToString(sshPkeyContents)
 		}
@@ -133,5 +134,7 @@ func init() {
 	cloudServerCreateCmd.Flags().String("winav", "", "Use only with Windows Servers. Typically (None or NOD32) for value when set")
 	cloudServerCreateCmd.Flags().String("ms-sql", "", "Microsoft SQL Server")
 
-	cloudServerCreateCmd.MarkFlagRequired("zone")
+	if err := cloudServerCreateCmd.MarkFlagRequired("zone"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

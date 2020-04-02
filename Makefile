@@ -1,21 +1,22 @@
 SHELL=/bin/bash
 
-default:
-	$(MAKE) install
+install: security
+	scripts/build/install
+
+security:
+	go get github.com/securego/gosec/cmd/gosec
+	@gosec ./...
 
 clean:
 	rm -rf _exe/
 
-static:
+static: security
 	scripts/build/static
 
-build:
+build: security
 	scripts/build/dynamic
 
-install:
-	scripts/build/install
-
-release-build:
+release-build: security
 	scripts/build/release-build
 
 .PHONY: clean static all build

@@ -86,5 +86,7 @@ func init() {
 	cloudStorageBlockVolumeUpdateCmd.Flags().Bool("disable-cross-attach", false,
 		"disable cross attach for Cloud Block Storage Volume")
 
-	cloudStorageBlockVolumeUpdateCmd.MarkFlagRequired("uniq-id")
+	if err := cloudStorageBlockVolumeUpdateCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

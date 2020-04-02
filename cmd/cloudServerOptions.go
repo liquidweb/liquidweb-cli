@@ -50,7 +50,9 @@ Be sure to take a look at the flags section for specific flags to pass.`,
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
 		if !configsFlag && !zonesFlag && !templatesFlag && !jsonFlag {
-			cmd.Help()
+			if err := cmd.Help(); err != nil {
+				lwCliInst.Die(err)
+			}
 			os.Exit(1)
 		}
 

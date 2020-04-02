@@ -73,5 +73,7 @@ and cost-savings.
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateDetachCmd)
 	cloudNetworkPrivateDetachCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
-	cloudNetworkPrivateDetachCmd.MarkFlagRequired("uniq-id")
+	if err := cloudNetworkPrivateDetachCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

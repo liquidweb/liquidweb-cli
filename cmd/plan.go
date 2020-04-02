@@ -21,6 +21,7 @@ import (
 	"html/template"
 	"io/ioutil"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -82,7 +83,7 @@ cloud:
 			}
 		}
 
-		planYaml, err := ioutil.ReadFile(planFile)
+		planYaml, err := ioutil.ReadFile(filepath.Clean(planFile))
 		if err != nil {
 			lwCliInst.Die(err)
 		}
@@ -163,5 +164,7 @@ func init() {
 
 	planCmd.Flags().String("file", "", "YAML file used to define a plan")
 	planCmd.Flags().StringSlice("var", nil, "define variable name")
-	planCmd.MarkFlagRequired("file")
+	if err := planCmd.MarkFlagRequired("file"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

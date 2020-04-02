@@ -85,6 +85,10 @@ func init() {
 	cloudNetworkPublicRemoveCmd.Flags().StringSliceVar(&cloudNetworkPublicRemoveCmdIpsFlag, "ips", []string{},
 		"ips separated by ',' to remove from the Cloud Server")
 
-	cloudNetworkPublicRemoveCmd.MarkFlagRequired("uniq-id")
-	cloudNetworkPublicRemoveCmd.MarkFlagRequired("ips")
+	if err := cloudNetworkPublicRemoveCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudNetworkPublicRemoveCmd.MarkFlagRequired("ips"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

@@ -60,5 +60,7 @@ func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentDetailsCmd)
 
 	cloudPrivateParentDetailsCmd.Flags().String("name", "", "name or uniq-id of the Private Parent")
-	cloudPrivateParentDetailsCmd.MarkFlagRequired("name")
+	if err := cloudPrivateParentDetailsCmd.MarkFlagRequired("name"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

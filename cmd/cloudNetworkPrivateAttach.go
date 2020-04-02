@@ -73,5 +73,7 @@ and cost-savings.
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateAttachCmd)
 	cloudNetworkPrivateAttachCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
-	cloudNetworkPrivateAttachCmd.MarkFlagRequired("uniq-id")
+	if err := cloudNetworkPrivateAttachCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cast"
@@ -169,7 +170,7 @@ Similarly to remove a health check when using --health-check-file, simply remove
 
 		// read and set ssl cert
 		if sslCertFlag != "" {
-			contents, err := ioutil.ReadFile(sslCertFlag)
+			contents, err := ioutil.ReadFile(filepath.Clean(sslCertFlag))
 			if err != nil {
 				lwCliInst.Die(err)
 			}
@@ -180,7 +181,7 @@ Similarly to remove a health check when using --health-check-file, simply remove
 
 		// read and set ssl private key
 		if sslPrivateKeyFlag != "" {
-			contents, err := ioutil.ReadFile(sslPrivateKeyFlag)
+			contents, err := ioutil.ReadFile(filepath.Clean(sslPrivateKeyFlag))
 			if err != nil {
 				lwCliInst.Die(err)
 			}
@@ -191,7 +192,7 @@ Similarly to remove a health check when using --health-check-file, simply remove
 
 		// read and set intermediate cert
 		if sslIntermediateCertFlag != "" {
-			contents, err := ioutil.ReadFile(sslIntermediateCertFlag)
+			contents, err := ioutil.ReadFile(filepath.Clean(sslIntermediateCertFlag))
 			if err != nil {
 				lwCliInst.Die(err)
 			}
@@ -224,7 +225,7 @@ Similarly to remove a health check when using --health-check-file, simply remove
 				healthChecks = healthChecksFromCmdLine
 			} else if healthCheckFileFlag != "" {
 				// health check, yaml file
-				contents, err := ioutil.ReadFile(healthCheckFileFlag)
+				contents, err := ioutil.ReadFile(filepath.Clean(healthCheckFileFlag))
 				if err != nil {
 					lwCliInst.Die(fmt.Errorf("error reading given --health-check-file [%s]: %s", healthCheckFileFlag, err))
 				}
@@ -317,5 +318,7 @@ func init() {
 	networkLoadBalancerUpdateCmd.Flags().String("health-check-file", "",
 		"A file containing valid yaml describing the LoadBalancer health checks to add for the service(s). Should not be combined with --health-check.")
 
-	networkLoadBalancerUpdateCmd.MarkFlagRequired("uniq-id")
+	if err := networkLoadBalancerUpdateCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

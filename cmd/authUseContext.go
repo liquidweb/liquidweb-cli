@@ -38,7 +38,9 @@ See also: get-context, get-contexts.
 If you've never setup any contexts, check "auth init".`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) != 1 {
-			cmd.Help()
+			if err := cmd.Help(); err != nil {
+				lwCliInst.Die(err)
+			}
 			os.Exit(1)
 		}
 

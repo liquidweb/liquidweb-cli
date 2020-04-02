@@ -49,6 +49,10 @@ func init() {
 	cloudTemplateRestoreCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server")
 	cloudTemplateRestoreCmd.Flags().String("template", "", "name of template to restore")
 
-	cloudTemplateRestoreCmd.MarkFlagRequired("uniq-id")
-	cloudTemplateRestoreCmd.MarkFlagRequired("template")
+	if err := cloudTemplateRestoreCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudTemplateRestoreCmd.MarkFlagRequired("template"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

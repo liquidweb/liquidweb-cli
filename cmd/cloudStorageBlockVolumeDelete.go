@@ -69,5 +69,7 @@ func init() {
 	cloudStorageBlockVolumeDeleteCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Block Storage volume")
 	cloudStorageBlockVolumeDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
-	cloudStorageBlockVolumeDeleteCmd.MarkFlagRequired("uniq-id")
+	if err := cloudStorageBlockVolumeDeleteCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

@@ -93,5 +93,7 @@ func init() {
 	networkIpPoolUpdateCmd.Flags().Int64("new-ips", -1, "amount of new IPs to assign to the IP Pool")
 	networkIpPoolUpdateCmd.Flags().String("uniq-id", "", "uniq-id of IP Pool")
 
-	networkIpPoolUpdateCmd.MarkFlagRequired("uniq-id")
+	if err := networkIpPoolUpdateCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

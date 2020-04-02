@@ -88,5 +88,7 @@ func init() {
 	cloudNetworkVipCmd.AddCommand(cloudNetworkVipDeleteCmd)
 	cloudNetworkVipDeleteCmd.Flags().String("uniq-id", "", "uniq-id of VIP to delete")
 
-	cloudNetworkVipDeleteCmd.MarkFlagRequired("uniq-id")
+	if err := cloudNetworkVipDeleteCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

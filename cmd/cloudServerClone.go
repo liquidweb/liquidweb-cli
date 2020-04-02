@@ -159,5 +159,7 @@ func init() {
 	cloudServerCloneCmd.Flags().Int64("config-id", -1,
 		"config-id for new Cloud Server (when !private-parent) (see: 'cloud server options --configs')")
 
-	cloudServerCloneCmd.MarkFlagRequired("uniq-id")
+	if err := cloudServerCloneCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

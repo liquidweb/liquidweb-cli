@@ -96,5 +96,7 @@ func init() {
 	cloudNetworkVipCreateCmd.Flags().Int64("zone", -1,
 		"zone id to create VIP in (see: 'cloud server options --zones')")
 
-	cloudNetworkVipCreateCmd.MarkFlagRequired("zone")
+	if err := cloudNetworkVipCreateCmd.MarkFlagRequired("zone"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

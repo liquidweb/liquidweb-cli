@@ -69,6 +69,10 @@ func init() {
 	cloudStorageBlockVolumeDetachCmd.Flags().String("detach-from", "",
 		"uniq-id of Cloud Server to detach from")
 
-	cloudStorageBlockVolumeDetachCmd.MarkFlagRequired("uniq-id")
-	cloudStorageBlockVolumeDetachCmd.MarkFlagRequired("detach-from")
+	if err := cloudStorageBlockVolumeDetachCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudStorageBlockVolumeDetachCmd.MarkFlagRequired("detach-from"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

@@ -68,5 +68,7 @@ func init() {
 	cloudServerStartCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerStartCmd.Flags().String("uniq-id", "", "uniq-id of server to start")
 
-	cloudServerStartCmd.MarkFlagRequired("uniq-id")
+	if err := cloudServerStartCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

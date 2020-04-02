@@ -112,5 +112,7 @@ func init() {
 	cloudServerUpdateCmd.Flags().Int64("bandwidth-quota", -1,
 		"bandwidth quota (0 indicates as-you-go, usage-based bandwidth charges)")
 
-	cloudServerUpdateCmd.MarkFlagRequired("uniq-id")
+	if err := cloudServerUpdateCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

@@ -100,5 +100,7 @@ func init() {
 	cloudNetworkPublicAddCmd.Flags().StringSliceVar(&cloudNetworkPublicAddCmdPoolIpsFlag, "pool-ips", []string{},
 		"ips from your IP Pool separated by ',' to assign to the Cloud Server")
 
-	cloudNetworkPublicAddCmd.MarkFlagRequired("uniq-id")
+	if err := cloudNetworkPublicAddCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

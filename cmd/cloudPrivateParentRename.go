@@ -66,6 +66,10 @@ func init() {
 	cloudPrivateParentRenameCmd.Flags().String("uniq-id", "", "uniq-id of the Private Parent")
 	cloudPrivateParentRenameCmd.Flags().String("name", "", "name to give the Private Parent")
 
-	cloudPrivateParentRenameCmd.MarkFlagRequired("uniq-id")
-	cloudPrivateParentRenameCmd.MarkFlagRequired("name")
+	if err := cloudPrivateParentRenameCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudPrivateParentRenameCmd.MarkFlagRequired("name"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

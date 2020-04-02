@@ -66,5 +66,7 @@ func init() {
 		"uniq-id of object store to delete (see 'cloud storage object list')")
 	cloudStorageObjectDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
-	cloudStorageObjectDeleteCmd.MarkFlagRequired("uniq-id")
+	if err := cloudStorageObjectDeleteCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

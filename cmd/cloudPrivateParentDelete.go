@@ -72,5 +72,7 @@ func init() {
 	cloudPrivateParentDeleteCmd.Flags().String("name", "", "name or uniq-id of the Private Parent")
 	cloudPrivateParentDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
-	cloudPrivateParentDeleteCmd.MarkFlagRequired("name")
+	if err := cloudPrivateParentDeleteCmd.MarkFlagRequired("name"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"io/ioutil"
+	"path/filepath"
 	"strings"
 
 	"github.com/spf13/cast"
@@ -112,7 +113,7 @@ A Load Balancer allows you to distribute traffic to multiple endpoints.
 
 		// read and set ssl cert
 		if sslCertFlag != "" {
-			contents, err := ioutil.ReadFile(sslCertFlag)
+			contents, err := ioutil.ReadFile(filepath.Clean(sslCertFlag))
 			if err != nil {
 				lwCliInst.Die(err)
 			}
@@ -123,7 +124,7 @@ A Load Balancer allows you to distribute traffic to multiple endpoints.
 
 		// read and set ssl private key
 		if sslPrivateKeyFlag != "" {
-			contents, err := ioutil.ReadFile(sslPrivateKeyFlag)
+			contents, err := ioutil.ReadFile(filepath.Clean(sslPrivateKeyFlag))
 			if err != nil {
 				lwCliInst.Die(err)
 			}
@@ -134,7 +135,7 @@ A Load Balancer allows you to distribute traffic to multiple endpoints.
 
 		// read and set intermediate cert
 		if sslIntermediateCertFlag != "" {
-			contents, err := ioutil.ReadFile(sslIntermediateCertFlag)
+			contents, err := ioutil.ReadFile(filepath.Clean(sslIntermediateCertFlag))
 			if err != nil {
 				lwCliInst.Die(err)
 			}
@@ -170,7 +171,7 @@ A Load Balancer allows you to distribute traffic to multiple endpoints.
 			healthChecks = healthChecksFromCmdLine
 		} else if healthCheckFileFlag != "" {
 			// health check, yaml file
-			contents, err := ioutil.ReadFile(healthCheckFileFlag)
+			contents, err := ioutil.ReadFile(filepath.Clean(healthCheckFileFlag))
 			if err != nil {
 				lwCliInst.Die(fmt.Errorf("error reading given --health-check-file [%s]: %s", healthCheckFileFlag, err))
 			}
@@ -258,7 +259,13 @@ func init() {
 	networkLoadBalancerCreateCmd.Flags().String("health-check-file", "",
 		"A file containing valid yaml describing the LoadBalancer health checks to add for the service(s). Should not be combined with --health-check.")
 
-	networkLoadBalancerCreateCmd.MarkFlagRequired("name")
-	networkLoadBalancerCreateCmd.MarkFlagRequired("services")
-	networkLoadBalancerCreateCmd.MarkFlagRequired("strategy")
+	if err := networkLoadBalancerCreateCmd.MarkFlagRequired("name"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := networkLoadBalancerCreateCmd.MarkFlagRequired("services"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := networkLoadBalancerCreateCmd.MarkFlagRequired("strategy"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

@@ -42,5 +42,7 @@ func init() {
 	authCmd.AddCommand(authRemoveContextCmd)
 
 	authRemoveContextCmd.Flags().String("context", "", "name of context to remove")
-	authRemoveContextCmd.MarkFlagRequired("context")
+	if err := authRemoveContextCmd.MarkFlagRequired("context"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

@@ -67,5 +67,7 @@ func init() {
 	networkLoadBalancerDeleteCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
 	networkLoadBalancerDeleteCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
-	networkLoadBalancerDeleteCmd.MarkFlagRequired("uniq-id")
+	if err := networkLoadBalancerDeleteCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

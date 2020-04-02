@@ -69,6 +69,10 @@ func init() {
 	cloudStorageBlockVolumeResizeCmd.Flags().Int64("new-size", -1,
 		"size (gb) to resize the volume to")
 
-	cloudStorageBlockVolumeResizeCmd.MarkFlagRequired("uniq-id")
-	cloudStorageBlockVolumeResizeCmd.MarkFlagRequired("new-size")
+	if err := cloudStorageBlockVolumeResizeCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := cloudStorageBlockVolumeResizeCmd.MarkFlagRequired("new-size"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

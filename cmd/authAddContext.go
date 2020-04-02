@@ -47,7 +47,9 @@ Use this if you've already setup contexts with "auth init".`,
 			if err != nil {
 				lwCliInst.Die(err)
 			}
-			f.Close()
+			if err := f.Close(); err != nil {
+				lwCliInst.Die(err)
+			}
 			if err := os.Chmod(file, 0600); err != nil {
 				lwCliInst.Die(err)
 			}
@@ -85,6 +87,10 @@ func init() {
 	authAddContextCmd.Flags().String("api-url", "https://api.liquidweb.com", "API URL to use")
 	authAddContextCmd.Flags().Int("timeout", 30, "timeout value when communicating with api-url")
 
-	authAddContextCmd.MarkFlagRequired("username")
-	authAddContextCmd.MarkFlagRequired("password")
+	if err := authAddContextCmd.MarkFlagRequired("username"); err != nil {
+		lwCliInst.Die(err)
+	}
+	if err := authAddContextCmd.MarkFlagRequired("password"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

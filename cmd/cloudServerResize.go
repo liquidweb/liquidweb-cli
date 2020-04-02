@@ -279,5 +279,7 @@ func init() {
 	cloudServerResizeCmd.Flags().Int64("config-id", -1,
 		"config-id of your desired config (when !private-parent) (see 'cloud server options --configs')")
 
-	cloudServerResizeCmd.MarkFlagRequired("uniq-id")
+	if err := cloudServerResizeCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

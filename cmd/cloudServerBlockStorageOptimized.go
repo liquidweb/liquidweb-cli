@@ -37,7 +37,9 @@ Enabling or disabling Cloud Block Storage will cause your Cloud Server to reboot
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
-		cmd.Help()
+		if err := cmd.Help(); err != nil {
+			lwCliInst.Die(err)
+		}
 		os.Exit(1)
 	},
 }

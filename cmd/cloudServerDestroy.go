@@ -90,5 +90,7 @@ func init() {
 		"reason for the cancellation (optional)")
 	cloudServerDestroyCmd.Flags().Bool("force", false, "bypass dialog confirmation")
 
-	cloudServerDestroyCmd.MarkFlagRequired("uniq-id")
+	if err := cloudServerDestroyCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

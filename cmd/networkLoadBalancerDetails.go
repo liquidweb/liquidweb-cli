@@ -55,5 +55,7 @@ var networkLoadBalancerDetailsCmd = &cobra.Command{
 func init() {
 	networkLoadBalancerCmd.AddCommand(networkLoadBalancerDetailsCmd)
 	networkLoadBalancerDetailsCmd.Flags().String("uniq-id", "", "uniq-id of Load Balancer")
-	networkLoadBalancerDetailsCmd.MarkFlagRequired("uniq-id")
+	if err := networkLoadBalancerDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }

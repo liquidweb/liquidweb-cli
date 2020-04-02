@@ -124,5 +124,7 @@ func init() {
 	cloudServerDetailsCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerDetailsCmd.Flags().String("uniq-id", "", "get details of this uniq-id")
 
-	cloudServerDetailsCmd.MarkFlagRequired("uniq-id")
+	if err := cloudServerDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
+		lwCliInst.Die(err)
+	}
 }
