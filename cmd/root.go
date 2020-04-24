@@ -32,7 +32,7 @@ var cfgFile string
 var lwCliInst instance.Client
 var useContext string
 
-var rootCmd = &cobra.Command{
+var RootCmd = &cobra.Command{
 	Use:   "lw",
 	Short: "CLI interface for LiquidWeb",
 	Long: `CLI interface for LiquidWeb.
@@ -54,7 +54,7 @@ capabilities.`,
 }
 
 func Execute() {
-	if err := rootCmd.Execute(); err != nil {
+	if err := RootCmd.Execute(); err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
@@ -63,8 +63,8 @@ func Execute() {
 func init() {
 	cobra.OnInitialize(initConfig)
 
-	rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.liquidweb-cli.yaml)")
-	rootCmd.PersistentFlags().StringVar(&useContext, "use-context", "", "forces current context, without persisting the context change")
+	RootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.liquidweb-cli.yaml)")
+	RootCmd.PersistentFlags().StringVar(&useContext, "use-context", "", "forces current context, without persisting the context change")
 }
 
 func initConfig() {
