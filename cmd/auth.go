@@ -37,5 +37,5 @@ Test your LiquidWeb API credentials.`,
 }
 
 func init() {
-	rootCmd.AddCommand(authCmd)
+	RootCmd.AddCommand(authCmd)
 }

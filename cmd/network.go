@@ -36,5 +36,5 @@ For a full list of capabilities, please refer to the "Available Commands" sectio
 }
 
 func init() {
-	rootCmd.AddCommand(networkCmd)
+	RootCmd.AddCommand(networkCmd)
 }

@@ -43,5 +43,5 @@ This information should be provided with any bug report.`,
 }
 
 func init() {
-	rootCmd.AddCommand(versionCmd)
+	RootCmd.AddCommand(versionCmd)
 }

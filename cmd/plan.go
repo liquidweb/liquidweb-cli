@@ -160,7 +160,7 @@ func processTemplate(varSliceFlag []string, planYaml []byte) ([]byte, error) {
 }
 
 func init() {
-	rootCmd.AddCommand(planCmd)
+	RootCmd.AddCommand(planCmd)
 
 	planCmd.Flags().String("file", "", "YAML file used to define a plan")
 	planCmd.Flags().StringSlice("var", nil, "define variable name")
