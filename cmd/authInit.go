@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 
 	"golang.org/x/crypto/ssh/terminal"
 
@@ -160,6 +161,11 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 					break WHILEMOREADDS
 				} else if contextNameAnswer == "" {
 					if _, err := term.Write([]byte("context name cannot be blank.\n")); err != nil {
+						userInputError <- err
+						break WHILEMOREADDS
+					}
+				} else if strings.ToLower(contextNameAnswer) != contextNameAnswer {
+					if _, err := term.Write([]byte("context name cannot be uppercase.\n")); err != nil {
 						userInputError <- err
 						break WHILEMOREADDS
 					}

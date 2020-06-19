@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/spf13/cobra"
 
@@ -37,6 +38,10 @@ Use this if you've already setup contexts with "auth init".`,
 		url, _ := cmd.Flags().GetString("api-url")
 		insecure, _ := cmd.Flags().GetBool("insecure")
 		timeout, _ := cmd.Flags().GetInt("timeout")
+
+		if strings.ToLower(contextName) != contextName {
+			lwCliInst.Die(fmt.Errorf("context names must be lowercase"))
+		}
 
 		file, err := getExpectedConfigPath()
 		if err != nil {
