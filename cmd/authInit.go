@@ -18,16 +18,15 @@ package cmd
 import (
 	"bytes"
 	"fmt"
-	"io"
 	"os"
+	"strings"
 
 	"golang.org/x/crypto/ssh/terminal"
 
-	"github.com/spf13/cast"
+	"github.com/c-bata/go-prompt"
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/cmd"
-	"github.com/liquidweb/liquidweb-cli/types/errors"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -65,79 +64,49 @@ func setAuthDataInteractively() error {
 }
 
 func fetchAuthDataInteractively() (writeConfig bool, err error) {
-	if !terminal.IsTerminal(0) || !terminal.IsTerminal(1) {
-		err = errorTypes.UnknownTerminal
-		return
-	}
-	oldState, termMakeErr := terminal.MakeRaw(0)
-	if termMakeErr != nil {
-		err = termMakeErr
-		return
-	}
-	defer terminal.Restore(0, oldState)
-	screen := struct {
-		io.Reader
-		io.Writer
-	}{os.Stdin, os.Stdout}
-	term := terminal.NewTerminal(screen, "")
-	term.SetPrompt(cast.ToString(term.Escape.Blue) + " > " + cast.ToString(term.Escape.Reset))
+	var (
+		moreAdds          bool
+		haveProceedAnswer bool
+	)
 
-	moreAdds := false
-
-	// warn before deleting config
-	var haveProceedAnswer bool
 	for !haveProceedAnswer {
-		if _, err = term.Write([]byte("Warning: This will delete all auth contexts. Continue (yes/[no])?: ")); err != nil {
-			return
-		}
-		proceedBytes, readErr := term.ReadLine()
-		if readErr != nil {
-			err = readErr
-			return
-		}
-		proceedString := cast.ToString(proceedBytes)
-		if proceedString != "yes" && proceedString != "no" && proceedString != "" {
-			if _, err = term.Write([]byte("invalid input.\n")); err != nil {
-				return
+		f := func(d prompt.Document) []prompt.Suggest {
+			s := []prompt.Suggest{
+				{Text: "yes", Description: "delete all auth contexts"},
+				{Text: "no", Description: "keep my auth contexts and exit"},
 			}
-			continue
+			return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
 		}
-
-		if proceedString == "yes" {
+		fmt.Println("Warning: If you proceed, any set auth context will be deleted.")
+		fmt.Print("\nAre you sure? ")
+		answer := strings.ToLower(prompt.Input("> ", f, prompt.OptionShowCompletionAtStart()))
+		if answer == "yes" {
 			moreAdds = true
 			haveProceedAnswer = true
-		} else if proceedString == "" || proceedString == "no" {
+		} else if answer == "no" {
 			haveProceedAnswer = true
 			moreAdds = false
 		}
 	}
 
-	// return if user didnt acknowledge to proceed
 	if !moreAdds {
 		return
 	}
 
-	// create context add loop channels
 	userInputComplete := make(chan bool)
 	userInputError := make(chan error)
 	userInputExitEarly := make(chan bool)
 	userInputContext := make(chan cmdTypes.AuthContext)
 
-	if _, err = term.Write([]byte("\nTo exit early, type 'exit' or send EOF (ctrl+d)\n\n")); err != nil {
-		return
-	}
+	fmt.Println("\nTo exit early, type 'exit'\n")
 
-	// start context add loop
 	go func() {
 	WHILEMOREADDS:
 		for moreAdds {
 			var (
 				context                      cmdTypes.AuthContext
-				contextNameAnswer            string
 				haveContextNameAnswer        bool
-				usernameAnswer               string
 				haveUsernameAnswer           bool
-				passwordAnswer               string
 				havePasswordAnswer           bool
 				haveMakeCurrentContextAnswer bool
 				haveMoreContextsToAddAnswer  bool
@@ -145,138 +114,93 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 
 			// context name
 			for !haveContextNameAnswer {
-				if _, err := term.Write([]byte("Name this context: ")); err != nil {
-					userInputError <- err
-					break WHILEMOREADDS
-				}
-				contextNameBytes, err := term.ReadLine()
-				if err != nil {
-					userInputError <- err
-					break WHILEMOREADDS
-				}
-				contextNameAnswer = cast.ToString(contextNameBytes)
-				if contextNameAnswer == "exit" {
+				fmt.Print("Name this context: ")
+				answer := strings.ToLower(prompt.Input("> ", func(d prompt.Document) (s []prompt.Suggest) { return }))
+				if answer == "exit" {
 					userInputExitEarly <- true
 					break WHILEMOREADDS
-				} else if contextNameAnswer == "" {
-					if _, err := term.Write([]byte("context name cannot be blank.\n")); err != nil {
-						userInputError <- err
-						break WHILEMOREADDS
-					}
-				} else {
+				} else if answer != "" {
 					haveContextNameAnswer = true
-					context.ContextName = contextNameAnswer
+					context.ContextName = answer
 				}
 			}
 
 			// username
 			for !haveUsernameAnswer {
-				if _, err := term.Write([]byte("LiquidWeb username: ")); err != nil {
-					userInputError <- err
-					break WHILEMOREADDS
-				}
-				usernameBytes, err := term.ReadLine()
-				if err != nil {
-					userInputError <- err
-					break WHILEMOREADDS
-				}
-				usernameAnswer = cast.ToString(usernameBytes)
-				if usernameAnswer == "exit" {
+				fmt.Print("LiquidWeb username: ")
+				answer := prompt.Input("> ", func(d prompt.Document) (s []prompt.Suggest) { return })
+				if answer == "exit" {
 					userInputExitEarly <- true
 					break WHILEMOREADDS
-				} else if usernameAnswer == "" {
-					if _, err := term.Write([]byte("username cannot be blank.\n")); err != nil {
-						userInputError <- err
-						break WHILEMOREADDS
-					}
-				} else {
+				} else if answer != "" {
 					haveUsernameAnswer = true
-					context.Username = usernameAnswer
+					context.Username = answer
 				}
 			}
 
 			// password
 			for !havePasswordAnswer {
-				passwordBytes, err := term.ReadPassword("LiquidWeb password: ")
+				fmt.Print("LiquidWeb password: ")
+				passwordBytes, err := terminal.ReadPassword(0)
 				if err != nil {
 					userInputError <- err
 					break WHILEMOREADDS
 				}
-				passwordAnswer = cast.ToString(passwordBytes)
-				if passwordAnswer == "exit" {
+				answer := string(passwordBytes)
+				//answer := prompt.Input("> ", func(d prompt.Document) (s []prompt.Suggest) { return })
+				if answer == "exit" {
 					userInputExitEarly <- true
 					break WHILEMOREADDS
-				} else if passwordAnswer == "" {
-					if _, err := term.Write([]byte("password cannot be blank.\n")); err != nil {
-						userInputError <- err
-						break WHILEMOREADDS
-					}
-				} else {
+				} else if answer != "" {
 					havePasswordAnswer = true
-					context.Password = passwordAnswer
+					context.Password = answer
 				}
+				fmt.Println("")
 			}
 
 			// make current context?
 			for !haveMakeCurrentContextAnswer {
-				if _, err := term.Write([]byte("Make current context? ([yes]/no)")); err != nil {
-					userInputError <- err
-					break WHILEMOREADDS
+				f := func(d prompt.Document) []prompt.Suggest {
+					s := []prompt.Suggest{
+						{Text: "yes", Description: "Make this my default context"},
+						{Text: "no", Description: "I will switch to this context when I need it"},
+					}
+					return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
 				}
-				makeCurrentContextBytes, err := term.ReadLine()
-				if err != nil {
-					userInputError <- err
-					break WHILEMOREADDS
-				}
-				makeCurrentContextString := cast.ToString(makeCurrentContextBytes)
-				if makeCurrentContextString == "exit" {
+				fmt.Print("Make current context? ")
+				answer := strings.ToLower(prompt.Input("> ", f, prompt.OptionShowCompletionAtStart()))
+				if answer == "yes" || answer == "no" {
+					haveMakeCurrentContextAnswer = true
+					if answer == "yes" {
+						context.CurrentContext = true
+					}
+				} else if answer == "exit" {
 					userInputExitEarly <- true
 					break WHILEMOREADDS
-				}
-				if makeCurrentContextString != "" && makeCurrentContextString != "yes" && makeCurrentContextString != "no" {
-					if _, err := term.Write([]byte("invalid input.\n")); err != nil {
-						userInputError <- err
-						break WHILEMOREADDS
-					}
-					continue
-				}
-
-				haveMakeCurrentContextAnswer = true
-				if makeCurrentContextString == "yes" || makeCurrentContextString == "" {
-					context.CurrentContext = true
 				}
 			}
 
 			// more contexts to add ?
 			for !haveMoreContextsToAddAnswer {
-				if _, err := term.Write([]byte("Add another context? (yes/[no]): ")); err != nil {
-					userInputError <- err
-					break WHILEMOREADDS
+				f := func(d prompt.Document) []prompt.Suggest {
+					s := []prompt.Suggest{
+						{Text: "yes", Description: "I have more auth contexts to add"},
+						{Text: "no", Description: "I'm all done adding auth contexts"},
+					}
+					return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
 				}
-				moreContextsBytes, err := term.ReadLine()
-				if err != nil {
-					userInputError <- err
-					break WHILEMOREADDS
-				}
-
-				answer := cast.ToString(moreContextsBytes)
-				if answer == "exit" {
+				fmt.Print("Add another context? ")
+				answer := strings.ToLower(prompt.Input("> ", f, prompt.OptionShowCompletionAtStart()))
+				if answer == "no" {
+					haveMoreContextsToAddAnswer = true
+					moreAdds = false
+				} else if answer == "yes" {
+					haveMoreContextsToAddAnswer = true
+					moreAdds = true
+				} else if answer == "exit" {
 					userInputExitEarly <- true
 					break WHILEMOREADDS
 				}
-				if answer != "" && answer != "yes" && answer != "no" {
-					if _, err := term.Write([]byte("invalid input.\n")); err != nil {
-						userInputError <- err
-						break WHILEMOREADDS
-					}
-					continue
-				}
-
-				if answer == "no" || answer == "" {
-					moreAdds = false
-				}
-
-				haveMoreContextsToAddAnswer = true
 			}
 
 			// when these defaults are unsuitable, see `auth update-context` to change it later
