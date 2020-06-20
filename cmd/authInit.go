@@ -147,7 +147,6 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 					break WHILEMOREADDS
 				}
 				answer := string(passwordBytes)
-				//answer := prompt.Input("> ", func(d prompt.Document) (s []prompt.Suggest) { return })
 				if answer == "exit" {
 					userInputExitEarly <- true
 					break WHILEMOREADDS
