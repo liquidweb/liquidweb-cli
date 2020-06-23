@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"syscall"
 
 	"golang.org/x/crypto/ssh/terminal"
 
@@ -141,7 +142,7 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 			// password
 			for !havePasswordAnswer {
 				fmt.Print("LiquidWeb password: ")
-				passwordBytes, err := terminal.ReadPassword(0)
+				passwordBytes, err := terminal.ReadPassword(int(syscall.Stdin))
 				if err != nil {
 					userInputError <- err
 					break WHILEMOREADDS
