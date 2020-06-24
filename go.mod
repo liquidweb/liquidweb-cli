@@ -5,6 +5,7 @@ go 1.13
 require (
 	github.com/c-bata/go-prompt v0.2.3
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
+	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
 	github.com/liquidweb/go-lwApi v0.0.0-20190605172801-52a4864d2738
 	github.com/mattn/go-colorable v0.1.6 // indirect
 	github.com/mattn/go-runewidth v0.0.9 // indirect

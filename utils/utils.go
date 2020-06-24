@@ -21,6 +21,8 @@ import (
 	"net"
 	"os"
 	"time"
+
+	"github.com/k0kubun/go-ansi"
 )
 
 func IpIsValid(ip string) bool {
@@ -54,32 +56,44 @@ func FileExists(file string) bool {
 
 func PrintRed(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	fmt.Printf(red(msg))
+	if _, err := ansi.Print(red(msg)); err != nil {
+		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
+	}
 }
 
 func PrintTeal(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	fmt.Printf(teal(msg))
+	if _, err := ansi.Print(teal(msg)); err != nil {
+		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
+	}
 }
 
 func PrintGreen(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	fmt.Printf(green(msg))
+	if _, err := ansi.Print(green(msg)); err != nil {
+		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
+	}
 }
 
 func PrintYellow(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	fmt.Printf(yellow(msg))
+	if _, err := ansi.Print(yellow(msg)); err != nil {
+		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
+	}
 }
 
 func PrintMagenta(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	fmt.Printf(magenta(msg))
+	if _, err := ansi.Print(magenta(msg)); err != nil {
+		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
+	}
 }
 
 func PrintPurple(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	fmt.Printf(purple(msg))
+	if _, err := ansi.Print(purple(msg)); err != nil {
+		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
+	}
 }
 
 // private
