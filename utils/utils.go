@@ -56,42 +56,42 @@ func FileExists(file string) bool {
 
 func PrintRed(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	if _, err := ansi.Printf(red(msg)); err != nil {
+	if _, err := ansi.Print(red(msg)); err != nil {
 		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
 	}
 }
 
 func PrintTeal(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	if _, err := ansi.Printf(teal(msg)); err != nil {
+	if _, err := ansi.Print(teal(msg)); err != nil {
 		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
 	}
 }
 
 func PrintGreen(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	if _, err := ansi.Printf(green(msg)); err != nil {
+	if _, err := ansi.Print(green(msg)); err != nil {
 		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
 	}
 }
 
 func PrintYellow(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	if _, err := ansi.Printf(yellow(msg)); err != nil {
+	if _, err := ansi.Print(yellow(msg)); err != nil {
 		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
 	}
 }
 
 func PrintMagenta(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	if _, err := ansi.Printf(magenta(msg)); err != nil {
+	if _, err := ansi.Print(magenta(msg)); err != nil {
 		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
 	}
 }
 
 func PrintPurple(m string, args ...interface{}) {
 	msg := fmt.Sprintf(m, args...)
-	if _, err := ansi.Printf(purple(msg)); err != nil {
+	if _, err := ansi.Print(purple(msg)); err != nil {
 		fmt.Printf("Error printing to console. Error was [%s] original message: [%s]\n", err, msg)
 	}
 }
