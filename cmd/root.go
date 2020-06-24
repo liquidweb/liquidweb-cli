@@ -16,10 +16,11 @@ limitations under the License.
 package cmd
 
 import (
-	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
+	"github.com/c-bata/go-prompt"
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
@@ -110,22 +111,22 @@ func dialogDesctructiveConfirmProceed() (proceed bool) {
 	var haveConfirmationAnswer bool
 	utils.PrintTeal("Tip: Avoid future confirmations by passing --force\n\n")
 
-	for !haveConfirmationAnswer {
-		utils.PrintRed("This is a destructive operation. Continue (yes/[no])?: ")
-		scanner := bufio.NewScanner(os.Stdin)
-		scanner.Scan()
-		answer := scanner.Text()
-
-		if answer != "" && answer != "yes" && answer != "no" {
-			utils.PrintYellow("invalid input.\n")
-			continue
+	f := func(d prompt.Document) []prompt.Suggest {
+		s := []prompt.Suggest{
+			{Text: "yes", Description: "I understand continue"},
+			{Text: "no", Description: "I would like to cancel"},
 		}
+		return prompt.FilterHasPrefix(s, d.GetWordBeforeCursor(), true)
+	}
 
-		haveConfirmationAnswer = true
-		if answer == "no" || answer == "" {
-			proceed = false
-		} else if answer == "yes" {
-			proceed = true
+	for !haveConfirmationAnswer {
+		fmt.Print("This is a destructive operation. Continue? ")
+		answer := strings.ToLower(prompt.Input("> ", f, prompt.OptionShowCompletionAtStart()))
+		if answer == "yes" || answer == "no" {
+			haveConfirmationAnswer = true
+			if answer == "yes" {
+				proceed = true
+			}
 		}
 	}
 
