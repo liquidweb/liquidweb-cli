@@ -120,7 +120,7 @@ func dialogDesctructiveConfirmProceed() (proceed bool) {
 	}
 
 	for !haveConfirmationAnswer {
-		fmt.Print("This is a destructive operation. Continue? ")
+		utils.PrintRed("This is a destructive operation. Continue? ")
 		answer := strings.ToLower(prompt.Input("> ", f, prompt.OptionShowCompletionAtStart()))
 		if answer == "yes" || answer == "no" {
 			haveConfirmationAnswer = true
