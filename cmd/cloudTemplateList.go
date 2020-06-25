@@ -67,7 +67,7 @@ var cloudTemplateListCmd = &cobra.Command{
 		}
 
 		for _, template := range templateList.Items {
-			if cast.ToBool(template["deprecated"]) {
+			if cast.ToBool(cast.ToInt(template["deprecated"])) {
 				continue
 			}
 
