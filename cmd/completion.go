@@ -1,5 +1,5 @@
 /*
-Copyright © 2020 NAME HERE <EMAIL ADDRESS>
+Copyright © LiquidWeb
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
@@ -26,6 +26,17 @@ var completionCmd = &cobra.Command{
 	Use:   "completion [bash|zsh|fish|powershell]",
 	Short: "Generate completion script",
 	Long: `To load completions:
+
+
+Bash:
+
+$ source <(lw completion bash)
+
+# To load completions for each session, execute once:
+Linux:
+  $ lw completion bash > /etc/bash_completion.d/lw
+MacOS:
+  $ lw completion bash > /usr/local/etc/bash_completion.d/lw
 
 
 `,
