@@ -178,9 +178,12 @@ During all resizes, the Cloud Server is online as the disk synchronizes.
 					memoryChanging = true
 				}
 			}
-			if !diskspaceChanging && !vcpuChanging && !memoryChanging {
-				lwCliInst.Die(fmt.Errorf(
-					"private parent resize, but passed diskspace, memory, vcpu values match existing values"))
+			// allow resizes to a private parent even if its old non private parent config had exact same specs
+			if cloudServerDetails.ConfigId == 0 && cloudServerDetails.PrivateParent != privateParentUniqId {
+				if !diskspaceChanging && !vcpuChanging && !memoryChanging {
+					lwCliInst.Die(fmt.Errorf(
+						"private parent resize, but passed diskspace, memory, vcpu values match existing values"))
+				}
 			}
 
 			resizeArgs["newsize"] = 0                  // 0 indicates private parent resize
