@@ -20,8 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/validate"
+	"github.com/liquidweb/liquidweb-cli/instance"
 )
 
 var cloudServerResizeCmd = &cobra.Command{
@@ -68,204 +67,22 @@ going to a config with more diskspace, and --skip-fs-resize wasn't passed.
 During all resizes, the Cloud Server is online as the disk synchronizes.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
-		diskspaceFlag, _ := cmd.Flags().GetInt64("diskspace")
-		configIdFlag, _ := cmd.Flags().GetInt64("config-id")
-		memoryFlag, _ := cmd.Flags().GetInt64("memory")
-		skipFsResizeFlag, _ := cmd.Flags().GetBool("skip-fs-resize")
-		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
-		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
+		params := &instance.CloudServerResizeParams{}
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		// must validate UniqId now because we call api methods with this uniq_id before below validate
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
+		params.UniqId, _ = cmd.Flags().GetString("uniq-id")
+		params.DiskSpace, _ = cmd.Flags().GetInt64("diskspace")
+		params.ConfigId, _ = cmd.Flags().GetInt64("config-id")
+		params.Memory, _ = cmd.Flags().GetInt64("memory")
+		params.SkipFsResize, _ = cmd.Flags().GetBool("skip-fs-resize")
+		params.Vcpu, _ = cmd.Flags().GetInt64("vcpu")
+		params.PrivateParent, _ = cmd.Flags().GetString("private-parent")
 
-		// convert bool to int for api
-		skipFsResizeInt := 0
-		if skipFsResizeFlag {
-			skipFsResizeInt = 1
-		}
-
-		if configIdFlag == -1 && privateParentFlag == "" {
-			lwCliInst.Die(fmt.Errorf("flag --config-id required when --private-parent is not given"))
-		}
-
-		resizeArgs := map[string]interface{}{
-			"uniq_id":        uniqIdFlag,
-			"skip_fs_resize": skipFsResizeInt,
-			"newsize":        configIdFlag,
-		}
-
-		// get details of existing configuration
-		var cloudServerDetails apiTypes.CloudServerDetails
-		if err := lwCliInst.CallLwApiInto("bleed/storm/server/details",
-			map[string]interface{}{"uniq_id": uniqIdFlag},
-			&cloudServerDetails); err != nil {
-			lwCliInst.Die(err)
-		}
-
-		var liveResize bool
-		var twoRebootResize bool
-		if privateParentFlag == "" {
-			// non private parent resize
-			if memoryFlag != -1 || diskspaceFlag != -1 || vcpuFlag != -1 {
-				lwCliInst.Die(fmt.Errorf("cannot pass --memory --diskspace or --vcpu when --private-parent is not given"))
-			}
-
-			// if already on the given config, nothing to do
-			if cloudServerDetails.ConfigId == configIdFlag {
-				lwCliInst.Die(fmt.Errorf("already on config-id [%d]; not initiating a resize", configIdFlag))
-			}
-
-			validateFields[configIdFlag] = "PositiveInt64"
-			if err := validate.Validate(validateFields); err != nil {
-				lwCliInst.Die(err)
-			}
-
-			// determine reboot expectation.
-			//   resize up full: 2 reboot
-			//   resize up quick (skip-fs-resize) 1 reboot
-			//   resize down: 1 reboot
-			var configDetails apiTypes.CloudConfigDetails
-			if err := lwCliInst.CallLwApiInto("bleed/storm/config/details",
-				map[string]interface{}{"id": configIdFlag}, &configDetails); err != nil {
-				lwCliInst.Die(err)
-			}
-
-			if configDetails.Disk >= cloudServerDetails.DiskSpace {
-				// disk space going up..
-				if !skipFsResizeFlag {
-					// .. and not skipping fs resize, will be 2 reboots.
-					twoRebootResize = true
-				}
-			}
-		} else {
-			// private parent resize specific logic
-			if memoryFlag == -1 && diskspaceFlag == -1 && vcpuFlag == -1 {
-				lwCliInst.Die(fmt.Errorf(
-					"resizes on private parents require at least least one of: --memory --diskspace --vcpu flags"))
-			}
-
-			privateParentUniqId, err := lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-
-			var (
-				diskspaceChanging bool
-				vcpuChanging      bool
-				memoryChanging    bool
-				memoryCanLive     bool
-				vcpuCanLive       bool
-			)
-			// record what resources are changing
-			if diskspaceFlag != -1 {
-				if cloudServerDetails.DiskSpace != diskspaceFlag {
-					diskspaceChanging = true
-				}
-			}
-			if vcpuFlag != -1 {
-				if cloudServerDetails.Vcpu != vcpuFlag {
-					vcpuChanging = true
-				}
-			}
-			if memoryFlag != -1 {
-				if cloudServerDetails.Memory != memoryFlag {
-					memoryChanging = true
-				}
-			}
-			// allow resizes to a private parent even if its old non private parent config had exact same specs
-			if cloudServerDetails.ConfigId == 0 && cloudServerDetails.PrivateParent != privateParentUniqId {
-				if !diskspaceChanging && !vcpuChanging && !memoryChanging {
-					lwCliInst.Die(fmt.Errorf(
-						"private parent resize, but passed diskspace, memory, vcpu values match existing values"))
-				}
-			}
-
-			resizeArgs["newsize"] = 0                  // 0 indicates private parent resize
-			resizeArgs["parent"] = privateParentUniqId // uniq_id of the private parent
-			validateFields[privateParentUniqId] = "UniqId"
-			// server/resize api method always wants diskspace, vcpu, memory passed for pp resize, even if not changing
-			// value. So set to current value, then override based on passed flags.
-			resizeArgs["diskspace"] = cloudServerDetails.DiskSpace
-			resizeArgs["memory"] = cloudServerDetails.Memory
-			resizeArgs["vcpu"] = cloudServerDetails.Vcpu
-
-			if diskspaceFlag != -1 {
-				resizeArgs["diskspace"] = diskspaceFlag // desired diskspace
-				validateFields[diskspaceFlag] = "PositiveInt64"
-			}
-			if memoryFlag != -1 {
-				resizeArgs["memory"] = memoryFlag // desired memory
-				validateFields[memoryFlag] = "PositiveInt64"
-			}
-			if vcpuFlag != -1 {
-				resizeArgs["vcpu"] = vcpuFlag // desired vcpus
-				validateFields[vcpuFlag] = "PositiveInt64"
-			}
-
-			// determine if this will be a live resize
-			if _, exists := resizeArgs["memory"]; exists {
-				if memoryFlag >= cloudServerDetails.Memory {
-					// asking for more RAM
-					memoryCanLive = true
-				}
-			}
-			if _, exists := resizeArgs["vcpu"]; exists {
-				if vcpuFlag >= cloudServerDetails.Vcpu {
-					// asking for more vcpu
-					vcpuCanLive = true
-				}
-			}
-
-			if memoryFlag != -1 && vcpuFlag != -1 {
-				if vcpuCanLive && memoryCanLive {
-					liveResize = true
-				}
-			} else if memoryCanLive {
-				liveResize = true
-			} else if vcpuCanLive {
-				liveResize = true
-			}
-
-			// if diskspace allocation changes its not currently ever done live regardless of memory, vcpu
-			if diskspaceFlag != -1 {
-				if resizeArgs["diskspace"] != cloudServerDetails.DiskSpace {
-					liveResize = false
-				}
-			}
-		}
-
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
-
-		_, err := lwCliInst.LwCliApiClient.Call("bleed/server/resize", resizeArgs)
+		status, err := lwCliInst.CloudServerResize(params)
 		if err != nil {
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("server resized started! You can check progress with 'cloud server status --uniq-id %s'\n\n", uniqIdFlag)
-
-		if liveResize {
-			fmt.Printf("\nthis resize will be performed live without downtime.\n")
-		} else {
-			rebootExpectation := "one reboot"
-			if twoRebootResize {
-				rebootExpectation = "two reboots"
-			}
-			fmt.Printf(
-				"\nexpect %s during this process. Your server will be online as the disk is copied to the destination.\n",
-				rebootExpectation)
-			if twoRebootResize {
-				fmt.Printf(
-					"\tTIP: Avoid the second reboot by passing --skip-fs-resize. See usage for additional details.\n")
-			}
-		}
+		fmt.Print(status)
 	},
 }
 
