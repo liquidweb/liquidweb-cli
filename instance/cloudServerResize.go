@@ -28,7 +28,7 @@ type CloudServerResizeParams struct {
 	UniqId        string `yaml:"uniq-id"`
 	ConfigId      int64  `yaml:"config-id"`
 	SkipFsResize  bool   `yaml:"skip-fs-resize"`
-	PrivateParent string `yaml:"string"`
+	PrivateParent string `yaml:"private-parent"`
 	Memory        int64  `yaml:"memory"`
 	Vcpu          int64  `yaml:"vcpu"`
 	DiskSpace     int64  `yaml:"disk-space"`
