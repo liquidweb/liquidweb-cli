@@ -70,6 +70,7 @@ to the command.
 Current commands supported in a `plan` file:
 
 - cloud server create
+- cloud server resize
 - cloud template restore
 
 Example:
