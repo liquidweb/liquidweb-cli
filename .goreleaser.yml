@@ -16,7 +16,6 @@ archives:
     darwin: Darwin
     linux: Linux
     windows: Windows
-    386: i386
     amd64: x86_64
 checksum:
   name_template: 'checksums.txt'
@@ -32,7 +31,6 @@ nfpms:
   -
     replacements:
       amd64: x86_64
-      386: i386
     vendor: "Liquid Web LLC"
     license: "Apache 2"
     homepage: "https://liquidweb.com"
