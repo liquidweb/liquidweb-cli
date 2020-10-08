@@ -2,8 +2,7 @@
 project_name: lw
 before:
   hooks:
-    - go mod tidy
-    - go generate ./...
+    - go mod verify
 builds:
 - env:
   - CGO_ENABLED=0
