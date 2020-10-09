@@ -122,27 +122,33 @@ This command is purely for information gathering.
 		if details.DiskDifference == 0 {
 			fmt.Printf("%d] ", details.DiskDifference)
 		} else if details.DiskDifference >= 0 {
-			utils.PrintGreen("%d] ", details.DiskDifference)
+			utils.PrintGreen("%d", details.DiskDifference)
+			fmt.Print("] ")
 		} else {
-			utils.PrintRed("%d] ", details.DiskDifference)
+			utils.PrintRed("%d", details.DiskDifference)
+			fmt.Print("] ")
 		}
 
 		fmt.Print("Memory [")
 		if details.MemoryDifference == 0 {
 			fmt.Printf("%d] ", details.MemoryDifference)
 		} else if details.MemoryDifference >= 0 {
-			utils.PrintGreen("%d] ", details.MemoryDifference)
+			utils.PrintGreen("%d", details.MemoryDifference)
+			fmt.Print("] ")
 		} else {
-			utils.PrintRed("%d] ", details.MemoryDifference)
+			utils.PrintRed("%d", details.MemoryDifference)
+			fmt.Print("] ")
 		}
 
 		fmt.Print("Vcpu [")
 		if details.VcpuDifference == 0 {
 			fmt.Printf("%d]\n", details.VcpuDifference)
 		} else if details.VcpuDifference >= 0 {
-			utils.PrintGreen("%d]\n", details.VcpuDifference)
+			utils.PrintGreen("%d", details.VcpuDifference)
+			fmt.Print("]\n")
 		} else {
-			utils.PrintRed("%d]\n", details.VcpuDifference)
+			utils.PrintRed("%d", details.VcpuDifference)
+			fmt.Print("]\n")
 		}
 
 		if details.RebootRequired {
