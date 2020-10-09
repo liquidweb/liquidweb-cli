@@ -108,8 +108,8 @@ This command is purely for information gathering.
 			}
 		}
 
-		var details apiTypes.CloudServerResizeExpectation
-		err := lwCliInst.CallLwApiInto("bleed/storm/server/resizePlan", apiArgs, &details)
+		var expectation apiTypes.CloudServerResizeExpectation
+		err := lwCliInst.CallLwApiInto("bleed/storm/server/resizePlan", apiArgs, &expectation)
 		if err != nil {
 			utils.PrintRed("Configuration Not Available\n\n")
 			fmt.Printf("%s\n", err)
@@ -119,39 +119,39 @@ This command is purely for information gathering.
 		utils.PrintGreen("Configuration Available\n\n")
 
 		fmt.Print("Resource Changes: Disk [")
-		if details.DiskDifference == 0 {
-			fmt.Printf("%d] ", details.DiskDifference)
-		} else if details.DiskDifference >= 0 {
-			utils.PrintGreen("%d", details.DiskDifference)
+		if expectation.DiskDifference == 0 {
+			fmt.Printf("%d] ", expectation.DiskDifference)
+		} else if expectation.DiskDifference >= 0 {
+			utils.PrintGreen("%d", expectation.DiskDifference)
 			fmt.Print("] ")
 		} else {
-			utils.PrintRed("%d", details.DiskDifference)
+			utils.PrintRed("%d", expectation.DiskDifference)
 			fmt.Print("] ")
 		}
 
 		fmt.Print("Memory [")
-		if details.MemoryDifference == 0 {
-			fmt.Printf("%d] ", details.MemoryDifference)
-		} else if details.MemoryDifference >= 0 {
-			utils.PrintGreen("%d", details.MemoryDifference)
+		if expectation.MemoryDifference == 0 {
+			fmt.Printf("%d] ", expectation.MemoryDifference)
+		} else if expectation.MemoryDifference >= 0 {
+			utils.PrintGreen("%d", expectation.MemoryDifference)
 			fmt.Print("] ")
 		} else {
-			utils.PrintRed("%d", details.MemoryDifference)
+			utils.PrintRed("%d", expectation.MemoryDifference)
 			fmt.Print("] ")
 		}
 
 		fmt.Print("Vcpu [")
-		if details.VcpuDifference == 0 {
-			fmt.Printf("%d]\n", details.VcpuDifference)
-		} else if details.VcpuDifference >= 0 {
-			utils.PrintGreen("%d", details.VcpuDifference)
+		if expectation.VcpuDifference == 0 {
+			fmt.Printf("%d]\n", expectation.VcpuDifference)
+		} else if expectation.VcpuDifference >= 0 {
+			utils.PrintGreen("%d", expectation.VcpuDifference)
 			fmt.Print("]\n")
 		} else {
-			utils.PrintRed("%d", details.VcpuDifference)
+			utils.PrintRed("%d", expectation.VcpuDifference)
 			fmt.Print("]\n")
 		}
 
-		if details.RebootRequired {
+		if expectation.RebootRequired {
 			utils.PrintYellow("\nReboot required.\n")
 		} else {
 			utils.PrintGreen("\nNo reboot required.\n")
