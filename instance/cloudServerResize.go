@@ -93,8 +93,6 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 		return
 	}
 
-	var privateParentUniqId string
-
 	if params.PrivateParent == "" {
 		// non private parent resize
 		if params.Memory != -1 || params.DiskSpace != -1 || params.Vcpu != -1 {
@@ -118,6 +116,7 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 			return
 		}
 
+		var privateParentUniqId string
 		privateParentUniqId, err = self.DerivePrivateParentUniqId(params.PrivateParent)
 		if err != nil {
 			return
