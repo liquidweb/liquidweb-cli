@@ -162,8 +162,6 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 		return
 	}
 
-	fmt.Printf("expectation: %+v\n", expectation)
-
 	if _, err = self.LwCliApiClient.Call("bleed/server/resize", resizeArgs); err != nil {
 		return
 	}
