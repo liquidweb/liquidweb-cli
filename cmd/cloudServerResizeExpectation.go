@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
@@ -109,52 +108,44 @@ This command is purely for information gathering.
 			}
 		}
 
-		expectationInter, err := lwCliInst.LwCliApiClient.Call("bleed/storm/server/resizePlan", apiArgs)
+		var details apiTypes.CloudServerResizeExpectation
+		err := lwCliInst.CallLwApiInto("bleed/storm/server/resizePlan", apiArgs, &details)
 		if err != nil {
 			utils.PrintRed("Configuration Not Available\n\n")
 			fmt.Printf("%s\n", err)
 			os.Exit(1)
 		}
-		expectation, ok := expectationInter.(map[string]interface{})
-		if !ok {
-			lwCliInst.Die(errors.New("returned an unexpected structure"))
-		}
-
-		memoryDifference := cast.ToInt(expectation["memoryDifference"])
-		diskDifference := cast.ToInt(expectation["diskDifference"])
-		vcpuDifference := cast.ToInt(expectation["vcpuDifference"])
-		rebootRequired := cast.ToBool(expectation["rebootRequired"])
 
 		utils.PrintGreen("Configuration Available\n\n")
 
 		fmt.Print("Resource Changes: Disk [")
-		if diskDifference == 0 {
-			fmt.Printf("%d] ", diskDifference)
-		} else if diskDifference >= 0 {
-			utils.PrintGreen("%d] ", diskDifference)
+		if details.DiskDifference == 0 {
+			fmt.Printf("%d] ", details.DiskDifference)
+		} else if details.DiskDifference >= 0 {
+			utils.PrintGreen("%d] ", details.DiskDifference)
 		} else {
-			utils.PrintRed("%d] ", diskDifference)
+			utils.PrintRed("%d] ", details.DiskDifference)
 		}
 
 		fmt.Print("Memory [")
-		if memoryDifference == 0 {
-			fmt.Printf("%d] ", memoryDifference)
-		} else if memoryDifference >= 0 {
-			utils.PrintGreen("%d] ", memoryDifference)
+		if details.MemoryDifference == 0 {
+			fmt.Printf("%d] ", details.MemoryDifference)
+		} else if details.MemoryDifference >= 0 {
+			utils.PrintGreen("%d] ", details.MemoryDifference)
 		} else {
-			utils.PrintRed("%d] ", memoryDifference)
+			utils.PrintRed("%d] ", details.MemoryDifference)
 		}
 
 		fmt.Print("Vcpu [")
-		if vcpuDifference == 0 {
-			fmt.Printf("%d]\n", vcpuDifference)
-		} else if vcpuDifference >= 0 {
-			utils.PrintGreen("%d]\n", vcpuDifference)
+		if details.VcpuDifference == 0 {
+			fmt.Printf("%d]\n", details.VcpuDifference)
+		} else if details.VcpuDifference >= 0 {
+			utils.PrintGreen("%d]\n", details.VcpuDifference)
 		} else {
-			utils.PrintRed("%d]\n", vcpuDifference)
+			utils.PrintRed("%d]\n", details.VcpuDifference)
 		}
 
-		if rebootRequired {
+		if details.RebootRequired {
 			utils.PrintYellow("\nReboot required.\n")
 		} else {
 			utils.PrintGreen("\nNo reboot required.\n")

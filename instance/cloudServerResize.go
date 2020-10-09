@@ -20,8 +20,6 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/spf13/cast"
-
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -158,19 +156,13 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 		return
 	}
 
-	var expectationInter interface{}
-	if expectationInter, err = self.LwCliApiClient.Call("bleed/storm/server/resizePlan", resizePlanArgs); err != nil {
-		return
-	}
-	expectation, ok := expectationInter.(map[string]interface{})
-	if !ok {
-		err = errors.New("bleed/storm/server/resizePlan returned an unexpected structure")
+	var expectation apiTypes.CloudServerResizeExpectation
+	if err = self.CallLwApiInto("bleed/storm/server/resizePlan", resizePlanArgs, &expectation); err != nil {
+		err = fmt.Errorf("Configuration Not Available\n\n%s\n", err)
 		return
 	}
 
-	memoryDifference := cast.ToInt(expectation["memoryDifference"])
-	diskDifference := cast.ToInt(expectation["diskDifference"])
-	vcpuDifference := cast.ToInt(expectation["vcpuDifference"])
+	fmt.Printf("expectation: %+v\n", expectation)
 
 	if _, err = self.LwCliApiClient.Call("bleed/server/resize", resizeArgs); err != nil {
 		return
@@ -179,9 +171,10 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 	var b bytes.Buffer
 
 	b.WriteString(fmt.Sprintf("Server resized started! You can check progress with 'cloud server status --uniq-id %s'\n\n", params.UniqId))
-	b.WriteString(fmt.Sprintf("Resource changes: Memory [%d] Disk [%d] Vcpu [%d]\n", memoryDifference, diskDifference, vcpuDifference))
+	b.WriteString(fmt.Sprintf("Resource changes: Memory [%d] Disk [%d] Vcpu [%d]\n", expectation.MemoryDifference,
+		expectation.DiskDifference, expectation.VcpuDifference))
 
-	if cast.ToBool(expectation["rebootRequired"]) {
+	if expectation.RebootRequired {
 		b.WriteString("\nExpect a reboot during this resize.\n")
 	} else {
 		b.WriteString("\nThis resize will be performed live without downtime.\n")
