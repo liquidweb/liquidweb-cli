@@ -155,9 +155,9 @@ This command is purely for information gathering.
 		}
 
 		if rebootRequired {
-			utils.PrintGreen("\nNo reboot required.\n")
-		} else {
 			utils.PrintYellow("\nReboot required.\n")
+		} else {
+			utils.PrintGreen("\nNo reboot required.\n")
 		}
 	},
 }
