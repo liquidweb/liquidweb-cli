@@ -18,6 +18,7 @@ package cmd
 import (
 	"errors"
 	"fmt"
+	"os"
 
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
@@ -110,7 +111,9 @@ This command is purely for information gathering.
 
 		expectationInter, err := lwCliInst.LwCliApiClient.Call("bleed/storm/server/resizePlan", apiArgs)
 		if err != nil {
-			lwCliInst.Die(fmt.Errorf("ERROR: %s", err))
+			utils.PrintRed("Configuration Not Available\n\n")
+			fmt.Printf("%s\n", err)
+			os.Exit(1)
 		}
 		expectation, ok := expectationInter.(map[string]interface{})
 		if !ok {
@@ -120,8 +123,9 @@ This command is purely for information gathering.
 		memoryDifference := cast.ToInt(expectation["memoryDifference"])
 		diskDifference := cast.ToInt(expectation["diskDifference"])
 		vcpuDifference := cast.ToInt(expectation["vcpuDifference"])
+		rebootRequired := cast.ToBool(expectation["rebootRequired"])
 
-		utils.PrintGreen("Configuration is available\n\n")
+		utils.PrintGreen("Configuration Available\n\n")
 
 		fmt.Print("Resource Changes: Disk [")
 		if diskDifference == 0 {
@@ -148,6 +152,12 @@ This command is purely for information gathering.
 			utils.PrintGreen("%d]\n", vcpuDifference)
 		} else {
 			utils.PrintRed("%d]\n", vcpuDifference)
+		}
+
+		if rebootRequired {
+			utils.PrintGreen("\nNo reboot required.\n")
+		} else {
+			utils.PrintYellow("\nReboot required.\n")
 		}
 	},
 }
