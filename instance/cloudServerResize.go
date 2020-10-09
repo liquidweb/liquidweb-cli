@@ -20,6 +20,8 @@ import (
 	"errors"
 	"fmt"
 
+	"github.com/spf13/cast"
+
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -73,6 +75,10 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 		return
 	}
 
+	resizePlanArgs := map[string]interface{}{
+		"uniq_id": params.UniqId,
+	}
+
 	resizeArgs := map[string]interface{}{
 		"uniq_id":        params.UniqId,
 		"skip_fs_resize": skipFsResizeInt,
@@ -89,10 +95,8 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 		return
 	}
 
-	var (
-		liveResize      bool
-		twoRebootResize bool
-	)
+	var privateParentUniqId string
+
 	if params.PrivateParent == "" {
 		// non private parent resize
 		if params.Memory != -1 || params.DiskSpace != -1 || params.Vcpu != -1 {
@@ -107,27 +111,8 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 		}
 
 		validateFields[params.ConfigId] = "PositiveInt64"
-		if err = validate.Validate(validateFields); err != nil {
-			return
-		}
 
-		// determine reboot expectation.
-		//   resize up full: 2 reboot
-		//   resize up quick (skip-fs-resize) 1 reboot
-		//   resize down: 1 reboot
-		var configDetails apiTypes.CloudConfigDetails
-		if err = self.CallLwApiInto("bleed/storm/config/details",
-			map[string]interface{}{"id": params.ConfigId}, &configDetails); err != nil {
-			return
-		}
-
-		if configDetails.Disk >= cloudServerDetails.DiskSpace {
-			// disk space going up..
-			if !params.SkipFsResize {
-				// .. and not skipping fs resize, will be 2 reboots.
-				twoRebootResize = true
-			}
-		}
+		resizePlanArgs["config_id"] = params.ConfigId
 	} else {
 		// private parent resize specific logic
 		if params.Memory == -1 && params.DiskSpace == -1 && params.Vcpu == -1 {
@@ -135,41 +120,9 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 			return
 		}
 
-		var privateParentUniqId string
 		privateParentUniqId, err = self.DerivePrivateParentUniqId(params.PrivateParent)
 		if err != nil {
 			return
-		}
-
-		var (
-			diskspaceChanging bool
-			vcpuChanging      bool
-			memoryChanging    bool
-			memoryCanLive     bool
-			vcpuCanLive       bool
-		)
-		// record what resources are changing
-		if params.DiskSpace != -1 {
-			if cloudServerDetails.DiskSpace != params.DiskSpace {
-				diskspaceChanging = true
-			}
-		}
-		if params.Vcpu != -1 {
-			if cloudServerDetails.Vcpu != params.Vcpu {
-				vcpuChanging = true
-			}
-		}
-		if params.Memory != -1 {
-			if cloudServerDetails.Memory != params.Memory {
-				memoryChanging = true
-			}
-		}
-		// allow resizes to a private parent even if its old non private parent config had exact same specs
-		if cloudServerDetails.ConfigId == 0 && cloudServerDetails.PrivateParent != privateParentUniqId {
-			if !diskspaceChanging && !vcpuChanging && !memoryChanging {
-				err = errors.New("private parent resize, but passed diskspace, memory, vcpu values match existing values")
-				return
-			}
 		}
 
 		resizeArgs["newsize"] = 0                  // 0 indicates private parent resize
@@ -194,64 +147,44 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 			validateFields[params.Vcpu] = "PositiveInt64"
 		}
 
-		// determine if this will be a live resize
-		if _, exists := resizeArgs["memory"]; exists {
-			if params.Memory >= cloudServerDetails.Memory {
-				// asking for more RAM
-				memoryCanLive = true
-			}
-		}
-		if _, exists := resizeArgs["vcpu"]; exists {
-			if params.Vcpu >= cloudServerDetails.Vcpu {
-				// asking for more vcpu
-				vcpuCanLive = true
-			}
-		}
-
-		if params.Memory != -1 && params.Vcpu != -1 {
-			if vcpuCanLive && memoryCanLive {
-				liveResize = true
-			}
-		} else if memoryCanLive {
-			liveResize = true
-		} else if vcpuCanLive {
-			liveResize = true
-		}
-
-		// if diskspace allocation changes its not currently ever done live regardless of memory, vcpu
-		if params.DiskSpace != -1 {
-			if resizeArgs["diskspace"] != cloudServerDetails.DiskSpace {
-				liveResize = false
-			}
-		}
+		resizePlanArgs["config_id"] = 0
+		resizePlanArgs["private_parent"] = privateParentUniqId
+		resizePlanArgs["memory"] = resizeArgs["memory"]
+		resizePlanArgs["disk"] = resizeArgs["diskspace"]
+		resizePlanArgs["vcpu"] = resizeArgs["vcpu"]
 	}
 
 	if err = validate.Validate(validateFields); err != nil {
 		return
 	}
 
+	var expectationInter interface{}
+	if expectationInter, err = self.LwCliApiClient.Call("bleed/storm/server/resizePlan", resizePlanArgs); err != nil {
+		return
+	}
+	expectation, ok := expectationInter.(map[string]interface{})
+	if !ok {
+		err = errors.New("bleed/storm/server/resizePlan returned an unexpected structure")
+		return
+	}
+
+	memoryDifference := cast.ToInt(expectation["memoryDifference"])
+	diskDifference := cast.ToInt(expectation["diskDifference"])
+	vcpuDifference := cast.ToInt(expectation["vcpuDifference"])
+
 	if _, err = self.LwCliApiClient.Call("bleed/server/resize", resizeArgs); err != nil {
 		return
 	}
 
 	var b bytes.Buffer
-	b.WriteString(fmt.Sprintf("server resized started! You can check progress with 'cloud server status --uniq-id %s'\n\n", params.UniqId))
 
-	if liveResize {
-		b.WriteString(fmt.Sprintf("\nthis resize will be performed live without downtime.\n"))
+	b.WriteString(fmt.Sprintf("Server resized started! You can check progress with 'cloud server status --uniq-id %s'\n\n", params.UniqId))
+	b.WriteString(fmt.Sprintf("Resource changes: Memory [%d] Disk [%d] Vcpu [%d]\n", memoryDifference, diskDifference, vcpuDifference))
+
+	if cast.ToBool(expectation["rebootRequired"]) {
+		b.WriteString("\nExpect a reboot during this resize.\n")
 	} else {
-		rebootExpectation := "one reboot"
-		if twoRebootResize {
-			rebootExpectation = "two reboots"
-		}
-		b.WriteString(fmt.Sprintf(
-			"\nexpect %s during this process. Your server will be online as the disk is copied to the destination.\n",
-			rebootExpectation))
-
-		if twoRebootResize {
-			b.WriteString(fmt.Sprintf(
-				"\tTIP: Avoid the second reboot by passing --skip-fs-resize. See usage for additional details.\n"))
-		}
+		b.WriteString("\nThis resize will be performed live without downtime.\n")
 	}
 
 	result = b.String()
