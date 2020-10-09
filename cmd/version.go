@@ -19,13 +19,8 @@ import (
 	"fmt"
 
 	"github.com/spf13/cobra"
-)
 
-// default build-time variables; these are overridden via ldflags
-var (
-	Version   = "unknown-version"
-	GitCommit = "unknown-commit"
-	BuildTime = "unknown-buildtime"
+	"github.com/liquidweb/liquidweb-cli/version"
 )
 
 var versionCmd = &cobra.Command{
@@ -35,13 +30,20 @@ var versionCmd = &cobra.Command{
 
 This information should be provided with any bug report.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("LiquidWeb CLI Build Details\n\n")
-		fmt.Printf("  Build Time: %s\n", BuildTime)
-		fmt.Printf("  Version: %s\n", Version)
-		fmt.Printf("  Git commit: %s\n\n", GitCommit)
+		checkLatestFlag, _ := cmd.Flags().GetBool("check-latest")
+
+		version.Show()
+
+		if checkLatestFlag {
+			if err := version.ShowLatest(); err != nil {
+				lwCliInst.Die(fmt.Errorf("failed detecting latest liquidweb-cli version: %s", err))
+			}
+		}
 	},
 }
 
 func init() {
 	rootCmd.AddCommand(versionCmd)
+
+	versionCmd.Flags().Bool("check-latest", false, "check if theres an official update available")
 }
