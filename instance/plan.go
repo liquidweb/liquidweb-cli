@@ -17,7 +17,6 @@ package instance
 
 import (
 	"fmt"
-	"os"
 )
 
 type Plan struct {
@@ -31,6 +30,7 @@ type PlanCloud struct {
 
 type PlanCloudServer struct {
 	Create []CloudServerCreateParams
+	Resize []CloudServerResizeParams
 }
 
 type PlanCloudTemplate struct {
@@ -74,6 +74,13 @@ func (ci *Client) processPlanCloudServer(server *PlanCloudServer) error {
 			}
 		}
 	}
+	if server.Resize != nil {
+		for _, r := range server.Resize {
+			if err := ci.processPlanCloudServerResize(&r); err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
 }
@@ -82,13 +89,24 @@ func (ci *Client) processPlanCloudServerCreate(params *CloudServerCreateParams) 
 
 	uniqId, err := ci.CloudServerCreate(params)
 	if err != nil {
-		fmt.Print(err)
-		os.Exit(1)
+		return err
 	}
 
 	fmt.Printf(
 		"Cloud server with uniq-id [%s] creating. Check status with 'cloud server status --uniq-id %s'\n",
 		uniqId, uniqId)
+	return nil
+}
+
+func (ci *Client) processPlanCloudServerResize(params *CloudServerResizeParams) error {
+
+	result, err := ci.CloudServerResize(params)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(result)
+
 	return nil
 }
 
