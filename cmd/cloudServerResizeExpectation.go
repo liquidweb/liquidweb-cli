@@ -46,7 +46,7 @@ This command is purely for information gathering.
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
-		diskFlag, _ := cmd.Flags().GetInt64("disk")
+		diskFlag, _ := cmd.Flags().GetInt64("diskspace")
 		memoryFlag, _ := cmd.Flags().GetInt64("memory")
 		vcpuFlag, _ := cmd.Flags().GetInt64("vcpu")
 		configIdFlag, _ := cmd.Flags().GetInt64("config-id")
@@ -166,7 +166,7 @@ func init() {
 
 	cloudServerResizeExpectationCmd.Flags().String("private-parent", "",
 		"name or uniq-id of the Private Parent (see: 'cloud private-parent list')")
-	cloudServerResizeExpectationCmd.Flags().Int64("disk", -1, "diskspace for the Cloud Server (when private-parent)")
+	cloudServerResizeExpectationCmd.Flags().Int64("diskspace", -1, "diskspace for the Cloud Server (when private-parent)")
 	cloudServerResizeExpectationCmd.Flags().Int64("memory", -1, "memory for the Cloud Server (when private-parent)")
 	cloudServerResizeExpectationCmd.Flags().Int64("vcpu", -1, "vcpus for the Cloud Server (when private-parent)")
 
