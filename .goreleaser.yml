@@ -10,7 +10,7 @@ builds:
     - windows
     - linux
     - darwin
-  ldflags: -X github.com/liquidweb/liquidweb-cli/cmd.Version={{ .Env.VERSION }}  -X github.com/liquidweb/liquidweb-cli/cmd.BuildTime={{ .Env.BUILDTIME }}  -X github.com/liquidweb/liquidweb-cli/cmd.GitCommit={{ .Env.GITCOMMIT }}
+  ldflags: -X github.com/liquidweb/liquidweb-cli/version.Version={{ .Env.VERSION }}  -X github.com/liquidweb/liquidweb-cli/version.BuildTime={{ .Env.BUILDTIME }}  -X github.com/liquidweb/liquidweb-cli/version.GitCommit={{ .Env.GITCOMMIT }}
 archives:
 - replacements:
     darwin: Darwin

@@ -18,8 +18,8 @@ fi
 
 export LDFLAGS="\
     -w \
-    -X \"github.com/liquidweb/liquidweb-cli/cmd.GitCommit=${GITCOMMIT}\" \
-    -X \"github.com/liquidweb/liquidweb-cli/cmd.BuildTime=${BUILDTIME}\" \
-    -X \"github.com/liquidweb/liquidweb-cli/cmd.Version=${VERSION}\" \
+    -X \"github.com/liquidweb/liquidweb-cli/version.GitCommit=${GITCOMMIT}\" \
+    -X \"github.com/liquidweb/liquidweb-cli/version.BuildTime=${BUILDTIME}\" \
+    -X \"github.com/liquidweb/liquidweb-cli/version.Version=${VERSION}\" \
     ${LDFLAGS:-} \
 "
