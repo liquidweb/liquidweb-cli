@@ -46,14 +46,20 @@ var cloudNetworkPublicListCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("IP Assignments for %s:\n", uniqIdFlag)
+		fmt.Printf("IP Assignments for %s:\n\n", uniqIdFlag)
 
-		for _, item := range results.Items {
+		for c, item := range results.Items {
 			var details apiTypes.NetworkAssignmentListEntry
 			if err := instance.CastFieldTypes(item, &details); err != nil {
 				lwCliInst.Die(err)
 			}
 
+			// first ip is always primary
+			if c == 0 {
+				fmt.Println("Primary IP:")
+			} else {
+				fmt.Println("Secondary IP:")
+			}
 			fmt.Print(details)
 		}
 	},
