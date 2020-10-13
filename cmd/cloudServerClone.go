@@ -73,10 +73,16 @@ Server is not on a Private Parent.`,
 
 		var privateParentUniqId string
 		if privateParentFlag != "" {
-			var err error
-			privateParentUniqId, err = lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
+			var (
+				err  error
+				zone int64
+			)
+			privateParentUniqId, zone, err = lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
 			if err != nil {
 				lwCliInst.Die(err)
+			}
+			if zoneFlag == -1 {
+				zoneFlag = zone
 			}
 		}
 
