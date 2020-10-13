@@ -19,10 +19,12 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
+	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/validate"
+	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
 var cloudServerDestroyCmdUniqIdFlag []string
@@ -40,25 +42,54 @@ server.`,
 		reasonFlag, _ := cmd.Flags().GetString("reason")
 		forceFlag, _ := cmd.Flags().GetBool("force")
 
-		// if force flag wasn't passed
-		if !forceFlag {
-			// exit if user didn't consent
+		destroyTargets := map[string]interface{}{}
+
+		if forceFlag {
+			for _, uniqId := range cloudServerDestroyCmdUniqIdFlag {
+				destroyTargets[uniqId] = "" // didnt do lookup, so dont know hostname
+			}
+		} else {
+			methodArgs := instance.AllPaginatedResultsArgs{
+				Method:         "bleed/storm/server/list",
+				ResultsPerPage: 100,
+			}
+			results, err := lwCliInst.AllPaginatedResults(&methodArgs)
+			if err != nil {
+				lwCliInst.Die(err)
+			}
+
+			for _, item := range results.Items {
+				uniqId := cast.ToString(item["uniq_id"])
+				var shouldDestroy bool
+				for _, candidateUniqId := range cloudServerDestroyCmdUniqIdFlag {
+					if uniqId == candidateUniqId {
+						shouldDestroy = true
+						break
+					}
+				}
+
+				if shouldDestroy {
+					destroyTargets[uniqId] = cast.ToString(item["domain"])
+				}
+			}
+
+			if len(destroyTargets) == 0 {
+				lwCliInst.Die(fmt.Errorf("no Cloud Servers found to destroy"))
+			}
+
+			utils.PrintYellow("DANGER! ")
+			utils.PrintRed("This will destroy ALL Cloud Servers listed below:\n\n")
+			for uniqId, hostname := range destroyTargets {
+				fmt.Printf("\tuniq_id: %s hostname: %s\n", uniqId, hostname)
+			}
+			fmt.Println("")
+
 			if proceed := dialogDesctructiveConfirmProceed(); !proceed {
 				os.Exit(0)
 			}
 		}
 
-		for _, uniqId := range cloudServerDestroyCmdUniqIdFlag {
-
-			validateFields := map[interface{}]interface{}{
-				uniqId: "UniqId",
-			}
-
-			if err := validate.Validate(validateFields); err != nil {
-				fmt.Printf("%s ... skipping\n", err)
-				continue
-			}
-
+		for uniqId, hostname := range destroyTargets {
 			destroyArgs := map[string]interface{}{
 				"uniq_id":              uniqId,
 				"cancellation_comment": commentFlag,
@@ -74,7 +105,11 @@ server.`,
 				lwCliInst.Die(err)
 			}
 
-			fmt.Printf("destroyed: %s\n", destroyed.Destroyed)
+			if hostname == "" {
+				fmt.Printf("destroyed: %s\n", destroyed.Destroyed)
+			} else {
+				fmt.Printf("destroyed: %s (%s)\n", destroyed.Destroyed, hostname)
+			}
 		}
 	},
 }
