@@ -17,9 +17,7 @@ package cmd
 
 import (
 	"fmt"
-	"net"
 
-	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
@@ -50,7 +48,12 @@ var cloudNetworkPublicListCmd = &cobra.Command{
 
 		fmt.Printf("IP Assignments for %s:\n\n", uniqIdFlag)
 
-		_, cloudPrivateSubnet, _ := net.ParseCIDR("10.0.0.0/8")
+		var private apiTypes.CloudNetworkPrivateGetIpResponse
+		privateArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
+		if err := lwCliInst.CallLwApiInto("bleed/network/private/getip", privateArgs, &private); err != nil {
+			lwCliInst.Die(err)
+		}
+
 		for c, item := range results.Items {
 			var details apiTypes.NetworkAssignmentListEntry
 			if err := instance.CastFieldTypes(item, &details); err != nil {
@@ -61,8 +64,8 @@ var cloudNetworkPublicListCmd = &cobra.Command{
 			if c == 0 {
 				fmt.Println("Primary IP:")
 			} else {
-				if cloudPrivateSubnet.Contains(net.ParseIP(cast.ToString(item["ip"]))) {
-					fmt.Println("Private/Secondary IP:")
+				if details.Ip == private.Ip {
+					fmt.Println("Private Network IP:")
 				} else {
 					fmt.Println("Secondary IP:")
 				}
