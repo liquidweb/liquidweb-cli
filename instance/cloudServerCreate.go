@@ -37,7 +37,7 @@ type CloudServerCreateParams struct {
 	BackupDays    int      `yaml:"backup-days"`  // daily backup plan; how many days to keep a backup
 	BackupQuota   int      `yaml:"backup-quota"` // backup quota plan; how many gb of backups to keep
 	Bandwidth     string   `yaml:"bandwidth"`
-	Zone          int      `yaml:"zone"`
+	Zone          int64    `yaml:"zone"`
 	WinAv         string   `yaml:"winav"`  // windows
 	MsSql         string   `yaml:"ms-sql"` // windows
 	PrivateParent string   `yaml:"private-parent"`
@@ -74,12 +74,16 @@ func (s *CloudServerCreateParams) UnmarshalYAML(unmarshal func(interface{}) erro
 func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, error) {
 	var err error
 
-	// if passed a private-parent flag, derive its uniq_id
+	// if passed a private-parent flag, derive its uniq_id and zone
 	if params.PrivateParent != "" {
-		params.PrivateParent, err = ci.DerivePrivateParentUniqId(params.PrivateParent)
+		params.PrivateParent, params.Zone, err = ci.DerivePrivateParentUniqId(params.PrivateParent)
 		if err != nil {
 			return "", err
 		}
+	}
+
+	if params.Zone <= 0 {
+		return "", fmt.Errorf("--zone must be given")
 	}
 
 	// default password
@@ -132,7 +136,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 	}
 
 	validateFields := map[interface{}]interface{}{
-		params.Zone:     map[string]string{"type": "PositiveInt", "optional": "true"},
+		params.Zone:     "PositiveInt64",
 		params.Hostname: "NonEmptyString",
 		params.Type:     "NonEmptyString",
 		params.Ips:      "PositiveInt",
