@@ -77,7 +77,7 @@ This command is purely for information gathering.
 				lwCliInst.Die(errors.New("when --private-parent , at least one of --memory --disk --vcpu are required"))
 			}
 
-			privateParentUniqId, err := lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
+			privateParentUniqId, _, err := lwCliInst.DerivePrivateParentUniqId(privateParentFlag)
 			if err != nil {
 				lwCliInst.Die(err)
 			}
