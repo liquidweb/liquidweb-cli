@@ -46,14 +46,30 @@ var cloudNetworkPublicListCmd = &cobra.Command{
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("IP Assignments for %s:\n", uniqIdFlag)
+		fmt.Printf("IP Assignments for %s:\n\n", uniqIdFlag)
 
-		for _, item := range results.Items {
+		var private apiTypes.CloudNetworkPrivateGetIpResponse
+		privateArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
+		if err := lwCliInst.CallLwApiInto("bleed/network/private/getip", privateArgs, &private); err != nil {
+			lwCliInst.Die(err)
+		}
+
+		for c, item := range results.Items {
 			var details apiTypes.NetworkAssignmentListEntry
 			if err := instance.CastFieldTypes(item, &details); err != nil {
 				lwCliInst.Die(err)
 			}
 
+			// first ip is always primary
+			if c == 0 {
+				fmt.Println("Primary IP:")
+			} else {
+				if details.Ip == private.Ip {
+					fmt.Println("Private Network IP:")
+				} else {
+					fmt.Println("Secondary IP:")
+				}
+			}
 			fmt.Print(details)
 		}
 	},

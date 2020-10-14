@@ -20,6 +20,7 @@ import (
 	"strings"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 // it helped package scope and getting access to the global client variable to
@@ -28,19 +29,18 @@ import (
 // or maybe the "instance" package name just makes it feel wrong...
 // feedback is welcome
 
-func (ci *Client) DerivePrivateParentUniqId(name string) (string, error) {
-	var (
-		privateParentUniqId     string
-		privateParentDetails    apiTypes.CloudPrivateParentDetails
-		privateParentDetailsErr error
-	)
-
+func (ci *Client) DerivePrivateParentUniqId(name string) (uniqId string, zone int64, privateParentDetailsErr error) {
 	// if name looks like a uniq_id, try it as a uniq_id first.
-	if len(name) == 6 && strings.ToUpper(name) == name {
+	validateFields := map[interface{}]interface{}{
+		strings.ToUpper(name): "UniqId",
+	}
+	if err := validate.Validate(validateFields); err == nil {
+		var privateParentDetails apiTypes.CloudPrivateParentDetails
 		if err := ci.CallLwApiInto("bleed/storm/private/parent/details",
 			map[string]interface{}{"uniq_id": name},
 			&privateParentDetails); err == nil {
-			privateParentUniqId = name
+			uniqId = name
+			zone = privateParentDetails.Zone.Id
 		} else {
 			privateParentDetailsErr = fmt.Errorf(
 				"failed fetching parent details treating given --private-parent arg as a uniq-id [%s]: %s",
@@ -49,44 +49,46 @@ func (ci *Client) DerivePrivateParentUniqId(name string) (string, error) {
 	}
 
 	// if we havent found the pp details yet, try assuming name is the name of the pp
-	if privateParentUniqId == "" {
+	if uniqId == "" {
 		methodArgs := AllPaginatedResultsArgs{
 			Method:         "bleed/storm/private/parent/list",
 			ResultsPerPage: 100,
 		}
 		results, err := ci.AllPaginatedResults(&methodArgs)
-		if err != nil {
-			ci.Die(err)
-		}
-
-		for _, item := range results.Items {
-			var privateParentDetails apiTypes.CloudPrivateParentDetails
-			if err := CastFieldTypes(item, &privateParentDetails); err != nil {
-				ci.Die(err)
-			}
-
-			if privateParentDetails.Domain == name {
-				// found it get details
-				err := ci.CallLwApiInto("bleed/storm/private/parent/details",
-					map[string]interface{}{
-						"uniq_id": privateParentDetails.UniqId,
-					},
-					&privateParentDetails)
-				if err != nil {
-					privateParentDetailsErr = fmt.Errorf(
-						"failed fetching private parent details for discovered uniq-id [%s] error: %s %w",
-						privateParentDetails.UniqId, err, privateParentDetailsErr)
-					return "", privateParentDetailsErr
+		if err == nil {
+			for _, item := range results.Items {
+				var privateParentDetails apiTypes.CloudPrivateParentDetails
+				if err := CastFieldTypes(item, &privateParentDetails); err != nil {
+					privateParentDetailsErr = fmt.Errorf("%s %w", privateParentDetailsErr, err)
+					break
 				}
-				privateParentUniqId = privateParentDetails.UniqId
-				break // found the uniq_id so break
+
+				if privateParentDetails.Domain == name {
+					// found it get details
+					err := ci.CallLwApiInto("bleed/storm/private/parent/details",
+						map[string]interface{}{
+							"uniq_id": privateParentDetails.UniqId,
+						},
+						&privateParentDetails)
+					if err != nil {
+						privateParentDetailsErr = fmt.Errorf(
+							"failed fetching private parent details for discovered uniq-id [%s] error: %w %s",
+							privateParentDetails.UniqId, err, privateParentDetailsErr)
+						break
+					}
+					uniqId = privateParentDetails.UniqId
+					zone = privateParentDetails.Zone.Id
+					break // found the uniq_id so break
+				}
 			}
+		} else {
+			privateParentDetailsErr = fmt.Errorf("%s %w", privateParentDetailsErr, err)
 		}
 	}
 
-	if privateParentUniqId == "" {
-		return "", fmt.Errorf("failed deriving uniq-id of private parent from [%s]: %s", name, privateParentDetailsErr)
+	if uniqId == "" || zone == 0 {
+		privateParentDetailsErr = fmt.Errorf("failed deriving uniq-id and/or zone of private parent from [%s]: %w", name, privateParentDetailsErr)
 	}
 
-	return privateParentUniqId, nil
+	return
 }

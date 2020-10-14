@@ -68,7 +68,7 @@ For a list of backups, see 'cloud backups list'
 		params.BackupDays, _ = cmd.Flags().GetInt("backup-days")
 		params.BackupQuota, _ = cmd.Flags().GetInt("backup-quota")
 		params.Bandwidth, _ = cmd.Flags().GetString("bandwidth")
-		params.Zone, _ = cmd.Flags().GetInt("zone")
+		params.Zone, _ = cmd.Flags().GetInt64("zone")
 		params.WinAv, _ = cmd.Flags().GetString("winav")
 		params.MsSql, _ = cmd.Flags().GetString("ms-sql")
 		params.PrivateParent, _ = cmd.Flags().GetString("private-parent")
@@ -114,7 +114,7 @@ func init() {
 	cloudServerCreateCmd.Flags().Int("backup-days", -1, "Enable daily backup plan. This is the amount of days to keep a backup")
 	cloudServerCreateCmd.Flags().Int("backup-quota", -1, "Enable quota backup plan. This is the total amount of GB to keep.")
 	cloudServerCreateCmd.Flags().String("bandwidth", "SS.10000", "bandwidth package to use")
-	cloudServerCreateCmd.Flags().Int("zone", 0, "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
+	cloudServerCreateCmd.Flags().Int64("zone", 0, "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
 	cloudServerCreateCmd.Flags().String("password", "", "root or administrator password to set")
 
 	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of cloud backup to create from (see 'cloud backup list')")
@@ -133,8 +133,4 @@ func init() {
 	// windows specific
 	cloudServerCreateCmd.Flags().String("winav", "", "Use only with Windows Servers. Typically (None or NOD32) for value when set")
 	cloudServerCreateCmd.Flags().String("ms-sql", "", "Microsoft SQL Server")
-
-	if err := cloudServerCreateCmd.MarkFlagRequired("zone"); err != nil {
-		lwCliInst.Die(err)
-	}
 }

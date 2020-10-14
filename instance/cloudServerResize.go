@@ -136,7 +136,7 @@ func (self *Client) CloudServerResize(params *CloudServerResizeParams) (result s
 		}
 
 		var privateParentUniqId string
-		privateParentUniqId, err = self.DerivePrivateParentUniqId(params.PrivateParent)
+		privateParentUniqId, _, err = self.DerivePrivateParentUniqId(params.PrivateParent)
 		if err != nil {
 			return
 		}
