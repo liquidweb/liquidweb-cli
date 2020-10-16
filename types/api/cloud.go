@@ -490,6 +490,29 @@ type CloudBlockStorageVolumeResize struct {
 	UniqId  string `json:"uniq_id" mapstructure:"uniq_id"`
 }
 
+type CloudServerResizeExpectation struct {
+	DiskDifference   int64    `json:"diskDifference" mapstructure:"diskDifference"`
+	MemoryDifference int64    `json:"memoryDifference" mapstructure:"memoryDifference"`
+	VcpuDifference   int64    `json:"vcpuDifference" mapstructure:"vcpuDifference"`
+	RebootRequired   FlexBool `json:"rebootRequired" mapstructure:"rebootRequired"`
+}
+
+type FlexBool bool
+
+func (self *FlexBool) UnmarshalJSON(data []byte) error {
+	str := string(data)
+
+	if str == "1" || str == "true" {
+		*self = true
+	} else if str == "0" || str == "false" {
+		*self = false
+	} else {
+		return fmt.Errorf("Boolean unmarshal error: invalid input %s", str)
+	}
+
+	return nil
+}
+
 type CloudObjectStoreDetails struct {
 	Accnt       int64                              `json:"accnt" mapstructure:"accnt"`
 	Caps        []CloudObjectStoreDetailsCapsEntry `json:"caps" mapstructure:"caps"`
