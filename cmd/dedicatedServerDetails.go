@@ -20,12 +20,11 @@ import (
 
 	"github.com/spf13/cobra"
 
-	//"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
-var dedicatedDetailsCmd = &cobra.Command{
+var dedicatedServerDetailsCmd = &cobra.Command{
 	Use:   "details",
 	Short: "Get details of a dedicated server",
 	Long:  `Get details of a dedicated server`,
@@ -75,12 +74,12 @@ var dedicatedDetailsCmd = &cobra.Command{
 }
 
 func init() {
-	dedicatedCmd.AddCommand(dedicatedDetailsCmd)
+	dedicatedServerCmd.AddCommand(dedicatedServerDetailsCmd)
 
-	dedicatedDetailsCmd.Flags().Bool("json", false, "output in json format")
-	dedicatedDetailsCmd.Flags().String("uniq-id", "", "uniq-id of the dedicated server")
+	dedicatedServerDetailsCmd.Flags().Bool("json", false, "output in json format")
+	dedicatedServerDetailsCmd.Flags().String("uniq-id", "", "uniq-id of the dedicated server")
 
-	if err := dedicatedDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
+	if err := dedicatedServerDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)
 	}
 }

@@ -24,7 +24,7 @@ import (
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
-var dedicatedListCmd = &cobra.Command{
+var dedicatedServerListCmd = &cobra.Command{
 	Use:   "list",
 	Short: "List Dedicated Servers on your account",
 	Long:  `List Dedicated Servers on your account`,
@@ -67,7 +67,7 @@ var dedicatedListCmd = &cobra.Command{
 }
 
 func init() {
-	dedicatedCmd.AddCommand(dedicatedListCmd)
+	dedicatedServerCmd.AddCommand(dedicatedServerListCmd)
 
-	dedicatedListCmd.Flags().Bool("json", false, "output in json format")
+	dedicatedServerListCmd.Flags().Bool("json", false, "output in json format")
 }

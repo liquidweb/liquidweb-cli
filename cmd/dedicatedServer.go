@@ -21,10 +21,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var dedicatedCmd = &cobra.Command{
-	Use:   "dedicated",
-	Short: "All things dedicated server.",
-	Long: `Command line interface for all things specific to running dedicated servers.
+var dedicatedServerCmd = &cobra.Command{
+	Use:   "server",
+	Short: "Traditional dedicated servers.",
+	Long: `Command line interface for traditional dedicated servers.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -36,5 +36,5 @@ For a full list of capabilities, please refer to the "Available Commands" sectio
 }
 
 func init() {
-	rootCmd.AddCommand(dedicatedCmd)
+	dedicatedCmd.AddCommand(dedicatedServerCmd)
 }
