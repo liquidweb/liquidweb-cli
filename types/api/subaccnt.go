@@ -24,7 +24,17 @@ func (x Subaccnt) String() string {
 
 	slice = append(slice, fmt.Sprintf("Domain: %s UniqId: %s\n", x.Domain, x.UniqId))
 
-	slice = append(slice, fmt.Sprintf("\tIp: %s\n", x.Ip))
+	if len(x.Categories) > 0 {
+		slice = append(slice, fmt.Sprintln("\tCategories"))
+		for _, category := range x.Categories {
+			slice = append(slice, fmt.Sprintf("\t\t* %s\n", category))
+		}
+	}
+
+	if x.Ip != "" && x.Ip != "127.0.0.1" {
+		slice = append(slice, fmt.Sprintf("\tIp: %s\n", x.Ip))
+	}
+
 	if x.ProjectName != "" && x.ProjectId != 0 {
 		slice = append(slice, fmt.Sprintf("\tProjectName: %s (id %d)\n", x.ProjectName, x.ProjectId))
 	}
