@@ -4,7 +4,7 @@ install: security
 	scripts/build/install
 
 security:
-	@gosec ./...
+	@gosec --exclude=G204 ./...
 
 clean:
 	rm -rf _exe/
