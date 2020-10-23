@@ -26,7 +26,19 @@ import (
 var cloudTemplateRestoreCmd = &cobra.Command{
 	Use:   "restore",
 	Short: "Restore a Cloud Template on a Cloud Server",
-	Long:  `Restore a Cloud Template on a Cloud Server.`,
+	Long: `Restore a Cloud Template on a Cloud Server.
+
+Plan Example:
+
+---
+cloud:
+  template:
+    restore:
+      - uniq-id: ABC123
+        template: DEBIAN_10_UNMANAGED
+
+lw plan --file cloud.template.restore.yaml
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := &instance.CloudTemplateRestoreParams{}
 
