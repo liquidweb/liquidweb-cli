@@ -31,7 +31,7 @@ var assetListCmd = &cobra.Command{
 	Short: "List assets on your account",
 	Long: `List assets on your account.
 
-An asset is an individual product on an account. Assets have categories.
+An asset is an individual component on an account. Assets have categories.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		jsonFlag, _ := cmd.Flags().GetBool("json")

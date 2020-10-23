@@ -24,7 +24,7 @@ import (
 var assetCmd = &cobra.Command{
 	Use:   "asset",
 	Short: "All things assets.",
-	Long: `An asset is an individual product on an account.
+	Long: `An asset is an individual component on an account.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {
