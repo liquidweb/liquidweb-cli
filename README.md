@@ -22,11 +22,11 @@ Usage:
   lw [command]
 
 Available Commands:
-  asset       All things assets.
+  asset       All things assets
   auth        authentication actions
   cloud       Interact with LiquidWeb's Cloud platform.
   completion  Generate completion script
-  dedicated   All things dedicated server.
+  dedicated   All things dedicated server
   help        Help about any command
   network     network actions
   plan        Process YAML plan file

@@ -23,7 +23,7 @@ import (
 
 var dedicatedCmd = &cobra.Command{
 	Use:   "dedicated",
-	Short: "All things dedicated server.",
+	Short: "All things dedicated server",
 	Long: `Command line interface for all things specific to running dedicated servers.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
