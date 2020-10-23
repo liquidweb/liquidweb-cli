@@ -32,6 +32,14 @@ var assetListCmd = &cobra.Command{
 	Long: `List assets on your account.
 
 An asset is an individual component on an account. Assets have categories.
+
+Examples:
+
+* List all assets in the Provisioned and DNS categories:
+-  lw asset list --categories Provisioned,DNS
+
+* List all dedicated servers:
+-  lw asset list --categories StrictDedicated
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		jsonFlag, _ := cmd.Flags().GetBool("json")
