@@ -1,0 +1,10 @@
+---
+ssh:
+  - host: nd00.ltv1wv76kc.io
+    command: "free -m"
+    user: "root"
+    private-key: "/home/myself/.ssh/id_rsa"
+    agent-forwarding: true
+    port: 22
+  - host: PPB4NZ
+    command: "hostname && free -m"

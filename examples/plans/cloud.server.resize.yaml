@@ -1,0 +1,10 @@
+---
+cloud:
+  server:
+    resize:
+      - config-id: 0
+        private-parent: "nvme-pp"
+        uniq-id: "{{- .Var.uniq_id -}}"
+        diskspace: 1800
+        vcpu: 16
+        memory: 124000

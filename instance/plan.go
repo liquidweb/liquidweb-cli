@@ -21,6 +21,7 @@ import (
 
 type Plan struct {
 	Cloud *PlanCloud
+	Ssh   []SshParams
 }
 
 type PlanCloud struct {
@@ -45,6 +46,12 @@ func (ci *Client) ProcessPlan(plan *Plan) error {
 		}
 	}
 
+	for _, x := range plan.Ssh {
+		if err := ci.processPlanSsh(&x); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -63,6 +70,12 @@ func (ci *Client) processPlanCloud(cloud *PlanCloud) error {
 	}
 
 	return nil
+}
+
+func (ci *Client) processPlanSsh(params *SshParams) (err error) {
+	err = ci.Ssh(params)
+
+	return
 }
 
 func (ci *Client) processPlanCloudServer(server *PlanCloudServer) error {
