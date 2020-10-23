@@ -26,7 +26,36 @@ var sshCmd = &cobra.Command{
 	Short: "SSH to a Server",
 	Long: `SSH to a Server.
 
-Gives you an interactive shell to your Server.`,
+Starts an interactive SSH session to your server. If --command is passed, a non interactive
+session is started running only your passed command.
+
+Examples:
+
+* SSH by hostname accepting all defaults:
+- lw ssh --host dexg.ulxy5e656r.io
+
+* SSH by uniq-id accepting all defaults:
+- lw ssh --host ABC123
+
+* SSH by uniq-id making use of all flags:
+- lw ssh --host ABC123 --agent-forwarding --port 2222 --private-ssh-key /home/myself/.ssh-alt/id_rsa \
+    --user amanda --command "ps faux && free -m"
+
+Plan Examples:
+
+---
+ssh:
+  - host: nd00.ltv1wv76kc.io
+    command: "free -m"
+    user: "root"
+    private-key: "/home/myself/.ssh/id_rsa"
+    agent-forwarding: true
+    port: 22
+  - host: PPB4NZ
+    command: "hostname && free -m"
+
+lw plan --file /tmp/above.yaml
+`,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := &instance.SshParams{}
 
