@@ -60,7 +60,7 @@ An asset is an individual component on an account. Assets have categories.
 				if err != nil {
 					lwCliInst.Die(err)
 				}
-				fmt.Printf(pretty)
+				fmt.Print(pretty)
 			} else {
 				fmt.Print(details)
 			}

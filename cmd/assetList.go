@@ -67,7 +67,7 @@ Examples:
 			if err != nil {
 				lwCliInst.Die(err)
 			}
-			fmt.Printf(pretty)
+			fmt.Print(pretty)
 		} else {
 			cnt := 1
 			for _, item := range results.Items {
