@@ -54,7 +54,7 @@ ssh:
   - host: PPB4NZ
     command: "hostname && free -m"
 
-lw plan --file /tmp/above.yaml
+lw plan --file /tmp/ssh.yaml
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := &instance.SshParams{}

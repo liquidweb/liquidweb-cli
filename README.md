@@ -93,6 +93,8 @@ cloud:
            bandwidth: "SS.5000"
 ```
 
+You can find more examples of plans in `examples/plans`.
+
 ### Plan Variables
 
 Plan yaml can make use of golang's template variables.  Allows variables to be passed on the
