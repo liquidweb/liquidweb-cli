@@ -21,7 +21,10 @@ import (
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
+
+var assetDetailsCmdUniqIdFlag []string
 
 var assetDetailsCmd = &cobra.Command{
 	Use:   "details",
@@ -32,26 +35,35 @@ An asset is an individual component on an account. Assets have categories.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		jsonFlag, _ := cmd.Flags().GetBool("json")
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 
-		var details apiTypes.Subaccnt
-		apiArgs := map[string]interface{}{
-			"uniq_id":  uniqIdFlag,
-			"alsowith": []string{"categories"},
-		}
+		for _, uniqId := range assetDetailsCmdUniqIdFlag {
+			validateFields := map[interface{}]interface{}{
+				uniqId: "UniqId",
+			}
+			if err := validate.Validate(validateFields); err != nil {
+				fmt.Printf("%s ... skipping\n", err)
+				continue
+			}
 
-		if err := lwCliInst.CallLwApiInto("bleed/asset/details", apiArgs, &details); err != nil {
-			lwCliInst.Die(err)
-		}
+			var details apiTypes.Subaccnt
+			apiArgs := map[string]interface{}{
+				"uniq_id":  uniqId,
+				"alsowith": []string{"categories"},
+			}
 
-		if jsonFlag {
-			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(details)
-			if err != nil {
+			if err := lwCliInst.CallLwApiInto("bleed/asset/details", apiArgs, &details); err != nil {
 				lwCliInst.Die(err)
 			}
-			fmt.Printf(pretty)
-		} else {
-			fmt.Print(details)
+
+			if jsonFlag {
+				pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(details)
+				if err != nil {
+					lwCliInst.Die(err)
+				}
+				fmt.Printf(pretty)
+			} else {
+				fmt.Print(details)
+			}
 		}
 	},
 }
@@ -60,7 +72,8 @@ func init() {
 	assetCmd.AddCommand(assetDetailsCmd)
 
 	assetDetailsCmd.Flags().Bool("json", false, "output in json format")
-	assetDetailsCmd.Flags().String("uniq-id", "", "uniq-id of the asset")
+	assetDetailsCmd.Flags().StringSliceVar(&assetDetailsCmdUniqIdFlag, "uniq-id", []string{},
+		"uniq-id of the asset. For multiple, must be ',' separated")
 
 	if err := assetDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)

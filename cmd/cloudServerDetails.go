@@ -17,7 +17,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/spf13/cobra"
 
@@ -28,6 +27,7 @@ import (
 
 var blockStorageVolumeList apiTypes.MergedPaginatedList
 var fetchedBlockStorageVolumes bool
+var cloudServerDetailsCmdUniqIdFlag []string
 
 var cloudServerDetailsCmd = &cobra.Command{
 	Use:   "details",
@@ -39,32 +39,33 @@ You can check this methods API documentation for what the returned fields mean:
 https://cart.liquidweb.com/storm/api/docs/bleed/Storm/Server.html#method_details
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
+		for _, uniqId := range cloudServerDetailsCmdUniqIdFlag {
+			validateFields := map[interface{}]interface{}{
+				uniqId: "UniqId",
+			}
+			if err := validate.Validate(validateFields); err != nil {
+				fmt.Printf("%s ... skipping\n", err)
+				continue
+			}
 
-		var details apiTypes.CloudServerDetails
-		if err := lwCliInst.CallLwApiInto("bleed/storm/server/details",
-			map[string]interface{}{"uniq_id": uniqIdFlag}, &details); err != nil {
-			lwCliInst.Die(err)
-		}
-
-		if jsonFlag {
-			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(details)
-			if err != nil {
+			var details apiTypes.CloudServerDetails
+			if err := lwCliInst.CallLwApiInto("bleed/storm/server/details",
+				map[string]interface{}{"uniq_id": uniqId}, &details); err != nil {
 				lwCliInst.Die(err)
 			}
-			fmt.Printf(pretty)
-			os.Exit(0)
-		}
 
-		_printExtendedCloudServerDetails(&details)
+			if jsonFlag {
+				pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(details)
+				if err != nil {
+					lwCliInst.Die(err)
+				}
+				fmt.Print(pretty)
+			} else {
+				_printExtendedCloudServerDetails(&details)
+			}
+		}
 	},
 }
 
@@ -122,7 +123,8 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerDetailsCmd)
 
 	cloudServerDetailsCmd.Flags().Bool("json", false, "output in json format")
-	cloudServerDetailsCmd.Flags().String("uniq-id", "", "get details of this uniq-id")
+	cloudServerDetailsCmd.Flags().StringSliceVar(&cloudServerDetailsCmdUniqIdFlag, "uniq-id", []string{},
+		"uniq-id of the cloud server. For multiple, must be ',' separated")
 
 	if err := cloudServerDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)

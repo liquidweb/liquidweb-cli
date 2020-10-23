@@ -24,51 +24,55 @@ import (
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
+var dedicatedServerDetailsCmdUniqIdFlag []string
+
 var dedicatedServerDetailsCmd = &cobra.Command{
 	Use:   "details",
 	Short: "Get details of a dedicated server",
 	Long:  `Get details of a dedicated server`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
-
-		var details apiTypes.Subaccnt
-		apiArgs := map[string]interface{}{
-			"uniq_id":  uniqIdFlag,
-			"alsowith": []string{"categories"},
-		}
-
-		if err := lwCliInst.CallLwApiInto("bleed/asset/details", apiArgs, &details); err != nil {
-			lwCliInst.Die(err)
-		}
-
-		var found bool
-		for _, category := range details.Categories {
-			if category == "StrictDedicated" {
-				found = true
-				break
+		for _, uniqId := range dedicatedServerDetailsCmdUniqIdFlag {
+			validateFields := map[interface{}]interface{}{
+				uniqId: "UniqId",
 			}
-		}
-
-		if !found {
-			lwCliInst.Die(fmt.Errorf("UniqId [%s] is not a dedicated server", uniqIdFlag))
-		}
-
-		if jsonFlag {
-			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(details)
-			if err != nil {
-				panic(err)
+			if err := validate.Validate(validateFields); err != nil {
+				fmt.Printf("%s ... skipping\n", err)
+				continue
 			}
-			fmt.Print(pretty)
-		} else {
-			fmt.Print(details)
+
+			var details apiTypes.Subaccnt
+			apiArgs := map[string]interface{}{
+				"uniq_id":  uniqId,
+				"alsowith": []string{"categories"},
+			}
+
+			if err := lwCliInst.CallLwApiInto("bleed/asset/details", apiArgs, &details); err != nil {
+				lwCliInst.Die(err)
+			}
+
+			var found bool
+			for _, category := range details.Categories {
+				if category == "StrictDedicated" {
+					found = true
+					break
+				}
+			}
+
+			if !found {
+				lwCliInst.Die(fmt.Errorf("UniqId [%s] is not a dedicated server", uniqId))
+			}
+
+			if jsonFlag {
+				pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(details)
+				if err != nil {
+					panic(err)
+				}
+				fmt.Print(pretty)
+			} else {
+				fmt.Print(details)
+			}
 		}
 	},
 }
@@ -77,7 +81,8 @@ func init() {
 	dedicatedServerCmd.AddCommand(dedicatedServerDetailsCmd)
 
 	dedicatedServerDetailsCmd.Flags().Bool("json", false, "output in json format")
-	dedicatedServerDetailsCmd.Flags().String("uniq-id", "", "uniq-id of the dedicated server")
+	dedicatedServerDetailsCmd.Flags().StringSliceVar(&dedicatedServerDetailsCmdUniqIdFlag, "uniq-id", []string{},
+		"uniq-id of the dedicated server. For multiple, must be ',' separated")
 
 	if err := dedicatedServerDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)
