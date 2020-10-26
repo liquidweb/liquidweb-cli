@@ -27,7 +27,7 @@ import (
 type SshParams struct {
 	Host            string `yaml:"host"`
 	Port            int    `yaml:"port"`
-	PrivateKey      string `yaml:"private-key"`
+	PrivateKeyFile  string `yaml:"private-key-file"`
 	User            string `yaml:"user"`
 	AgentForwarding bool   `yaml:"agent-forwarding"`
 	Command         string `yaml:"command"`
@@ -108,8 +108,8 @@ func (self *Client) Ssh(params *SshParams) (err error) {
 	}
 
 	sshArgs := []string{}
-	if params.PrivateKey != "" {
-		sshArgs = append(sshArgs, "-i", params.PrivateKey)
+	if params.PrivateKeyFile != "" {
+		sshArgs = append(sshArgs, "-i", params.PrivateKeyFile)
 	}
 
 	if params.AgentForwarding {

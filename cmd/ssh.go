@@ -38,7 +38,7 @@ Examples:
 - lw ssh --host ABC123
 
 * SSH by uniq-id making use of all flags:
-- lw ssh --host ABC123 --agent-forwarding --port 2222 --private-ssh-key /home/myself/.ssh-alt/id_rsa \
+- lw ssh --host ABC123 --agent-forwarding --port 2222 --private-key-file /home/myself/.ssh-alt/id_rsa \
     --user amanda --command "ps faux && free -m"
 
 Plan Examples:
@@ -48,7 +48,7 @@ ssh:
   - host: nd00.ltv1wv76kc.io
     command: "free -m"
     user: "root"
-    private-key: "/home/myself/.ssh/id_rsa"
+    private-key-file: "/home/myself/.ssh/id_rsa"
     agent-forwarding: true
     port: 22
   - host: PPB4NZ
@@ -60,7 +60,7 @@ lw plan --file /tmp/ssh.yaml
 		params := &instance.SshParams{}
 
 		params.Host, _ = cmd.Flags().GetString("host")
-		params.PrivateKey, _ = cmd.Flags().GetString("private-ssh-key")
+		params.PrivateKeyFile, _ = cmd.Flags().GetString("private-key-file")
 		params.User, _ = cmd.Flags().GetString("user")
 		params.AgentForwarding, _ = cmd.Flags().GetBool("agent-forwarding")
 		params.Port, _ = cmd.Flags().GetInt("port")
@@ -77,7 +77,7 @@ func init() {
 
 	sshCmd.Flags().String("host", "", "uniq-id or hostname for the Server")
 	sshCmd.Flags().Int("port", 22, "ssh port to use")
-	sshCmd.Flags().String("private-ssh-key", "", "path to a specific/non default ssh private key to use")
+	sshCmd.Flags().String("private-key-file", "", "path to a specific/non default ssh private key to use")
 	sshCmd.Flags().Bool("agent-forwarding", false, "whether or not to enable ssh agent forwarding")
 	sshCmd.Flags().String("user", "root", "username to use for the ssh connection")
 	sshCmd.Flags().String("command", "", "run this command and exit rather than start an interactive shell")
