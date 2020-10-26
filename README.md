@@ -22,11 +22,15 @@ Usage:
   lw [command]
 
 Available Commands:
+  asset       All things assets
   auth        authentication actions
-  cloud       Interact with LiquidWeb's Cloud platform.
+  cloud       Interact with LiquidWeb's Cloud platform
+  completion  Generate completion script
+  dedicated   All things dedicated server
   help        Help about any command
   network     network actions
   plan        Process YAML plan file
+  ssh         SSH to a Server
   version     show build information
 
 Flags:
@@ -72,6 +76,7 @@ Current commands supported in a `plan` file:
 - cloud server create
 - cloud server resize
 - cloud template restore
+- ssh
 
 Example:
 
@@ -92,6 +97,8 @@ cloud:
            config-id: 88
            bandwidth: "SS.5000"
 ```
+
+You can find more examples of plans in `examples/plans`.
 
 ### Plan Variables
 

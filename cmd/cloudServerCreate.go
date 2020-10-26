@@ -39,7 +39,7 @@ Requires various flags. Please see the flag section of help.
 Examples:
 
 # Create a Cloud Server on a Private Parent named "private"
-'cloud server create --private-parent private --memory 1024 --diskspace 40 --vcpu 2 --zone 40460 --template DEBIAN_10_UNMANAGED'
+'cloud server create --private-parent private --memory 1024 --diskspace 40 --vcpu 2 --template DEBIAN_10_UNMANAGED'
 
 # Create a Cloud Server on config-id 1
 'cloud server create --config-id 1 --template DEBIAN_10_UNMANAGED --zone 40460'
@@ -55,6 +55,36 @@ These examples use default values for various flags, such as password, type, ssh
 For a list of Templates, Configs, and Region/Zones, see 'cloud server options --configs --templates --zones'
 For a list of images, see 'cloud images list'
 For a list of backups, see 'cloud backups list'
+
+Plan Example:
+
+---
+cloud:
+   server:
+      create:
+         - type: "SS.VPS.WIN"
+           password: "1fk4ds$jktl43u90dsa"
+           template: "WINDOWS_2019_UNMANAGED"
+           zone: 40460
+           hostname: "db1.dev.addictmud.org"
+           ips: 1
+           public-ssh-key: ""
+           config-id: 88
+           backup-days: 5
+           bandwidth: "SS.5000"
+           backup-id: -1
+           image-id: -1
+           pool-ips:
+              - "10.111.12.13"
+              - "10.12.13.14"
+           private-parent: "my pp"
+           memory: 0
+           diskspace: 0
+           vcpu: 0
+           winav: ""
+           ms-sql: ""
+
+lw plan --file /tmp/cloud.server.create.yaml
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := &instance.CloudServerCreateParams{}

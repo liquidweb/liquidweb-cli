@@ -21,10 +21,10 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var cloudCmd = &cobra.Command{
-	Use:   "cloud",
-	Short: "Interact with LiquidWeb's Cloud platform",
-	Long: `Command line interface to LiquidWeb's Cloud platform.
+var dedicatedCmd = &cobra.Command{
+	Use:   "dedicated",
+	Short: "All things dedicated server",
+	Long: `Command line interface for all things specific to running dedicated servers.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {
@@ -36,5 +36,5 @@ For a full list of capabilities, please refer to the "Available Commands" sectio
 }
 
 func init() {
-	rootCmd.AddCommand(cloudCmd)
+	rootCmd.AddCommand(dedicatedCmd)
 }

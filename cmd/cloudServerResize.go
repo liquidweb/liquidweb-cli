@@ -56,15 +56,23 @@ are required:
 
 Downtime Expectations:
 
-When resizing a Cloud Server on a private parent, you can add memory or vcpu(s)
-without downtime. If you change the diskspace however, then a reboot will be
-required.
+Please see 'lw help cloud server resize-expection' to determine if a specific
+resize would require a reboot or not.
 
-When resizing a Cloud Server that isn't on a private parent, there will be one
-reboot during the resize. The only case there will be two reboots is when
-going to a config with more diskspace, and --skip-fs-resize wasn't passed.
+Plan Example:
 
-During all resizes, the Cloud Server is online as the disk synchronizes.
+---
+cloud:
+  server:
+    resize:
+      - config-id: 0
+        private-parent: "nvme-pp"
+        uniq-id: "{{- .Var.uniq_id -}}"
+        diskspace: 1800
+        vcpu: 16
+        memory: 124000
+
+lw plan --file /tmp/cloud.server.resize.yaml --var uniq_id=ABC123
 `,
 	Run: func(cmd *cobra.Command, args []string) {
 		params := &instance.CloudServerResizeParams{}

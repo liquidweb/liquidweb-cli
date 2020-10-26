@@ -1,0 +1,6 @@
+---
+cloud:
+  template:
+    restore:
+      - uniq-id: ABC123
+        template: DEBIAN_10_UNMANAGED
