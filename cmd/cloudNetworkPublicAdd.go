@@ -31,15 +31,17 @@ var cloudNetworkPublicAddCmd = &cobra.Command{
 	Short: "Add Public IP(s) to a Cloud Server",
 	Long: `Add Public IP(s) to a Cloud Server.
 
-Add a number of IPs to an existing Cloud Server. If the reboot flag is passed, the
-server will be stopped, have the new IP addresses configured, and then started.
+Add a number of IPs to an existing Cloud Server. If the configure-ips flag is
+passed in, the IP addresses will be automatically configured within the guest
+operating system.
 
-When the reboot flag is not passed, the IP will be assigned to the server, but it
-will be up to the administrator to configure the IP address(es) within the server.
-`,
+If the configure-ips flag is not passed, the IP addresses will be assigned, and
+routing will be allowed. However the IP(s) will not be automatically configured
+in the guest operating system. In this scenario, it will be up to the system
+administrator to add the IP(s) to the network configuration.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
-		rebootFlag, _ := cmd.Flags().GetBool("reboot")
+		configureIpsFlag, _ := cmd.Flags().GetBool("configure-ips")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 
 		validateFields := map[interface{}]interface{}{
@@ -54,8 +56,8 @@ will be up to the administrator to configure the IP address(es) within the serve
 		}
 
 		apiArgs := map[string]interface{}{
-			"reboot":  rebootFlag,
-			"uniq_id": uniqIdFlag,
+			"configure_ips": configureIpsFlag,
+			"uniq_id":       uniqIdFlag,
 		}
 		if newIpsFlag != 0 {
 			apiArgs["ip_count"] = newIpsFlag
@@ -83,10 +85,10 @@ will be up to the administrator to configure the IP address(es) within the serve
 
 		fmt.Printf("Adding [%s] to Cloud Server\n", details.Adding)
 
-		if rebootFlag {
-			fmt.Println("Server will be rebooted and IP(s) automatically configured.")
+		if configureIpsFlag {
+			fmt.Println("IP(s) will be automatically configured.")
 		} else {
-			fmt.Println("Server will not be rebooted.  IP's will need to be manually configured.")
+			fmt.Println("IP(s) will need to be manually configured.")
 		}
 	},
 }
@@ -94,8 +96,8 @@ will be up to the administrator to configure the IP address(es) within the serve
 func init() {
 	cloudNetworkPublicCmd.AddCommand(cloudNetworkPublicAddCmd)
 	cloudNetworkPublicAddCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
-	cloudNetworkPublicAddCmd.Flags().Bool("reboot", false,
-		"wheter or not to automatically configure the new IP address(es) in the server (requires reboot)")
+	cloudNetworkPublicAddCmd.Flags().Bool("configure-ips", false,
+		"wheter or not to automatically configure the new IP address(es) in the server")
 	cloudNetworkPublicAddCmd.Flags().Int64("new-ips", 0, "amount of new ips to (randomly) grab")
 	cloudNetworkPublicAddCmd.Flags().StringSliceVar(&cloudNetworkPublicAddCmdPoolIpsFlag, "pool-ips", []string{},
 		"ips from your IP Pool separated by ',' to assign to the Cloud Server")

@@ -31,18 +31,18 @@ var cloudNetworkPublicRemoveCmd = &cobra.Command{
 	Short: "Remove Public IP(s) from a Cloud Server",
 	Long: `Remove Public IP(s) from a Cloud Server.
 
-Remove specific Public IP(s) from a Cloud Server. If the reboot flag is passed in, the machine
-will be stopped, have the old IP addresses removed, and then started.
+Remove specific Public IP(s) from a Cloud Server. If the configure-ips flag is passed in,
+the IP addresses given will also be automatically removed from the guest operating system.
 
-If the reboot flag is not passed, the IP will be unassigned, and you will no longer be able
-to route the IP. However the machine will not be shutdown to remove it from its network
-configuration. It will be up to the administrator to remove the IP from the servers network
-configuration.
+If the configure-ips flag is not passed, the IP will be unassigned, and you will no longer
+be able to route the IP. However the IP(s) will still be set in the guest operating system.
+In this scenario, it will be up to the system administrator to remove the IP(s) from the
+network configuration.
 
 Note that you cannot remove the Cloud Servers primary ip with this command.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
-		rebootFlag, _ := cmd.Flags().GetBool("reboot")
+		configureIpsFlag, _ := cmd.Flags().GetBool("configure-ips")
 
 		validateFields := map[interface{}]interface{}{
 			uniqIdFlag: "UniqId",
@@ -52,8 +52,8 @@ Note that you cannot remove the Cloud Servers primary ip with this command.`,
 		}
 
 		apiArgs := map[string]interface{}{
-			"reboot":  rebootFlag,
-			"uniq_id": uniqIdFlag,
+			"configure_ips": configureIpsFlag,
+			"uniq_id":       uniqIdFlag,
 		}
 
 		for _, ip := range cloudNetworkPublicRemoveCmdIpsFlag {
@@ -73,6 +73,13 @@ Note that you cannot remove the Cloud Servers primary ip with this command.`,
 			}
 
 			fmt.Printf("Removing [%s] from Cloud Server\n", details.Removing)
+
+			if configureIpsFlag {
+				fmt.Println("IP(s) will be automatically removed from the network configuration.")
+			} else {
+				fmt.Println("IP(s) will need to be manually removed from the network configuration.")
+			}
+
 		}
 	},
 }
@@ -80,8 +87,8 @@ Note that you cannot remove the Cloud Servers primary ip with this command.`,
 func init() {
 	cloudNetworkPublicCmd.AddCommand(cloudNetworkPublicRemoveCmd)
 	cloudNetworkPublicRemoveCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
-	cloudNetworkPublicRemoveCmd.Flags().Bool("reboot", false,
-		"whether or not to automatically remove the IP address(es) in the server config (requires reboot)")
+	cloudNetworkPublicRemoveCmd.Flags().Bool("configure-ips", false,
+		"whether or not to automatically remove the IP address(es) in the server config")
 	cloudNetworkPublicRemoveCmd.Flags().StringSliceVar(&cloudNetworkPublicRemoveCmdIpsFlag, "ips", []string{},
 		"ips separated by ',' to remove from the Cloud Server")
 

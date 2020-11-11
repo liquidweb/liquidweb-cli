@@ -32,7 +32,7 @@ purposely runs very tight. To work around this we can reduce the RAM allocated
 to the Cloud Server to give more to the hypervisor. We call this Cloud Block
 Storage Optimized.
 
-Enabling or disabling Cloud Block Storage will cause your Cloud Server to reboot.
+Enabling or disabling Cloud Block Storage Optimized will cause your Cloud Server to reboot.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 
