@@ -24,6 +24,8 @@ import (
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
+var cloudNetworkPrivateDetachCmdUniqIdFlag []string
+
 var cloudNetworkPrivateDetachCmd = &cobra.Command{
 	Use:   "detach",
 	Short: "Detach a Cloud Server from a Private Network",
@@ -39,40 +41,41 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
+		for _, uniqId := range cloudNetworkPrivateDetachCmdUniqIdFlag {
+			validateFields := map[interface{}]interface{}{
+				uniqId: "UniqId",
+			}
+			if err := validate.Validate(validateFields); err != nil {
+				lwCliInst.Die(err)
+			}
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
+			apiArgs := map[string]interface{}{"uniq_id": uniqId}
 
-		apiArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
+			var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
+			err := lwCliInst.CallLwApiInto("bleed/network/private/isattached", apiArgs, &attachedDetails)
+			if err != nil {
+				lwCliInst.Die(err)
+			}
+			if !attachedDetails.IsAttached {
+				lwCliInst.Die(fmt.Errorf("Cloud Server is already detached to the Private Network"))
+			}
 
-		var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
-		err := lwCliInst.CallLwApiInto("bleed/network/private/isattached", apiArgs, &attachedDetails)
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		if !attachedDetails.IsAttached {
-			lwCliInst.Die(fmt.Errorf("Cloud Server is already detached to the Private Network"))
-		}
+			var details apiTypes.CloudNetworkPrivateDetachResponse
+			err = lwCliInst.CallLwApiInto("bleed/network/private/detach", apiArgs, &details)
+			if err != nil {
+				lwCliInst.Die(err)
+			}
 
-		var details apiTypes.CloudNetworkPrivateDetachResponse
-		err = lwCliInst.CallLwApiInto("bleed/network/private/detach", apiArgs, &details)
-		if err != nil {
-			lwCliInst.Die(err)
+			fmt.Printf("Detaching %s from private network\n", details.Detached)
+			fmt.Printf("\n\nYou can check progress with 'cloud server status --uniq-id %s'\n\n", uniqId)
 		}
-
-		fmt.Printf("Detaching %s from private network\n", details.Detached)
-		fmt.Printf("\n\nYou can check progress with 'cloud server status --uniq-id %s'\n\n", uniqIdFlag)
 	},
 }
 
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateDetachCmd)
-	cloudNetworkPrivateDetachCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
+	cloudNetworkPrivateDetachCmd.Flags().StringSliceVar(&cloudNetworkPrivateDetachCmdUniqIdFlag, "uniq-id",
+		[]string{}, "uniq-ids separated by ',' of Cloud Servers to detach from private networking")
 	if err := cloudNetworkPrivateDetachCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)
 	}

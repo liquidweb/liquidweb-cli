@@ -24,6 +24,8 @@ import (
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
+var cloudNetworkPrivateAttachCmdUniqIdFlag []string
+
 var cloudNetworkPrivateAttachCmd = &cobra.Command{
 	Use:   "attach",
 	Short: "Attach a Cloud Server to a Private Network",
@@ -39,40 +41,42 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
+		for _, uniqId := range cloudNetworkPrivateAttachCmdUniqIdFlag {
+			validateFields := map[interface{}]interface{}{
+				uniqId: "UniqId",
+			}
+			if err := validate.Validate(validateFields); err != nil {
+				fmt.Printf("uniqId [%s] is invalid; ignoring...\n", uniqId)
+				continue
+			}
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
+			apiArgs := map[string]interface{}{"uniq_id": uniqId}
 
-		apiArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
+			var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
+			err := lwCliInst.CallLwApiInto("bleed/network/private/isattached", apiArgs, &attachedDetails)
+			if err != nil {
+				lwCliInst.Die(err)
+			}
+			if attachedDetails.IsAttached {
+				lwCliInst.Die(fmt.Errorf("Cloud Server is already attached to the Private Network"))
+			}
 
-		var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
-		err := lwCliInst.CallLwApiInto("bleed/network/private/isattached", apiArgs, &attachedDetails)
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		if attachedDetails.IsAttached {
-			lwCliInst.Die(fmt.Errorf("Cloud Server is already attached to the Private Network"))
-		}
+			var details apiTypes.CloudNetworkPrivateAttachResponse
+			err = lwCliInst.CallLwApiInto("bleed/network/private/attach", apiArgs, &details)
+			if err != nil {
+				lwCliInst.Die(err)
+			}
 
-		var details apiTypes.CloudNetworkPrivateAttachResponse
-		err = lwCliInst.CallLwApiInto("bleed/network/private/attach", apiArgs, &details)
-		if err != nil {
-			lwCliInst.Die(err)
+			fmt.Printf("Attaching %s to private network\n", details.Attached)
+			fmt.Printf("\n\nYou can check progress with 'cloud server status --uniq-id %s'\n", uniqId)
 		}
-
-		fmt.Printf("Attaching %s to private network\n", details.Attached)
-		fmt.Printf("\n\nYou can check progress with 'cloud server status --uniq-id %s'\n", uniqIdFlag)
 	},
 }
 
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateAttachCmd)
-	cloudNetworkPrivateAttachCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
+	cloudNetworkPrivateAttachCmd.Flags().StringSliceVar(&cloudNetworkPrivateAttachCmdUniqIdFlag, "uniq-id",
+		[]string{}, "uniq-ids separated by ',' of Cloud Servers to attach to private networking")
 	if err := cloudNetworkPrivateAttachCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)
 	}
