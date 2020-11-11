@@ -20,8 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/validate"
+	"github.com/liquidweb/liquidweb-cli/instance"
 )
 
 var cloudNetworkPublicRemoveCmdIpsFlag []string
@@ -41,46 +40,18 @@ network configuration.
 
 Note that you cannot remove the Cloud Servers primary ip with this command.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
-		configureIpsFlag, _ := cmd.Flags().GetBool("configure-ips")
+		params := &instance.CloudNetworkPublicRemoveParams{}
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
+		params.UniqId, _ = cmd.Flags().GetString("uniq-id")
+		params.ConfigureIps, _ = cmd.Flags().GetBool("configure-ips")
+		params.Ips = cloudNetworkPublicRemoveCmdIpsFlag
+
+		status, err := lwCliInst.CloudNetworkPublicRemove(params)
+		if err != nil {
 			lwCliInst.Die(err)
 		}
 
-		apiArgs := map[string]interface{}{
-			"configure_ips": configureIpsFlag,
-			"uniq_id":       uniqIdFlag,
-		}
-
-		for _, ip := range cloudNetworkPublicRemoveCmdIpsFlag {
-			validateFields := map[interface{}]interface{}{
-				ip: "IP",
-			}
-			if err := validate.Validate(validateFields); err != nil {
-				fmt.Printf("%s ... skipping\n", err)
-				continue
-			}
-
-			var details apiTypes.NetworkIpRemove
-			apiArgs["ip"] = ip
-			err := lwCliInst.CallLwApiInto("bleed/network/ip/remove", apiArgs, &details)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-
-			fmt.Printf("Removing [%s] from Cloud Server\n", details.Removing)
-
-			if configureIpsFlag {
-				fmt.Println("IP(s) will be automatically removed from the network configuration.")
-			} else {
-				fmt.Println("IP(s) will need to be manually removed from the network configuration.")
-			}
-
-		}
+		fmt.Print(status)
 	},
 }
 

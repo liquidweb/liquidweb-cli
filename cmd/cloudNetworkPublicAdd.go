@@ -20,8 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/validate"
+	"github.com/liquidweb/liquidweb-cli/instance"
 )
 
 var cloudNetworkPublicAddCmdPoolIpsFlag []string
@@ -40,56 +39,19 @@ routing will be allowed. However the IP(s) will not be automatically configured
 in the guest operating system. In this scenario, it will be up to the system
 administrator to add the IP(s) to the network configuration.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
-		configureIpsFlag, _ := cmd.Flags().GetBool("configure-ips")
-		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
+		params := &instance.CloudNetworkPublicAddParams{}
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
+		params.UniqId, _ = cmd.Flags().GetString("uniq-id")
+		params.ConfigureIps, _ = cmd.Flags().GetBool("configure-ips")
+		params.NewIps, _ = cmd.Flags().GetInt64("new-ips")
+		params.PoolIps = cloudNetworkPublicAddCmdPoolIpsFlag
 
-		if newIpsFlag == 0 && len(cloudNetworkPublicAddCmdPoolIpsFlag) == 0 {
-			lwCliInst.Die(fmt.Errorf("at least one of --new-ips --pool-ips must be given"))
-		}
-
-		apiArgs := map[string]interface{}{
-			"configure_ips": configureIpsFlag,
-			"uniq_id":       uniqIdFlag,
-		}
-		if newIpsFlag != 0 {
-			apiArgs["ip_count"] = newIpsFlag
-			validateFields := map[interface{}]interface{}{newIpsFlag: "PositiveInt64"}
-			if err := validate.Validate(validateFields); err != nil {
-				lwCliInst.Die(err)
-			}
-		}
-		if len(cloudNetworkPublicAddCmdPoolIpsFlag) != 0 {
-			apiArgs["pool_ips"] = cloudNetworkPublicAddCmdPoolIpsFlag
-			validateFields := map[interface{}]interface{}{}
-			for _, ip := range cloudNetworkPublicAddCmdPoolIpsFlag {
-				validateFields[ip] = "IP"
-			}
-			if err := validate.Validate(validateFields); err != nil {
-				lwCliInst.Die(err)
-			}
-		}
-
-		var details apiTypes.NetworkIpAdd
-		err := lwCliInst.CallLwApiInto("bleed/network/ip/add", apiArgs, &details)
+		status, err := lwCliInst.CloudNetworkPublicAdd(params)
 		if err != nil {
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Adding [%s] to Cloud Server\n", details.Adding)
-
-		if configureIpsFlag {
-			fmt.Println("IP(s) will be automatically configured.")
-		} else {
-			fmt.Println("IP(s) will need to be manually configured.")
-		}
+		fmt.Print(status)
 	},
 }
 
