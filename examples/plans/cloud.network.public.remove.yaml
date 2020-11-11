@@ -1,0 +1,9 @@
+---
+cloud:
+  network:
+    public:
+      remove:
+        - uniq-id: "{{- .Var.uniq_id -}}"
+          configure-ips: true
+          ips:
+            - "{{- .Var.rmip1 -}}"

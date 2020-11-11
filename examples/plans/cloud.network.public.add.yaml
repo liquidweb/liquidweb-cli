@@ -1,0 +1,12 @@
+---
+cloud:
+  network:
+    public:
+      add:
+        - uniq-id: "{{- .Var.uniq_id -}}"
+          configure-ips: true
+          new-ips: 2
+        - uniq-id: "{{- .Var.uniq_id -}}"
+          configure-ips: true
+          pool-ips:
+            - "{{- .Var.poolip1 -}}"

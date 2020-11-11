@@ -27,6 +27,7 @@ type Plan struct {
 type PlanCloud struct {
 	Server   *PlanCloudServer
 	Template *PlanCloudTemplate
+	Network  *PlanCloudNetwork
 }
 
 type PlanCloudServer struct {
@@ -36,6 +37,15 @@ type PlanCloudServer struct {
 
 type PlanCloudTemplate struct {
 	Restore []CloudTemplateRestoreParams
+}
+
+type PlanCloudNetwork struct {
+	Public *PlanCloudNetworkPublic
+}
+
+type PlanCloudNetworkPublic struct {
+	Add    []CloudNetworkPublicAddParams
+	Remove []CloudNetworkPublicRemoveParams
 }
 
 func (ci *Client) ProcessPlan(plan *Plan) error {
@@ -65,6 +75,12 @@ func (ci *Client) processPlanCloud(cloud *PlanCloud) error {
 
 	if cloud.Template != nil {
 		if err := ci.processPlanCloudTemplate(cloud.Template); err != nil {
+			return err
+		}
+	}
+
+	if cloud.Network != nil {
+		if err := ci.processPlanCloudNetwork(cloud.Network); err != nil {
 			return err
 		}
 	}
@@ -132,6 +148,60 @@ func (ci *Client) processPlanCloudTemplate(template *PlanCloudTemplate) error {
 			}
 		}
 	}
+
+	return nil
+}
+
+func (ci *Client) processPlanCloudNetwork(network *PlanCloudNetwork) error {
+
+	if network.Public != nil {
+		if err := ci.processPlanCloudNetworkPublic(network.Public); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (ci *Client) processPlanCloudNetworkPublic(public *PlanCloudNetworkPublic) error {
+
+	if public.Add != nil {
+		for _, c := range public.Add {
+			if err := ci.processPlanCloudNetworkPublicAdd(&c); err != nil {
+				return err
+			}
+		}
+	}
+
+	if public.Remove != nil {
+		for _, c := range public.Remove {
+			if err := ci.processPlanCloudNetworkPublicRemove(&c); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
+func (ci *Client) processPlanCloudNetworkPublicAdd(params *CloudNetworkPublicAddParams) error {
+	result, err := ci.CloudNetworkPublicAdd(params)
+	if err != nil {
+		ci.Die(err)
+	}
+
+	fmt.Print(result)
+
+	return nil
+}
+
+func (ci *Client) processPlanCloudNetworkPublicRemove(params *CloudNetworkPublicRemoveParams) error {
+	result, err := ci.CloudNetworkPublicRemove(params)
+	if err != nil {
+		ci.Die(err)
+	}
+
+	fmt.Print(result)
 
 	return nil
 }
