@@ -40,12 +40,18 @@ type PlanCloudTemplate struct {
 }
 
 type PlanCloudNetwork struct {
-	Public *PlanCloudNetworkPublic
+	Public  *PlanCloudNetworkPublic
+	Private *PlanCloudNetworkPrivate
 }
 
 type PlanCloudNetworkPublic struct {
 	Add    []CloudNetworkPublicAddParams
 	Remove []CloudNetworkPublicRemoveParams
+}
+
+type PlanCloudNetworkPrivate struct {
+	Attach []CloudNetworkPrivateAttachParams
+	Detach []CloudNetworkPrivateDetachParams
 }
 
 func (ci *Client) ProcessPlan(plan *Plan) error {
@@ -160,6 +166,12 @@ func (ci *Client) processPlanCloudNetwork(network *PlanCloudNetwork) error {
 		}
 	}
 
+	if network.Private != nil {
+		if err := ci.processPlanCloudNetworkPrivate(network.Private); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -184,6 +196,27 @@ func (ci *Client) processPlanCloudNetworkPublic(public *PlanCloudNetworkPublic) 
 	return nil
 }
 
+func (ci *Client) processPlanCloudNetworkPrivate(private *PlanCloudNetworkPrivate) error {
+
+	if private.Attach != nil {
+		for _, c := range private.Attach {
+			if err := ci.processPlanCloudNetworkPrivateAttach(&c); err != nil {
+				return err
+			}
+		}
+	}
+
+	if private.Detach != nil {
+		for _, c := range private.Detach {
+			if err := ci.processPlanCloudNetworkPrivateDetach(&c); err != nil {
+				return err
+			}
+		}
+	}
+
+	return nil
+}
+
 func (ci *Client) processPlanCloudNetworkPublicAdd(params *CloudNetworkPublicAddParams) error {
 	result, err := ci.CloudNetworkPublicAdd(params)
 	if err != nil {
@@ -197,6 +230,28 @@ func (ci *Client) processPlanCloudNetworkPublicAdd(params *CloudNetworkPublicAdd
 
 func (ci *Client) processPlanCloudNetworkPublicRemove(params *CloudNetworkPublicRemoveParams) error {
 	result, err := ci.CloudNetworkPublicRemove(params)
+	if err != nil {
+		ci.Die(err)
+	}
+
+	fmt.Print(result)
+
+	return nil
+}
+
+func (ci *Client) processPlanCloudNetworkPrivateAttach(params *CloudNetworkPrivateAttachParams) error {
+	result, err := ci.CloudNetworkPrivateAttach(params)
+	if err != nil {
+		ci.Die(err)
+	}
+
+	fmt.Print(result)
+
+	return nil
+}
+
+func (ci *Client) processPlanCloudNetworkPrivateDetach(params *CloudNetworkPrivateDetachParams) error {
+	result, err := ci.CloudNetworkPrivateDetach(params)
 	if err != nil {
 		ci.Die(err)
 	}

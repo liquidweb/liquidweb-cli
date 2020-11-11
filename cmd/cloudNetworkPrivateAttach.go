@@ -20,8 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/validate"
+	"github.com/liquidweb/liquidweb-cli/instance"
 )
 
 var cloudNetworkPrivateAttachCmdUniqIdFlag []string
@@ -41,35 +40,16 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, uniqId := range cloudNetworkPrivateAttachCmdUniqIdFlag {
-			validateFields := map[interface{}]interface{}{
-				uniqId: "UniqId",
-			}
-			if err := validate.Validate(validateFields); err != nil {
-				fmt.Printf("uniqId [%s] is invalid; ignoring...\n", uniqId)
-				continue
-			}
+		params := &instance.CloudNetworkPrivateAttachParams{}
 
-			apiArgs := map[string]interface{}{"uniq_id": uniqId}
+		params.UniqId = cloudNetworkPrivateAttachCmdUniqIdFlag
 
-			var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
-			err := lwCliInst.CallLwApiInto("bleed/network/private/isattached", apiArgs, &attachedDetails)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-			if attachedDetails.IsAttached {
-				lwCliInst.Die(fmt.Errorf("Cloud Server is already attached to the Private Network"))
-			}
-
-			var details apiTypes.CloudNetworkPrivateAttachResponse
-			err = lwCliInst.CallLwApiInto("bleed/network/private/attach", apiArgs, &details)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-
-			fmt.Printf("Attaching %s to private network\n", details.Attached)
-			fmt.Printf("\n\nYou can check progress with 'cloud server status --uniq-id %s'\n", uniqId)
+		status, err := lwCliInst.CloudNetworkPrivateAttach(params)
+		if err != nil {
+			lwCliInst.Die(err)
 		}
+
+		fmt.Print(status)
 	},
 }
 

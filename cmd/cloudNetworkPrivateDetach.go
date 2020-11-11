@@ -20,8 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/validate"
+	"github.com/liquidweb/liquidweb-cli/instance"
 )
 
 var cloudNetworkPrivateDetachCmdUniqIdFlag []string
@@ -41,34 +40,16 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		for _, uniqId := range cloudNetworkPrivateDetachCmdUniqIdFlag {
-			validateFields := map[interface{}]interface{}{
-				uniqId: "UniqId",
-			}
-			if err := validate.Validate(validateFields); err != nil {
-				lwCliInst.Die(err)
-			}
+		params := &instance.CloudNetworkPrivateDetachParams{}
 
-			apiArgs := map[string]interface{}{"uniq_id": uniqId}
+		params.UniqId = cloudNetworkPrivateDetachCmdUniqIdFlag
 
-			var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
-			err := lwCliInst.CallLwApiInto("bleed/network/private/isattached", apiArgs, &attachedDetails)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-			if !attachedDetails.IsAttached {
-				lwCliInst.Die(fmt.Errorf("Cloud Server is already detached to the Private Network"))
-			}
-
-			var details apiTypes.CloudNetworkPrivateDetachResponse
-			err = lwCliInst.CallLwApiInto("bleed/network/private/detach", apiArgs, &details)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-
-			fmt.Printf("Detaching %s from private network\n", details.Detached)
-			fmt.Printf("\n\nYou can check progress with 'cloud server status --uniq-id %s'\n\n", uniqId)
+		status, err := lwCliInst.CloudNetworkPrivateDetach(params)
+		if err != nil {
+			lwCliInst.Die(err)
 		}
+
+		fmt.Print(status)
 	},
 }
 
