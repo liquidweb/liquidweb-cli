@@ -35,7 +35,7 @@ purposely runs very tight. To work around this we can reduce the RAM allocated
 to the Cloud Server to give more to the hypervisor. We call this Cloud Block
 Storage Optimized.
 
-Disabling Cloud Block Storage will cause your Cloud Server to reboot.`,
+Disabling Cloud Block Storage Optimized will cause your Cloud Server to reboot.`,
 
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")

@@ -1,0 +1,8 @@
+---
+cloud:
+  network:
+    private:
+      attach:
+        - uniq-id:
+            - "{{- .Var.uniq_id -}}"
+            - "{{- .Var.uniq_id2 -}}"

@@ -20,9 +20,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/validate"
+	"github.com/liquidweb/liquidweb-cli/instance"
 )
+
+var cloudNetworkPrivateDetachCmdUniqIdFlag []string
 
 var cloudNetworkPrivateDetachCmd = &cobra.Command{
 	Use:   "detach",
@@ -39,40 +40,23 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
+		params := &instance.CloudNetworkPrivateDetachParams{}
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
+		params.UniqId = cloudNetworkPrivateDetachCmdUniqIdFlag
 
-		apiArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
-
-		var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
-		err := lwCliInst.CallLwApiInto("bleed/network/private/isattached", apiArgs, &attachedDetails)
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		if !attachedDetails.IsAttached {
-			lwCliInst.Die(fmt.Errorf("Cloud Server is already detached to the Private Network"))
-		}
-
-		var details apiTypes.CloudNetworkPrivateDetachResponse
-		err = lwCliInst.CallLwApiInto("bleed/network/private/detach", apiArgs, &details)
+		status, err := lwCliInst.CloudNetworkPrivateDetach(params)
 		if err != nil {
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Detaching %s from private network\n", details.Detached)
-		fmt.Printf("\n\nYou can check progress with 'cloud server status --uniq-id %s'\n\n", uniqIdFlag)
+		fmt.Print(status)
 	},
 }
 
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateDetachCmd)
-	cloudNetworkPrivateDetachCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
+	cloudNetworkPrivateDetachCmd.Flags().StringSliceVar(&cloudNetworkPrivateDetachCmdUniqIdFlag, "uniq-id",
+		[]string{}, "uniq-ids separated by ',' of Cloud Servers to detach from private networking")
 	if err := cloudNetworkPrivateDetachCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)
 	}

@@ -20,8 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/validate"
+	"github.com/liquidweb/liquidweb-cli/instance"
 )
 
 var cloudNetworkPublicRemoveCmdIpsFlag []string
@@ -31,57 +30,36 @@ var cloudNetworkPublicRemoveCmd = &cobra.Command{
 	Short: "Remove Public IP(s) from a Cloud Server",
 	Long: `Remove Public IP(s) from a Cloud Server.
 
-Remove specific Public IP(s) from a Cloud Server. If the reboot flag is passed in, the machine
-will be stopped, have the old IP addresses removed, and then started.
+Remove specific Public IP(s) from a Cloud Server. If the configure-ips flag is passed in,
+the IP addresses given will also be automatically removed from the guest operating system.
 
-If the reboot flag is not passed, the IP will be unassigned, and you will no longer be able
-to route the IP. However the machine will not be shutdown to remove it from its network
-configuration. It will be up to the administrator to remove the IP from the servers network
-configuration.
+If the configure-ips flag is not passed, the IP will be unassigned, and you will no longer
+be able to route the IP. However the IP(s) will still be set in the guest operating system.
+In this scenario, it will be up to the system administrator to remove the IP(s) from the
+network configuration.
 
 Note that you cannot remove the Cloud Servers primary ip with this command.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
-		rebootFlag, _ := cmd.Flags().GetBool("reboot")
+		params := &instance.CloudNetworkPublicRemoveParams{}
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
+		params.UniqId, _ = cmd.Flags().GetString("uniq-id")
+		params.ConfigureIps, _ = cmd.Flags().GetBool("configure-ips")
+		params.Ips = cloudNetworkPublicRemoveCmdIpsFlag
+
+		status, err := lwCliInst.CloudNetworkPublicRemove(params)
+		if err != nil {
 			lwCliInst.Die(err)
 		}
 
-		apiArgs := map[string]interface{}{
-			"reboot":  rebootFlag,
-			"uniq_id": uniqIdFlag,
-		}
-
-		for _, ip := range cloudNetworkPublicRemoveCmdIpsFlag {
-			validateFields := map[interface{}]interface{}{
-				ip: "IP",
-			}
-			if err := validate.Validate(validateFields); err != nil {
-				fmt.Printf("%s ... skipping\n", err)
-				continue
-			}
-
-			var details apiTypes.NetworkIpRemove
-			apiArgs["ip"] = ip
-			err := lwCliInst.CallLwApiInto("bleed/network/ip/remove", apiArgs, &details)
-			if err != nil {
-				lwCliInst.Die(err)
-			}
-
-			fmt.Printf("Removing [%s] from Cloud Server\n", details.Removing)
-		}
+		fmt.Print(status)
 	},
 }
 
 func init() {
 	cloudNetworkPublicCmd.AddCommand(cloudNetworkPublicRemoveCmd)
 	cloudNetworkPublicRemoveCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
-	cloudNetworkPublicRemoveCmd.Flags().Bool("reboot", false,
-		"whether or not to automatically remove the IP address(es) in the server config (requires reboot)")
+	cloudNetworkPublicRemoveCmd.Flags().Bool("configure-ips", false,
+		"whether or not to automatically remove the IP address(es) in the server config")
 	cloudNetworkPublicRemoveCmd.Flags().StringSliceVar(&cloudNetworkPublicRemoveCmdIpsFlag, "ips", []string{},
 		"ips separated by ',' to remove from the Cloud Server")
 

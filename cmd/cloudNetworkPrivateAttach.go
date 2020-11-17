@@ -20,9 +20,10 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/validate"
+	"github.com/liquidweb/liquidweb-cli/instance"
 )
+
+var cloudNetworkPrivateAttachCmdUniqIdFlag []string
 
 var cloudNetworkPrivateAttachCmd = &cobra.Command{
 	Use:   "attach",
@@ -39,40 +40,23 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
+		params := &instance.CloudNetworkPrivateAttachParams{}
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
+		params.UniqId = cloudNetworkPrivateAttachCmdUniqIdFlag
 
-		apiArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
-
-		var attachedDetails apiTypes.CloudNetworkPrivateIsAttachedResponse
-		err := lwCliInst.CallLwApiInto("bleed/network/private/isattached", apiArgs, &attachedDetails)
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		if attachedDetails.IsAttached {
-			lwCliInst.Die(fmt.Errorf("Cloud Server is already attached to the Private Network"))
-		}
-
-		var details apiTypes.CloudNetworkPrivateAttachResponse
-		err = lwCliInst.CallLwApiInto("bleed/network/private/attach", apiArgs, &details)
+		status, err := lwCliInst.CloudNetworkPrivateAttach(params)
 		if err != nil {
 			lwCliInst.Die(err)
 		}
 
-		fmt.Printf("Attaching %s to private network\n", details.Attached)
-		fmt.Printf("\n\nYou can check progress with 'cloud server status --uniq-id %s'\n", uniqIdFlag)
+		fmt.Print(status)
 	},
 }
 
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateAttachCmd)
-	cloudNetworkPrivateAttachCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
+	cloudNetworkPrivateAttachCmd.Flags().StringSliceVar(&cloudNetworkPrivateAttachCmdUniqIdFlag, "uniq-id",
+		[]string{}, "uniq-ids separated by ',' of Cloud Servers to attach to private networking")
 	if err := cloudNetworkPrivateAttachCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)
 	}
