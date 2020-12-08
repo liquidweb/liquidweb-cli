@@ -28,6 +28,7 @@ type CloudNetworkPublicAddParams struct {
 	ConfigureIps bool     `yaml:"configure-ips"`
 	NewIps       int64    `yaml:"new-ips"`
 	PoolIps      []string `yaml:"pool-ips"`
+	IpVersion    int      `yaml:"ip-version"`
 }
 
 func (self *CloudNetworkPublicAddParams) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -55,9 +56,15 @@ func (self *Client) CloudNetworkPublicAdd(params *CloudNetworkPublicAddParams) (
 		return
 	}
 
+	if params.IpVersion != 4 && params.IpVersion != 6 {
+		err = fmt.Errorf("ip-version may only be 4 or 6")
+		return
+	}
+
 	apiArgs := map[string]interface{}{
 		"configure_ips": params.ConfigureIps,
 		"uniq_id":       params.UniqId,
+		"ip_version":    params.IpVersion,
 	}
 	if params.NewIps != 0 {
 		apiArgs["ip_count"] = params.NewIps
