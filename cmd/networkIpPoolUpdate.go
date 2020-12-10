@@ -55,13 +55,13 @@ your account.`,
 		if len(networkIpPoolUpdateCmdAddIpsFlag) > 0 {
 			apiArgs["add_ips"] = networkIpPoolUpdateCmdAddIpsFlag
 			for _, ip := range networkIpPoolUpdateCmdAddIpsFlag {
-				validateFields[ip] = "IP"
+				validateFields[ip] = "IpOrCidr"
 			}
 		}
 		if len(networkIpPoolUpdateCmdRemoveIpsFlag) > 0 {
 			apiArgs["remove_ips"] = networkIpPoolUpdateCmdRemoveIpsFlag
 			for _, ip := range networkIpPoolUpdateCmdRemoveIpsFlag {
-				validateFields[ip] = "IP"
+				validateFields[ip] = "IpOrCidr"
 			}
 		}
 		if newIpsFlag != -1 {

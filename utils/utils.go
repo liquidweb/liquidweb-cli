@@ -33,6 +33,14 @@ func IpIsValid(ip string) bool {
 	return true
 }
 
+func IpRangeIsValid(cidr string) bool {
+	if _, _, err := net.ParseCIDR(cidr); err != nil {
+		return false
+	}
+
+	return true
+}
+
 func RandomString(length int) string {
 	charset := "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" + "0123456789"
 	var seededRand *rand.Rand = rand.New(
