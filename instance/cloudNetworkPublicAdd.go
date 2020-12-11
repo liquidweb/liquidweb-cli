@@ -77,7 +77,7 @@ func (self *Client) CloudNetworkPublicAdd(params *CloudNetworkPublicAddParams) (
 		apiArgs["pool_ips"] = params.PoolIps
 		validateFields := map[interface{}]interface{}{}
 		for _, ip := range params.PoolIps {
-			validateFields[ip] = "IP"
+			validateFields[ip] = "IpOrCidr"
 		}
 		if err = validate.Validate(validateFields); err != nil {
 			return

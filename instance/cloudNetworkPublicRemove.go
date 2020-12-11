@@ -62,7 +62,7 @@ func (self *Client) CloudNetworkPublicRemove(params *CloudNetworkPublicRemovePar
 	var b bytes.Buffer
 	for _, ip := range params.Ips {
 		validateFields := map[interface{}]interface{}{
-			ip: "IP",
+			ip: "IpOrCidr",
 		}
 		if err := validate.Validate(validateFields); err != nil {
 			fmt.Printf("%s ... skipping\n", err)

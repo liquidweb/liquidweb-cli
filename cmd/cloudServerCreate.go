@@ -108,6 +108,7 @@ lw plan --file /tmp/cloud.server.create.yaml
 		params.Vcpu, _ = cmd.Flags().GetInt("vcpu")
 		params.BackupId, _ = cmd.Flags().GetInt("backup-id")
 		params.ImageId, _ = cmd.Flags().GetInt("image-id")
+		params.PoolIps = cloudServerCreateCmdPoolIpsFlag
 
 		sshPkeyContents, err := ioutil.ReadFile(filepath.Clean(pubSshKey))
 		if err == nil {
