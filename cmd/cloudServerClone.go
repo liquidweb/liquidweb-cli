@@ -130,7 +130,7 @@ Server is not on a Private Parent.`,
 		if len(cloudServerCloneCmdPool6IpsFlag) > 0 {
 			cloneArgs["pool6_ips"] = cloudServerCloneCmdPool6IpsFlag
 			for _, ip := range cloudServerCloneCmdPool6IpsFlag {
-				validateFields[ip] = "IpOrCidr"
+				validateFields[ip] = "CIDR"
 			}
 		}
 

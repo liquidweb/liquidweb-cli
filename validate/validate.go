@@ -109,6 +109,12 @@ func interfaceInputTypeValidate(iface, inputFieldValue interface{}) error {
 		if err := obj.Validate(); err != nil {
 			return err
 		}
+	case InputTypeCIDR:
+		var obj InputTypeCIDR
+		obj.CIDR = cast.ToString(inputFieldValue)
+		if err := obj.Validate(); err != nil {
+			return err
+		}
 	case InputTypeIpOrCidr:
 		var obj InputTypeIpOrCidr
 		obj.IpOrCidr = cast.ToString(inputFieldValue)
