@@ -27,8 +27,9 @@ type CloudNetworkPublicAddParams struct {
 	UniqId       string   `yaml:"uniq-id"`
 	ConfigureIps bool     `yaml:"configure-ips"`
 	NewIps       int64    `yaml:"new-ips"`
+	NewIp6s      int64    `yaml:"new-ip6s"`
 	PoolIps      []string `yaml:"pool-ips"`
-	IpVersion    int      `yaml:"ip-version"`
+	Pool6Ips     []string `yaml:"pool6-ips"`
 }
 
 func (self *CloudNetworkPublicAddParams) UnmarshalYAML(unmarshal func(interface{}) error) error {
@@ -51,20 +52,14 @@ func (self *Client) CloudNetworkPublicAdd(params *CloudNetworkPublicAddParams) (
 		return
 	}
 
-	if params.NewIps == 0 && len(params.PoolIps) == 0 {
-		err = fmt.Errorf("at least one of --new-ips --pool-ips must be given")
-		return
-	}
-
-	if params.IpVersion != 4 && params.IpVersion != 6 {
-		err = fmt.Errorf("ip-version may only be 4 or 6")
+	if params.NewIps == 0 && len(params.PoolIps) == 0 && params.NewIp6s == 0 && len(params.Pool6Ips) == 0 {
+		err = fmt.Errorf("at least one of --new-ips --pool-ips --new-ip6s --pool6-ips must be given")
 		return
 	}
 
 	apiArgs := map[string]interface{}{
 		"configure_ips": params.ConfigureIps,
 		"uniq_id":       params.UniqId,
-		"ip_version":    params.IpVersion,
 	}
 	if params.NewIps != 0 {
 		apiArgs["ip_count"] = params.NewIps
@@ -77,6 +72,24 @@ func (self *Client) CloudNetworkPublicAdd(params *CloudNetworkPublicAddParams) (
 		apiArgs["pool_ips"] = params.PoolIps
 		validateFields := map[interface{}]interface{}{}
 		for _, ip := range params.PoolIps {
+			validateFields[ip] = "IP"
+		}
+		if err = validate.Validate(validateFields); err != nil {
+			return
+		}
+	}
+
+	if params.NewIp6s != 0 {
+		apiArgs["ip6_count"] = params.NewIp6s
+		validateFields := map[interface{}]interface{}{params.NewIps: "PositiveInt64"}
+		if err = validate.Validate(validateFields); err != nil {
+			return
+		}
+	}
+	if len(params.Pool6Ips) != 0 {
+		apiArgs["pool6_ips"] = params.Pool6Ips
+		validateFields := map[interface{}]interface{}{}
+		for _, ip := range params.Pool6Ips {
 			validateFields[ip] = "IpOrCidr"
 		}
 		if err = validate.Validate(validateFields); err != nil {
