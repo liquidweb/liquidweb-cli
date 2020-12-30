@@ -25,6 +25,8 @@ import (
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
+var cloudNetworkPrivateDetailsCmdUniqIdFlag []string
+
 var cloudNetworkPrivateDetailsCmd = &cobra.Command{
 	Use:   "details",
 	Short: "Get Private Network details for a single or all Cloud Server(s)",
@@ -40,12 +42,11 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
 		allFlag, _ := cmd.Flags().GetBool("all")
 
 		var uniqIds []string
 
-		if uniqIdFlag == "" || allFlag {
+		if len(cloudNetworkPrivateDetailsCmdUniqIdFlag) == 0 || allFlag {
 			methodArgs := instance.AllPaginatedResultsArgs{
 				Method:         "bleed/storm/server/list",
 				ResultsPerPage: 100,
@@ -62,7 +63,7 @@ and cost-savings.
 				uniqIds = append(uniqIds, cs.UniqId)
 			}
 		} else {
-			uniqIds = append(uniqIds, uniqIdFlag)
+			uniqIds = cloudNetworkPrivateDetailsCmdUniqIdFlag
 		}
 
 		for _, uniqId := range uniqIds {
@@ -87,6 +88,7 @@ and cost-savings.
 
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateDetailsCmd)
-	cloudNetworkPrivateDetailsCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
+	cloudNetworkPrivateDetailsCmd.Flags().StringSliceVar(&cloudNetworkPrivateDetailsCmdUniqIdFlag, "uniq-id",
+		[]string{}, "uniq-ids separated by ',' of Cloud Servers to fetch private networking details for")
 	cloudNetworkPrivateDetailsCmd.Flags().Bool("all", false, "get details for all Cloud Servers")
 }
