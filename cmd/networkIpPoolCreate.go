@@ -18,8 +18,10 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
+	"github.com/liquidweb/liquidweb-cli/flags/defaults"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
@@ -36,11 +38,8 @@ your account.`,
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 
-		//fmt.Printf("networkIpPoolCreateCmdAddIpsFlag: %+v\n", networkIpPoolCreateCmdAddIpsFlag)
-		//fmt.Printf("%d %d\n", newIpsFlag, zoneFlag)
-
-		if len(networkIpPoolCreateCmdAddIpsFlag) == 0 && newIpsFlag == -1 {
-			lwCliInst.Die(fmt.Errorf("flags --new-ips --add-ips cannot both be empty"))
+		if len(networkIpPoolCreateCmdAddIpsFlag) == 0 && newIpsFlag == -1 || zoneFlag == 0 {
+			lwCliInst.Die(fmt.Errorf("flags --new-ips --add-ips cannot both be empty. --zone cannot be empty"))
 		}
 
 		apiArgs := map[string]interface{}{
@@ -68,9 +67,6 @@ func init() {
 	networkIpPoolCreateCmd.Flags().StringSliceVar(&networkIpPoolCreateCmdAddIpsFlag, "add-ips", []string{},
 		"ips separated by ',' to add to created IP Pool")
 	networkIpPoolCreateCmd.Flags().Int64("new-ips", -1, "amount of IPs to assign to the created IP Pool")
-	networkIpPoolCreateCmd.Flags().Int64("zone", -1, "zone id to create the IP Pool in")
-
-	if err := networkIpPoolCreateCmd.MarkFlagRequired("zone"); err != nil {
-		lwCliInst.Die(err)
-	}
+	networkIpPoolCreateCmd.Flags().Int64("zone", cast.ToInt64(defaults.GetOrNag("zone")),
+		"zone id to create the IP Pool in")
 }

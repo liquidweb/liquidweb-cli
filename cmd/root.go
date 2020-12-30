@@ -30,7 +30,7 @@ import (
 )
 
 var cfgFile string
-var lwCliInst instance.Client
+var lwCliInst *instance.Client
 var useContext string
 
 var rootCmd = &cobra.Command{
@@ -70,17 +70,16 @@ func init() {
 
 func initConfig() {
 	vp := viper.New()
+
 	if cfgFile != "" {
 		// Use config file from the flag.
 		vp.SetConfigFile(cfgFile)
 	} else {
-		// Find home directory.
+		// Search config in home directory with name ".liquidweb-cli" (without extension).
 		home, err := homedir.Dir()
 		if err != nil {
 			lwCliInst.Die(err)
 		}
-
-		// Search config in home directory with name ".liquidweb-cli" (without extension).
 		vp.AddConfigPath(home)
 		vp.SetConfigName(".liquidweb-cli")
 	}

@@ -18,8 +18,10 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
+	"github.com/liquidweb/liquidweb-cli/flags/defaults"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
@@ -93,10 +95,6 @@ func init() {
 	cloudNetworkVipCmd.AddCommand(cloudNetworkVipCreateCmd)
 	cloudNetworkVipCreateCmd.Flags().String("name", fmt.Sprintf("vip-%s", utils.RandomString(8)),
 		"name for the new VIP")
-	cloudNetworkVipCreateCmd.Flags().Int64("zone", -1,
+	cloudNetworkVipCreateCmd.Flags().Int64("zone", cast.ToInt64(defaults.GetOrNag("zone")),
 		"zone id to create VIP in (see: 'cloud server options --zones')")
-
-	if err := cloudNetworkVipCreateCmd.MarkFlagRequired("zone"); err != nil {
-		lwCliInst.Die(err)
-	}
 }
