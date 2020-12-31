@@ -21,7 +21,6 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/flags/defaults"
 	"github.com/liquidweb/liquidweb-cli/instance"
 )
 
@@ -61,7 +60,7 @@ func init() {
 	cloudTemplateCmd.AddCommand(cloudTemplateRestoreCmd)
 
 	cloudTemplateRestoreCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server")
-	cloudTemplateRestoreCmd.Flags().String("template", cast.ToString(defaults.GetOrNag("template")), "name of template to restore")
+	cloudTemplateRestoreCmd.Flags().String("template", cast.ToString(defaultFlag("template")), "name of template to restore")
 
 	if err := cloudTemplateRestoreCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)

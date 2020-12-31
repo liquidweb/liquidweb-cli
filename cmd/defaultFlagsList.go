@@ -28,7 +28,11 @@ var defaultFlagsListCmd = &cobra.Command{
 	Short: "Display your set default flags",
 	Long: `Display your set default flags.
 
-If you've never created any default flags, check "default-flags add".`,
+If you've never created any default flags, see 'help default-flags set'.
+
+When a default flag is set (such as "zone") then any subcommand will use its
+value in place if omitted. Default flags are auth context aware. For details
+on auth contexts, see 'help auth'.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		all, err := defaults.GetAll()
 		if err != nil {

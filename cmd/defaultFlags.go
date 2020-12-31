@@ -27,7 +27,8 @@ var defaultFlagsCmd = &cobra.Command{
 	Long: `Manage the configured default flags.
 
 If a default flag is set (such as for "zone") then any subcommand will use its
-value in place if omitted.
+value in place if omitted. Default flags are auth context aware. For details
+on auth contexts, see 'help auth'.
 
 For a full list of capabilities, please refer to the "Available Commands" section.`,
 	Run: func(cmd *cobra.Command, args []string) {

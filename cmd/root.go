@@ -18,13 +18,14 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"regexp"
 	"strings"
 
 	"github.com/c-bata/go-prompt"
-	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/cobra"
-	"github.com/spf13/viper"
 
+	"github.com/liquidweb/liquidweb-cli/config"
+	"github.com/liquidweb/liquidweb-cli/flags/defaults"
 	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/utils"
 )
@@ -68,34 +69,50 @@ func init() {
 	rootCmd.PersistentFlags().StringVar(&useContext, "use-context", "", "forces current context, without persisting the context change")
 }
 
+func setConfigArgs() {
+	config.UseContextArg = useContext
+	config.ConfigFileArg = cfgFile
+
+	if config.UseContextArg == "" {
+		osArgsForContext(regexp.MustCompile(`use-context\s+[A-z]+`))
+		if config.UseContextArg == "" {
+			osArgsForContext(regexp.MustCompile(`use-context=[A-z]+`))
+		}
+	}
+}
+
+// this gets called early on before cobra fully initializes, so have to
+// parse os.Args directly.
+func osArgsForContext(re *regexp.Regexp) {
+	var searchStr string
+	for _, str := range os.Args {
+		searchStr = searchStr + " " + str
+	}
+
+	delimiter := " "
+	if strings.Contains(searchStr, "=") {
+		delimiter = "="
+	}
+
+	slice := strings.Split(re.FindString(searchStr), delimiter)
+	if len(slice) > 1 && slice[1] != "" {
+		config.UseContextArg = slice[1]
+		config.CurrentContext = slice[1]
+	}
+}
+
+func defaultFlag(flag string) (value interface{}) {
+	// calling config.InitConfig() here so default context gets set
+	_, _ = config.InitConfig()
+	setConfigArgs()
+	value = defaults.GetOrNag(flag)
+	return
+}
+
 func initConfig() {
-	vp := viper.New()
-
-	if cfgFile != "" {
-		// Use config file from the flag.
-		vp.SetConfigFile(cfgFile)
-	} else {
-		// Search config in home directory with name ".liquidweb-cli" (without extension).
-		home, err := homedir.Dir()
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-		vp.AddConfigPath(home)
-		vp.SetConfigName(".liquidweb-cli")
-	}
-
-	vp.AutomaticEnv()
-	if err := vp.ReadInConfig(); err != nil {
-		utils.PrintYellow("no config\n")
-	}
-
-	if useContext != "" {
-		if err := instance.ValidateContext(useContext, vp); err != nil {
-			utils.PrintRed("error using auth context:\n\n")
-			fmt.Printf("%s\n\n", err)
-			os.Exit(1)
-		}
-		vp.Set("liquidweb.api.current_context", useContext)
+	vp, err := config.InitConfig()
+	if err != nil {
+		lwCliInst.Die(err)
 	}
 
 	var lwCliInstErr error

@@ -25,11 +25,12 @@ import (
 
 var defaultFlagsDeleteCmd = &cobra.Command{
 	Use:   "delete",
-	Short: "Delete a default flag",
-	Long: `Delete a default flag.
+	Short: "Delete a flag",
+	Long: `Delete a flag for the current context.
 
 When a default flag is set (such as "zone") then any subcommand will use its
-value in place if omitted.`,
+value in place if omitted. Default flags are auth context aware. For details
+on auth contexts, see 'help auth'.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		flagName, _ := cmd.Flags().GetString("flag")
 
@@ -43,7 +44,7 @@ value in place if omitted.`,
 
 func init() {
 	defaultFlagsCmd.AddCommand(defaultFlagsDeleteCmd)
-	defaultFlagsDeleteCmd.Flags().String("flag", "", "name of the default flag to delete")
+	defaultFlagsDeleteCmd.Flags().String("flag", "", "name of the flag to delete")
 	if err := defaultFlagsDeleteCmd.MarkFlagRequired("flag"); err != nil {
 		lwCliInst.Die(err)
 	}

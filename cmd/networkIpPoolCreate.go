@@ -21,7 +21,6 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/flags/defaults"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 )
 
@@ -67,6 +66,6 @@ func init() {
 	networkIpPoolCreateCmd.Flags().StringSliceVar(&networkIpPoolCreateCmdAddIpsFlag, "add-ips", []string{},
 		"ips separated by ',' to add to created IP Pool")
 	networkIpPoolCreateCmd.Flags().Int64("new-ips", -1, "amount of IPs to assign to the created IP Pool")
-	networkIpPoolCreateCmd.Flags().Int64("zone", cast.ToInt64(defaults.GetOrNag("zone")),
+	networkIpPoolCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("zone")),
 		"zone id to create the IP Pool in")
 }

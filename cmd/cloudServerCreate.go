@@ -24,7 +24,7 @@ import (
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/flags/defaults"
+	"github.com/liquidweb/liquidweb-cli/config"
 	"github.com/liquidweb/liquidweb-cli/instance"
 )
 
@@ -88,6 +88,7 @@ cloud:
 lw plan --file /tmp/cloud.server.create.yaml
 `,
 	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("config.CurrentContext is now: %s\n", config.CurrentContext)
 		params := &instance.CloudServerCreateParams{}
 
 		params.Template, _ = cmd.Flags().GetString("template")
@@ -135,7 +136,7 @@ func init() {
 		sshPubKeyFile = fmt.Sprintf("%s/.ssh/id_rsa.pub", home)
 	}
 
-	cloudServerCreateCmd.Flags().String("template", cast.ToString(defaults.GetOrNag("template")), "template to use (see 'cloud server options --templates')")
+	cloudServerCreateCmd.Flags().String("template", cast.ToString(defaultFlag("template")), "template to use (see 'cloud server options --templates')")
 	cloudServerCreateCmd.Flags().String("type", "SS.VPS", "some examples of types; SS.VPS, SS.VPS.WIN, SS.VM, SS.VM.WIN")
 	cloudServerCreateCmd.Flags().String("hostname", "", "hostname to set")
 	cloudServerCreateCmd.Flags().Int("ips", 1, "amount of IP addresses")
@@ -145,7 +146,7 @@ func init() {
 	cloudServerCreateCmd.Flags().Int("backup-days", -1, "Enable daily backup plan. This is the amount of days to keep a backup")
 	cloudServerCreateCmd.Flags().Int("backup-quota", -1, "Enable quota backup plan. This is the total amount of GB to keep.")
 	cloudServerCreateCmd.Flags().String("bandwidth", "SS.10000", "bandwidth package to use")
-	cloudServerCreateCmd.Flags().Int64("zone", cast.ToInt64(defaults.GetOrNag("zone")), "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
+	cloudServerCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("zone")), "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
 	cloudServerCreateCmd.Flags().String("password", "", "root or administrator password to set")
 
 	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of cloud backup to create from (see 'cloud backup list')")

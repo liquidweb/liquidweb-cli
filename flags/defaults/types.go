@@ -16,15 +16,15 @@ func (self AllFlags) String() string {
 		slice = append(slice, "Configured default flags:\n\n")
 
 		for flag, value := range self {
-			slice = append(slice, fmt.Sprintf("\tFlag: %s\n", flag))
-			slice = append(slice, fmt.Sprintf("\t\tValue: %+v\n", value))
+			slice = append(slice, fmt.Sprintf("  Flag: %s\n", flag))
+			slice = append(slice, fmt.Sprintf("    Value: %+v\n", value))
 		}
 	}
 
 	return strings.Join(slice[:], "")
 }
 
-var permittedFlags = map[string]interface{}{
+var permittedFlags = map[string]bool{
 	"zone":     true,
 	"template": true,
 }

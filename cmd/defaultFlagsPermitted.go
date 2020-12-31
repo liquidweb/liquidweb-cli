@@ -23,34 +23,28 @@ import (
 	"github.com/liquidweb/liquidweb-cli/flags/defaults"
 )
 
-var defaultFlagsSetCmd = &cobra.Command{
-	Use:   "set",
-	Short: "Set a flag",
-	Long: `Set a flag for the current context.
+var defaultFlagsPermittedCmd = &cobra.Command{
+	Use:   "permitted",
+	Short: "Display permitted default flags",
+	Long: `Display permitted default flags.
+
+If you've never created any default flags, see 'help default-flags set'.
 
 When a default flag is set (such as "zone") then any subcommand will use its
 value in place if omitted. Default flags are auth context aware. For details
 on auth contexts, see 'help auth'.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		flagName, _ := cmd.Flags().GetString("flag")
-		flagValue, _ := cmd.Flags().GetString("value")
-
-		if err := defaults.Set(flagName, flagValue); err != nil {
-			lwCliInst.Die(err)
+		permitted := defaults.GetPermitted()
+		fmt.Println("Permitted flags:")
+		for flag, v := range permitted {
+			if !v {
+				continue
+			}
+			fmt.Printf("  %s\n", flag)
 		}
-
-		fmt.Printf("flag [%s] set with value [%s]\n", flagName, flagValue)
 	},
 }
 
 func init() {
-	defaultFlagsCmd.AddCommand(defaultFlagsSetCmd)
-	defaultFlagsSetCmd.Flags().String("flag", "", "name of the flag to set")
-	defaultFlagsSetCmd.Flags().String("value", "", "value for the flag")
-	reqs := []string{"flag", "value"}
-	for _, req := range reqs {
-		if err := defaultFlagsSetCmd.MarkFlagRequired(req); err != nil {
-			lwCliInst.Die(err)
-		}
-	}
+	defaultFlagsCmd.AddCommand(defaultFlagsPermittedCmd)
 }

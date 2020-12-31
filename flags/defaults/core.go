@@ -8,10 +8,19 @@ import (
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
 
+	"github.com/liquidweb/liquidweb-cli/config"
 	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
+var (
+	nagged map[string]bool
+	nags   bool
+	tipped bool
+)
+
 func init() {
+	nagged = map[string]bool{}
+
 	home, err := homedir.Dir()
 	if err != nil {
 		utils.PrintYellow("failed fetching homedir: %s\n", err)
@@ -20,16 +29,40 @@ func init() {
 	viper.SetDefault("liquidweb.flags.defaults.file", fmt.Sprintf("%s/.liquidweb-cli-flag-defaults.yaml", home))
 }
 
-//var flagDefaultsFile = viper.GetString("liquidweb.flags.defaults.file")
+func NagsOff() (err error) {
+	err = toggleNags(false)
+
+	return
+}
+
+func NagsOn() (err error) {
+	err = toggleNags(true)
+
+	return
+}
+
+func GetPermitted() (permitted map[string]bool) {
+	permitted = permittedFlags
+	return
+}
 
 func GetOrNag(flag string) (value interface{}) {
 	var err error
 	value, err = Get(flag)
 	if err != nil {
-		if errors.Is(err, ErrorNotFound) {
-			utils.PrintTeal("No default for flag [%s] set. See 'help default-flags set' for details.\n", flag)
-		} else {
-			utils.PrintYellow("Unexpected error when fetching value for default flag [%s]: %s\n", flag, err)
+		if !nagged[flag] {
+			if errors.Is(err, ErrorNotFound) {
+				if nags {
+					fmt.Printf("No default value for flag [%s] set. See 'help default-flags set' for details.\n", flag)
+					if !tipped {
+						utils.PrintTeal("TIP: You can silence undefined default flag notices with 'default-flags nags-off'\n")
+						tipped = true
+					}
+				}
+			} else {
+				utils.PrintYellow("WARNING: Unexpected error when fetching value for default flag [%s]: %s\n", flag, err)
+			}
+			nagged[flag] = true
 		}
 	}
 	return
@@ -76,11 +109,9 @@ func Set(flag string, value interface{}) (err error) {
 	}
 
 	flags[flag] = value
-	vp.Set(DefFlagsKey, flags)
+	vp.Set(contextFlagKey(), flags)
 
-	if err = vp.WriteConfig(); err != nil {
-		err = fmt.Errorf("%w: %s", ErrorUnwritable, err)
-	}
+	err = writeViperConfig(vp)
 
 	return
 }
@@ -100,8 +131,8 @@ func Delete(flag string) (err error) {
 	}
 
 	delete(flags, flag)
-	vp.Set(DefFlagsKey, flags)
-	err = vp.WriteConfig()
+	vp.Set(contextFlagKey(), flags)
+	err = writeViperConfig(vp)
 
 	return
 }
@@ -140,7 +171,7 @@ func getFlagsMap(vpL ...*viper.Viper) (flags map[string]interface{}, err error) 
 		vp = vpL[0]
 	}
 
-	flags = vp.GetStringMap(DefFlagsKey)
+	flags = vp.GetStringMap(contextFlagKey())
 
 	return
 }
@@ -154,10 +185,13 @@ func getFlagsViper() (vp *viper.Viper, err error) {
 
 	vp = viper.New()
 	vp.SetConfigFile(file)
+	vp.SetDefault(NagsKey, true)
 	if err = vp.ReadInConfig(); err != nil {
 		err = fmt.Errorf("%w: %s", ErrorUnreadable, err)
 		return
 	}
+
+	nags = vp.GetBool(NagsKey)
 
 	return
 }
@@ -176,6 +210,33 @@ func getFlagsFile() (file string, err error) {
 			return
 		}
 		err = f.Close()
+	}
+
+	return
+}
+
+func contextFlagKey() (k string) {
+	k = fmt.Sprintf("%s.%s", DefFlagsKey, config.CurrentContext)
+
+	return
+}
+
+func toggleNags(on bool) error {
+	vp, err := getFlagsViper()
+	if err != nil {
+		return err
+	}
+
+	vp.Set(NagsKey, on)
+
+	err = writeViperConfig(vp)
+
+	return err
+}
+
+func writeViperConfig(vp *viper.Viper) (err error) {
+	if err = vp.WriteConfig(); err != nil {
+		err = fmt.Errorf("%w: %s", ErrorUnwritable, err)
 	}
 
 	return

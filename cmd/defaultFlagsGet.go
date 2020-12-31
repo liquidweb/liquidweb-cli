@@ -26,10 +26,11 @@ import (
 var defaultFlagsGetCmd = &cobra.Command{
 	Use:   "get",
 	Short: "Get details on a flag",
-	Long: `Get details on a flag.
+	Long: `Get details on a flag in the current context.
 
 When a default flag is set (such as "zone") then any subcommand will use its
-value in place if omitted.`,
+value in place if omitted. Default flags are auth context aware. For details
+on auth contexts, see 'help auth'.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		flagName, _ := cmd.Flags().GetString("flag")
 
@@ -45,7 +46,7 @@ value in place if omitted.`,
 
 func init() {
 	defaultFlagsCmd.AddCommand(defaultFlagsGetCmd)
-	defaultFlagsGetCmd.Flags().String("flag", "", "name of the default flag")
+	defaultFlagsGetCmd.Flags().String("flag", "", "name of the flag")
 	if err := defaultFlagsGetCmd.MarkFlagRequired("flag"); err != nil {
 		lwCliInst.Die(err)
 	}
