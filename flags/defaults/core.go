@@ -143,7 +143,7 @@ func permittedFlagOrError(flag string) (err error) {
 		return
 	}
 
-	if _, exists := permittedFlags[flag]; !exists {
+	if v, exists := permittedFlags[flag]; !exists || !v {
 		err = fmt.Errorf("%s %w", flag, ErrorForbiddenFlag)
 	}
 
