@@ -34,8 +34,13 @@ func InitConfig() (vp *viper.Viper, err error) {
 	}
 
 	vp.AutomaticEnv()
-	if err := vp.ReadInConfig(); err != nil {
-		utils.PrintYellow("no config\n")
+	if err = vp.ReadInConfig(); err != nil {
+		if _, notFound := err.(viper.ConfigFileNotFoundError); notFound {
+			err = nil
+			return
+		}
+		utils.PrintYellow("error reading config: %s\n", err)
+		return
 	}
 
 	if UseContextArg != "" {
