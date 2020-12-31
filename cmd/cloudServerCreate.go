@@ -88,7 +88,6 @@ cloud:
 lw plan --file /tmp/cloud.server.create.yaml
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("config.CurrentContext is now: %s\n", config.CurrentContext)
 		params := &instance.CloudServerCreateParams{}
 
 		params.Template, _ = cmd.Flags().GetString("template")
