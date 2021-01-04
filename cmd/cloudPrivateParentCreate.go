@@ -70,12 +70,12 @@ of configs, check 'cloud server options --configs'.`,
 func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentCreateCmd)
 
-	cloudPrivateParentCreateCmd.Flags().Int64("config-id", -1, "config-id (category must be bare-metal or bare-metal-r)")
+	cloudPrivateParentCreateCmd.Flags().Int64("config-id", cast.ToInt64(defaultFlag("config-id", -1)), "config-id (category must be bare-metal or bare-metal-r)")
 	cloudPrivateParentCreateCmd.Flags().String("name", "", "name for your Private Parent")
 	cloudPrivateParentCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("zone", -1)),
 		"id number of the zone to provision the Private Parent in ('cloud server options --zones')")
 
-	reqs := []string{"config-id", "name"}
+	reqs := []string{"name"}
 	for _, req := range reqs {
 		if err := cloudPrivateParentCreateCmd.MarkFlagRequired(req); err != nil {
 			lwCliInst.Die(err)
