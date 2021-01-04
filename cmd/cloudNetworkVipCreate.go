@@ -94,6 +94,6 @@ func init() {
 	cloudNetworkVipCmd.AddCommand(cloudNetworkVipCreateCmd)
 	cloudNetworkVipCreateCmd.Flags().String("name", fmt.Sprintf("vip-%s", utils.RandomString(8)),
 		"name for the new VIP")
-	cloudNetworkVipCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("zone")),
+	cloudNetworkVipCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("zone", -1)),
 		"zone id to create VIP in (see: 'cloud server options --zones')")
 }

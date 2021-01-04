@@ -101,11 +101,14 @@ func osArgsForContext(re *regexp.Regexp) {
 	}
 }
 
-func defaultFlag(flag string) (value interface{}) {
+func defaultFlag(flag string, defaultValueList ...interface{}) (value interface{}) {
 	// calling config.InitConfig() here so default context gets set
 	_, _ = config.InitConfig()
 	setConfigArgs()
 	value = defaults.GetOrNag(flag)
+	if len(defaultValueList) > 0 && value == nil {
+		value = defaultValueList[0]
+	}
 	return
 }
 

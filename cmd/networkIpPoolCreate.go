@@ -37,7 +37,7 @@ your account.`,
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
 
-		if len(networkIpPoolCreateCmdAddIpsFlag) == 0 && newIpsFlag == -1 || zoneFlag == 0 {
+		if len(networkIpPoolCreateCmdAddIpsFlag) == 0 && newIpsFlag == -1 || zoneFlag == -1 {
 			lwCliInst.Die(fmt.Errorf("flags --new-ips --add-ips cannot both be empty. --zone cannot be empty"))
 		}
 
@@ -66,6 +66,6 @@ func init() {
 	networkIpPoolCreateCmd.Flags().StringSliceVar(&networkIpPoolCreateCmdAddIpsFlag, "add-ips", []string{},
 		"ips separated by ',' to add to created IP Pool")
 	networkIpPoolCreateCmd.Flags().Int64("new-ips", -1, "amount of IPs to assign to the created IP Pool")
-	networkIpPoolCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("zone")),
+	networkIpPoolCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("zone", -1)),
 		"zone id to create the IP Pool in")
 }

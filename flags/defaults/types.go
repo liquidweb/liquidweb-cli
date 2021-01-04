@@ -25,6 +25,7 @@ func (self AllFlags) String() string {
 }
 
 var permittedFlags = map[string]bool{
-	"zone":     true,
-	"template": true,
+	"zone":      true,
+	"template":  true,
+	"config-id": true,
 }

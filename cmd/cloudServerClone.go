@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
@@ -162,7 +163,7 @@ func init() {
 	cloudServerCloneCmd.Flags().Int64("vcpu", -1, "amount of vcpus for new Cloud Server (when private-parent)")
 
 	// Non Private Parent
-	cloudServerCloneCmd.Flags().Int64("config-id", -1,
+	cloudServerCloneCmd.Flags().Int64("config-id", cast.ToInt64(defaultFlag("config-id", -1)),
 		"config-id for new Cloud Server (when !private-parent) (see: 'cloud server options --configs')")
 
 	if err := cloudServerCloneCmd.MarkFlagRequired("uniq-id"); err != nil {
