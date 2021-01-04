@@ -42,11 +42,9 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		allFlag, _ := cmd.Flags().GetBool("all")
-
 		var uniqIds []string
 
-		if len(cloudNetworkPrivateDetailsCmdUniqIdFlag) == 0 || allFlag {
+		if len(cloudNetworkPrivateDetailsCmdUniqIdFlag) == 0 {
 			methodArgs := instance.AllPaginatedResultsArgs{
 				Method:         "bleed/storm/server/list",
 				ResultsPerPage: 100,
@@ -90,5 +88,4 @@ func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateDetailsCmd)
 	cloudNetworkPrivateDetailsCmd.Flags().StringSliceVar(&cloudNetworkPrivateDetailsCmdUniqIdFlag, "uniq-id",
 		[]string{}, "uniq-ids separated by ',' of Cloud Servers to fetch private networking details for")
-	cloudNetworkPrivateDetailsCmd.Flags().Bool("all", false, "get details for all Cloud Servers")
 }
