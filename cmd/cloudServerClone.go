@@ -65,9 +65,6 @@ Server is not on a Private Parent.`,
 			hostnameFlag: map[string]string{"type": "NonEmptyString", "optional": "false"},
 		}
 
-		if privateParentFlag != "" && configIdFlag != -1 {
-			lwCliInst.Die(fmt.Errorf("cant pass both --config-id and --private-parent flags"))
-		}
 		if privateParentFlag == "" && configIdFlag == -1 {
 			lwCliInst.Die(fmt.Errorf("must pass --config-id or --private-parent"))
 		}
@@ -115,7 +112,7 @@ Server is not on a Private Parent.`,
 			cloneArgs["vcpu"] = vcpuFlag
 			validateFields[vcpuFlag] = "PositiveInt64"
 		}
-		if configIdFlag != -1 {
+		if configIdFlag != -1 && privateParentFlag == "" {
 			cloneArgs["config_id"] = configIdFlag
 			validateFields[configIdFlag] = "PositiveInt64"
 		}
