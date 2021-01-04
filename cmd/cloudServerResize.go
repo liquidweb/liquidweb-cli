@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/instance"
@@ -104,7 +105,7 @@ func init() {
 	cloudServerResizeCmd.Flags().Int64("memory", -1, "desired memory (when private-parent)")
 	cloudServerResizeCmd.Flags().Bool("skip-fs-resize", false, "whether or not to skip the fs resize")
 	cloudServerResizeCmd.Flags().Int64("vcpu", -1, "desired vcpu count (when private-parent)")
-	cloudServerResizeCmd.Flags().Int64("config-id", -1,
+	cloudServerResizeCmd.Flags().Int64("config-id", cast.ToInt64(defaultFlag("config-id", -1)),
 		"config-id of your desired config (when !private-parent) (see 'cloud server options --configs')")
 
 	if err := cloudServerResizeCmd.MarkFlagRequired("uniq-id"); err != nil {
