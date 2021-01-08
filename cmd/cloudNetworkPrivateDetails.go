@@ -20,14 +20,17 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"github.com/liquidweb/liquidweb-cli/instance"
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
+var cloudNetworkPrivateDetailsCmdUniqIdFlag []string
+
 var cloudNetworkPrivateDetailsCmd = &cobra.Command{
 	Use:   "details",
-	Short: "Get Private Network details for a Cloud Server",
-	Long: `Get Private Network details for a Cloud Server
+	Short: "Get Private Network details for a single or all Cloud Server(s)",
+	Long: `Get Private Network details for a single or all Cloud Server(s)
 
 Private networking provides the option for several Cloud Servers to contact each other
 via a network interface that is:
@@ -39,37 +42,50 @@ Applications that communicate internally will frequently use this for both secur
 and cost-savings.
 `,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
+		var uniqIds []string
 
-		validateFields := map[interface{}]interface{}{
-			uniqIdFlag: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
-
-		apiArgs := map[string]interface{}{"uniq_id": uniqIdFlag}
-
-		var details apiTypes.CloudNetworkPrivateGetIpResponse
-		err := lwCliInst.CallLwApiInto("bleed/network/private/getip", apiArgs, &details)
-		if err != nil {
-			lwCliInst.Die(err)
-		}
-
-		if details.Ip == "" {
-			fmt.Printf("Cloud Server is not attached to a Private Network\n")
+		if len(cloudNetworkPrivateDetailsCmdUniqIdFlag) == 0 {
+			methodArgs := instance.AllPaginatedResultsArgs{
+				Method:         "bleed/storm/server/list",
+				ResultsPerPage: 100,
+			}
+			results, err := lwCliInst.AllPaginatedResults(&methodArgs)
+			if err != nil {
+				lwCliInst.Die(err)
+			}
+			for _, item := range results.Items {
+				var cs apiTypes.CloudServerDetails
+				if err := instance.CastFieldTypes(item, &cs); err != nil {
+					lwCliInst.Die(err)
+				}
+				uniqIds = append(uniqIds, cs.UniqId)
+			}
 		} else {
-			fmt.Printf("Cloud Server is attached to a Private Network\n")
-			fmt.Printf("\tIP: %s\n", details.Ip)
-			fmt.Printf("\tLegacy: %t\n", details.Legacy)
+			uniqIds = cloudNetworkPrivateDetailsCmdUniqIdFlag
+		}
+
+		for _, uniqId := range uniqIds {
+			validateFields := map[interface{}]interface{}{
+				uniqId: "UniqId",
+			}
+			if err := validate.Validate(validateFields); err != nil {
+				lwCliInst.Die(err)
+			}
+
+			apiArgs := map[string]interface{}{"uniq_id": uniqId}
+
+			var details apiTypes.CloudNetworkPrivateGetIpResponse
+			if err := lwCliInst.CallLwApiInto("bleed/network/private/getip", apiArgs, &details); err != nil {
+				lwCliInst.Die(err)
+			}
+
+			fmt.Print(details)
 		}
 	},
 }
 
 func init() {
 	cloudNetworkPrivateCmd.AddCommand(cloudNetworkPrivateDetailsCmd)
-	cloudNetworkPrivateDetailsCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
-	if err := cloudNetworkPrivateDetailsCmd.MarkFlagRequired("uniq-id"); err != nil {
-		lwCliInst.Die(err)
-	}
+	cloudNetworkPrivateDetailsCmd.Flags().StringSliceVar(&cloudNetworkPrivateDetailsCmdUniqIdFlag, "uniq-id",
+		[]string{}, "uniq-ids separated by ',' of Cloud Servers to fetch private networking details for")
 }

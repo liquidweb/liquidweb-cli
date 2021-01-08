@@ -429,6 +429,20 @@ type CloudNetworkPrivateGetIpResponse struct {
 	Ip     string `json:"ip" mapstructure:"ip"`
 }
 
+func (self CloudNetworkPrivateGetIpResponse) String() string {
+	var slice []string
+
+	if self.Ip == "" {
+		slice = append(slice, fmt.Sprintf("Cloud Server [%s] is not attached to a Private Network\n", self.UniqId))
+	} else {
+		slice = append(slice, fmt.Sprintf("Cloud Server [%s] is attached to a Private Network\n", self.UniqId))
+		slice = append(slice, fmt.Sprintf("\tIP: %s\n", self.Ip))
+		slice = append(slice, fmt.Sprintf("\tLegacy: %t\n", self.Legacy))
+	}
+
+	return strings.Join(slice[:], "")
+}
+
 type CloudNetworkPrivateIsAttachedResponse struct {
 	IsAttached bool `json:"is_attached" mapstructure:"is_attached"`
 }
