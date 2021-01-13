@@ -5,12 +5,15 @@ import (
 	"fmt"
 	"os"
 	"sort"
+	"strings"
 
 	homedir "github.com/mitchellh/go-homedir"
+	"github.com/spf13/cast"
 	"github.com/spf13/viper"
 
 	"github.com/liquidweb/liquidweb-cli/config"
 	"github.com/liquidweb/liquidweb-cli/utils"
+	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
 var (
@@ -44,8 +47,8 @@ func NagsOn() (err error) {
 
 func GetPermitted() (permitted []string) {
 	permitted = make([]string, 0, len(permittedFlags))
-	for flag, val := range permittedFlags {
-		if !val {
+	for flag, opts := range permittedFlags {
+		if enabled, ok := opts["enabled"].(bool); !enabled || !ok {
 			continue
 		}
 		permitted = append(permitted, flag)
@@ -78,7 +81,7 @@ func GetOrNag(flag string) (value interface{}) {
 }
 
 func Get(flag string) (value interface{}, err error) {
-	if err = permittedFlagOrError(flag); err != nil {
+	if _, err = permittedFlagOrError(flag); err != nil {
 		return
 	}
 
@@ -104,7 +107,13 @@ func GetAll() (all AllFlags, err error) {
 }
 
 func Set(flag string, value interface{}) (err error) {
-	if err = permittedFlagOrError(flag); err != nil {
+	var validator string
+	validator, err = permittedFlagOrError(flag)
+	if err != nil {
+		return
+	}
+
+	if err = validateFlagValue(validator, value); err != nil {
 		return
 	}
 
@@ -126,7 +135,7 @@ func Set(flag string, value interface{}) (err error) {
 }
 
 func Delete(flag string) (err error) {
-	if err = permittedFlagOrError(flag); err != nil {
+	if _, err = permittedFlagOrError(flag); err != nil {
 		return
 	}
 
@@ -146,15 +155,45 @@ func Delete(flag string) (err error) {
 	return
 }
 
-func permittedFlagOrError(flag string) (err error) {
+func permittedFlagOrError(flag string) (validator string, err error) {
 	if flag == "" {
 		err = ErrorInvalidFlagName
 		return
 	}
 
-	if v, exists := permittedFlags[flag]; !exists || !v {
+	opts, exists := permittedFlags[flag]
+	if !exists {
+		err = fmt.Errorf("%s %w", flag, ErrorForbiddenFlag)
+		return
+	}
+
+	if v, ok := opts["enabled"].(bool); !ok || !v {
 		err = fmt.Errorf("%s %w", flag, ErrorForbiddenFlag)
 	}
+
+	validator = cast.ToString(opts["type"])
+
+	return
+}
+
+func validateFlagValue(validator string, value interface{}) (err error) {
+	var validateFields map[interface{}]interface{}
+
+	if strings.HasSuffix(validator, "Int64") {
+		validateFields = map[interface{}]interface{}{
+			cast.ToInt64(value): "PositiveInt64",
+		}
+	} else if strings.HasSuffix(validator, "Int") {
+		validateFields = map[interface{}]interface{}{
+			cast.ToInt(value): "PositiveInt64",
+		}
+	} else if strings.HasSuffix(validator, "String") {
+		validateFields = map[interface{}]interface{}{
+			cast.ToString(value): "NonEmptyString",
+		}
+	}
+
+	err = validate.Validate(validateFields)
 
 	return
 }
