@@ -66,6 +66,6 @@ func init() {
 	networkIpPoolCreateCmd.Flags().StringSliceVar(&networkIpPoolCreateCmdAddIpsFlag, "add-ips", []string{},
 		"ips separated by ',' to add to created IP Pool")
 	networkIpPoolCreateCmd.Flags().Int64("new-ips", -1, "amount of IPs to assign to the created IP Pool")
-	networkIpPoolCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("zone", -1)),
+	networkIpPoolCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("network_ip-pool_create_zone", -1)),
 		"zone id to create the IP Pool in")
 }

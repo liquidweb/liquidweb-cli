@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"sort"
 
 	homedir "github.com/mitchellh/go-homedir"
 	"github.com/spf13/viper"
@@ -41,8 +42,16 @@ func NagsOn() (err error) {
 	return
 }
 
-func GetPermitted() (permitted map[string]bool) {
-	permitted = permittedFlags
+func GetPermitted() (permitted []string) {
+	permitted = make([]string, 0, len(permittedFlags))
+	for flag, val := range permittedFlags {
+		if !val {
+			continue
+		}
+		permitted = append(permitted, flag)
+	}
+	sort.Strings(permitted)
+
 	return
 }
 

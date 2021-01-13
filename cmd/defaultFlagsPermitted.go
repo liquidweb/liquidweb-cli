@@ -36,10 +36,7 @@ on auth contexts, see 'help auth'.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		permitted := defaults.GetPermitted()
 		fmt.Println("Permitted flags:")
-		for flag, v := range permitted {
-			if !v {
-				continue
-			}
+		for _, flag := range permitted {
 			fmt.Printf("  %s\n", flag)
 		}
 	},

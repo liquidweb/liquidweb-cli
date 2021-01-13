@@ -25,7 +25,22 @@ func (self AllFlags) String() string {
 }
 
 var permittedFlags = map[string]bool{
-	"zone":      true,
-	"template":  true,
-	"config-id": true,
+	// cloud network vip create
+	"cloud_network_vip_create_zone": true,
+	// cloud private-parent create
+	"cloud_private-parent_create_config-id": true,
+	"cloud_private-parent_create_zone":      true,
+	// cloud server clone
+	"cloud_server_clone_config-id": true,
+	// cloud server create
+	"cloud_server_create_zone":      true,
+	"cloud_server_create_template":  true,
+	"cloud_server_create_config-id": true,
+	// cloud server resize
+	"cloud_server_resize_config-id": true,
+	// cloud template restore
+	"cloud_template_restore_template": true,
+
+	// network ip-pool create
+	"network_ip-pool_create_zone": true,
 }

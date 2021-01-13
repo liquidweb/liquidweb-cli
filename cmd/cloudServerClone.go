@@ -160,7 +160,7 @@ func init() {
 	cloudServerCloneCmd.Flags().Int64("vcpu", -1, "amount of vcpus for new Cloud Server (when private-parent)")
 
 	// Non Private Parent
-	cloudServerCloneCmd.Flags().Int64("config-id", cast.ToInt64(defaultFlag("config-id", -1)),
+	cloudServerCloneCmd.Flags().Int64("config-id", cast.ToInt64(defaultFlag("cloud_server_clone_config-id", -1)),
 		"config-id for new Cloud Server (when !private-parent) (see: 'cloud server options --configs')")
 
 	if err := cloudServerCloneCmd.MarkFlagRequired("uniq-id"); err != nil {
