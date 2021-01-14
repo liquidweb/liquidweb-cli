@@ -141,18 +141,18 @@ func init() {
 		sshPubKeyFile = fmt.Sprintf("%s/.ssh/id_rsa.pub", home)
 	}
 
-	cloudServerCreateCmd.Flags().String("template", "", "template to use (see 'cloud server options --templates')")
+	cloudServerCreateCmd.Flags().String("template", cast.ToString(defaultFlag("cloud_server_create_template")), "template to use (see 'cloud server options --templates')")
 	cloudServerCreateCmd.Flags().String("type", "SS.VPS", "some examples of types; SS.VPS, SS.VPS.WIN, SS.VM, SS.VM.WIN")
 	cloudServerCreateCmd.Flags().String("hostname", "", "hostname to set")
 	cloudServerCreateCmd.Flags().Int("ips", 1, "amount of IPv4 addresses")
 	cloudServerCreateCmd.Flags().Int("ip6s", 0, "amount of IPv6 /64s")
 	cloudServerCreateCmd.Flags().String("public-ssh-key", sshPubKeyFile,
 		"path to file containing the public ssh key you wish to be on the new Cloud Server")
-	cloudServerCreateCmd.Flags().Int("config-id", 0, "config-id to use")
+	cloudServerCreateCmd.Flags().Int("config-id", cast.ToInt(defaultFlag("cloud_server_create_config-id", -1)), "config-id to use")
 	cloudServerCreateCmd.Flags().Int("backup-days", -1, "Enable daily backup plan. This is the amount of days to keep a backup")
 	cloudServerCreateCmd.Flags().Int("backup-quota", -1, "Enable quota backup plan. This is the total amount of GB to keep.")
 	cloudServerCreateCmd.Flags().String("bandwidth", "SS.10000", "bandwidth package to use")
-	cloudServerCreateCmd.Flags().Int64("zone", 0, "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
+	cloudServerCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("cloud_server_create_zone", -1)), "zone (id) to create new Cloud Server in (see 'cloud server options --zones')")
 	cloudServerCreateCmd.Flags().String("password", "", "root or administrator password to set")
 
 	cloudServerCreateCmd.Flags().Int("backup-id", -1, "id of cloud backup to create from (see 'cloud backup list')")

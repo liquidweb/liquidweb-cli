@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
@@ -66,9 +67,6 @@ Server is not on a Private Parent.`,
 			hostnameFlag: map[string]string{"type": "NonEmptyString", "optional": "false"},
 		}
 
-		if privateParentFlag != "" && configIdFlag != -1 {
-			lwCliInst.Die(fmt.Errorf("cant pass both --config-id and --private-parent flags"))
-		}
 		if privateParentFlag == "" && configIdFlag == -1 {
 			lwCliInst.Die(fmt.Errorf("must pass --config-id or --private-parent"))
 		}
@@ -117,7 +115,7 @@ Server is not on a Private Parent.`,
 			cloneArgs["vcpu"] = vcpuFlag
 			validateFields[vcpuFlag] = "PositiveInt64"
 		}
-		if configIdFlag != -1 {
+		if configIdFlag != -1 && privateParentFlag == "" {
 			cloneArgs["config_id"] = configIdFlag
 			validateFields[configIdFlag] = "PositiveInt64"
 		}
@@ -174,7 +172,7 @@ func init() {
 	cloudServerCloneCmd.Flags().Int64("vcpu", -1, "amount of vcpus for new Cloud Server (when private-parent)")
 
 	// Non Private Parent
-	cloudServerCloneCmd.Flags().Int64("config-id", -1,
+	cloudServerCloneCmd.Flags().Int64("config-id", cast.ToInt64(defaultFlag("cloud_server_clone_config-id", -1)),
 		"config-id for new Cloud Server (when !private-parent) (see: 'cloud server options --configs')")
 
 	if err := cloudServerCloneCmd.MarkFlagRequired("uniq-id"); err != nil {

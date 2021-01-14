@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 
+	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
 
 	"github.com/liquidweb/liquidweb-cli/types/api"
@@ -69,17 +70,15 @@ of configs, check 'cloud server options --configs'.`,
 func init() {
 	cloudPrivateParentCmd.AddCommand(cloudPrivateParentCreateCmd)
 
-	cloudPrivateParentCreateCmd.Flags().Int64("config-id", -1, "config-id (category must be bare-metal or bare-metal-r)")
+	cloudPrivateParentCreateCmd.Flags().Int64("config-id", cast.ToInt64(defaultFlag("cloud_private-parent_create_config-id", -1)), "config-id (category must be bare-metal or bare-metal-r)")
 	cloudPrivateParentCreateCmd.Flags().String("name", "", "name for your Private Parent")
-	cloudPrivateParentCreateCmd.Flags().Int64("zone", -1, "id number of the zone to provision the Private Parent in ('cloud server options --zones')")
+	cloudPrivateParentCreateCmd.Flags().Int64("zone", cast.ToInt64(defaultFlag("cloud_private-parent_create_zone", -1)),
+		"id number of the zone to provision the Private Parent in ('cloud server options --zones')")
 
-	if err := cloudPrivateParentCreateCmd.MarkFlagRequired("config-id"); err != nil {
-		lwCliInst.Die(err)
-	}
-	if err := cloudPrivateParentCreateCmd.MarkFlagRequired("zone"); err != nil {
-		lwCliInst.Die(err)
-	}
-	if err := cloudPrivateParentCreateCmd.MarkFlagRequired("name"); err != nil {
-		lwCliInst.Die(err)
+	reqs := []string{"name"}
+	for _, req := range reqs {
+		if err := cloudPrivateParentCreateCmd.MarkFlagRequired(req); err != nil {
+			lwCliInst.Die(err)
+		}
 	}
 }
