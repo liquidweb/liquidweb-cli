@@ -32,16 +32,15 @@ import (
 	"github.com/liquidweb/liquidweb-cli/utils"
 )
 
-func New(viper *viper.Viper) (Client, error) {
-
+func New(viper *viper.Viper) (*Client, error) {
 	lwCliApiClient, err := lwCliInstApi.New(viper)
 	if err != nil {
-		return Client{}, fmt.Errorf(
+		return &Client{}, fmt.Errorf(
 			"Failed creating an lwApi client. Error was:\n%s\nPlease check your liquidweb-cli config file for errors or ommissions\n",
 			err)
 	}
 
-	client := Client{
+	client := &Client{
 		LwCliApiClient: lwCliApiClient,
 		Viper:          viper,
 	}

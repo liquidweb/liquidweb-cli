@@ -16,6 +16,8 @@ limitations under the License.
 package instance
 
 import (
+	"errors"
+
 	"github.com/liquidweb/liquidweb-cli/types/api"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -31,6 +33,10 @@ func (ci *Client) CloudTemplateRestore(params *CloudTemplateRestoreParams) (stri
 	}
 	if err := validate.Validate(validateFields); err != nil {
 		return "", err
+	}
+
+	if params.Template == "" {
+		return "", errors.New("template cannot be blank")
 	}
 
 	apiArgs := map[string]interface{}{"template": params.Template, "uniq_id": params.UniqId}
