@@ -67,7 +67,7 @@ func init() {
 	cloudNetworkPublicCmd.AddCommand(cloudNetworkPublicAddCmd)
 	cloudNetworkPublicAddCmd.Flags().String("uniq-id", "", "uniq-id of the Cloud Server")
 	cloudNetworkPublicAddCmd.Flags().Bool("configure-ips", false,
-		"wheter or not to automatically configure the new IP address(es) in the server")
+		"whether or not to automatically configure the new IP address(es) in the server")
 	cloudNetworkPublicAddCmd.Flags().Int64("new-ips", 0, "amount of new IPv4 ips to (randomly) grab")
 	cloudNetworkPublicAddCmd.Flags().Int64("new-ip6s", 0, "amount of new IPv6 /64's to (randomly) grab")
 	cloudNetworkPublicAddCmd.Flags().StringSliceVar(&cloudNetworkPublicAddCmdPoolIpsFlag, "pool-ips", []string{},
