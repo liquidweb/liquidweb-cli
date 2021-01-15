@@ -120,8 +120,8 @@ lw plan --file /tmp/cloud.server.create.yaml
 		}
 
 		fmt.Printf(
-			"Cloud server with uniq-id [%s] creating. Check status with 'cloud server status --uniq-id %s'\n",
-			uniqId, uniqId)
+			"Cloud server with uniq-id [%s] creating. Check status with: \n %s cloud server status --uniq-id %s\n",
+			uniqId, baseCmd, uniqId)
 	},
 }
 

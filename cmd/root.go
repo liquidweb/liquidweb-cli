@@ -18,6 +18,7 @@ package cmd
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 	"regexp"
 	"strings"
 
@@ -33,6 +34,7 @@ import (
 var cfgFile string
 var lwCliInst *instance.Client
 var useContext string
+var baseCmd = filepath.Base(os.Args[0])
 
 var rootCmd = &cobra.Command{
 	Use:   "lw",
