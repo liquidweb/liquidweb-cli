@@ -20,8 +20,7 @@ import (
 
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/api"
-	"github.com/liquidweb/liquidweb-cli/validate"
+	"github.com/liquidweb/liquidweb-cli/instance"
 )
 
 var cloudServerRebootCmdUniqIdFlag []string
@@ -33,34 +32,18 @@ var cloudServerRebootCmd = &cobra.Command{
 
 To perform a forced a reboot, you must use --force`,
 	Run: func(cmd *cobra.Command, args []string) {
-		jsonOutput, _ := cmd.Flags().GetBool("json")
-		force, _ := cmd.Flags().GetBool("force")
+		params := &instance.CloudServerRebootParams{}
+		params.Force, _ = cmd.Flags().GetBool("force")
 
 		for _, uniqId := range cloudServerRebootCmdUniqIdFlag {
+			params.UniqId = uniqId
 
-			validateFields := map[interface{}]interface{}{
-				uniqId: "UniqId",
-			}
-			if err := validate.Validate(validateFields); err != nil {
-				fmt.Printf("%s ... skipping\n", err)
-				continue
-			}
-
-			var resp apiTypes.CloudServerRebootResponse
-			if err := lwCliInst.CallLwApiInto("bleed/storm/server/reboot", map[string]interface{}{
-				"uniq_id": uniqId, "force": force}, &resp); err != nil {
+			status, err := lwCliInst.CloudServerReboot(params)
+			if err != nil {
 				lwCliInst.Die(err)
 			}
 
-			if jsonOutput {
-				pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(resp)
-				if err != nil {
-					lwCliInst.Die(err)
-				}
-				fmt.Printf(pretty)
-			} else {
-				fmt.Printf("Rebooted: %s\n", resp.Rebooted)
-			}
+			fmt.Print(status)
 		}
 	},
 }
@@ -68,7 +51,6 @@ To perform a forced a reboot, you must use --force`,
 func init() {
 	cloudServerCmd.AddCommand(cloudServerRebootCmd)
 
-	cloudServerRebootCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerRebootCmd.Flags().Bool("force", false, "perform a forced reboot")
 	cloudServerRebootCmd.Flags().StringSliceVar(&cloudServerRebootCmdUniqIdFlag, "uniq-id", []string{},
 		"uniq-id(s) to get status of. For multiple, must be ',' separated")

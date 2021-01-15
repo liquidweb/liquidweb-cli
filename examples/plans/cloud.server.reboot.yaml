@@ -1,0 +1,8 @@
+---
+cloud:
+  server:
+    reboot:
+      - uniq-id: "{{- .Var.uniq_id -}}"
+        force: false
+      - uniq-id: "{{- .Var.uniq_id2 -}}"
+        force: false
