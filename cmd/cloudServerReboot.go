@@ -24,6 +24,8 @@ import (
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
 
+var cloudServerRebootCmdUniqIdFlag []string
+
 var cloudServerRebootCmd = &cobra.Command{
 	Use:   "reboot",
 	Short: "Reboot a Cloud Server",
@@ -31,31 +33,34 @@ var cloudServerRebootCmd = &cobra.Command{
 
 To perform a forced a reboot, you must use --force`,
 	Run: func(cmd *cobra.Command, args []string) {
-		uniqId, _ := cmd.Flags().GetString("uniq-id")
 		jsonOutput, _ := cmd.Flags().GetBool("json")
 		force, _ := cmd.Flags().GetBool("force")
 
-		validateFields := map[interface{}]interface{}{
-			uniqId: "UniqId",
-		}
-		if err := validate.Validate(validateFields); err != nil {
-			lwCliInst.Die(err)
-		}
+		for _, uniqId := range cloudServerRebootCmdUniqIdFlag {
 
-		var resp apiTypes.CloudServerRebootResponse
-		if err := lwCliInst.CallLwApiInto("bleed/storm/server/reboot", map[string]interface{}{
-			"uniq_id": uniqId, "force": force}, &resp); err != nil {
-			lwCliInst.Die(err)
-		}
+			validateFields := map[interface{}]interface{}{
+				uniqId: "UniqId",
+			}
+			if err := validate.Validate(validateFields); err != nil {
+				fmt.Printf("%s ... skipping\n", err)
+				continue
+			}
 
-		if jsonOutput {
-			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(resp)
-			if err != nil {
+			var resp apiTypes.CloudServerRebootResponse
+			if err := lwCliInst.CallLwApiInto("bleed/storm/server/reboot", map[string]interface{}{
+				"uniq_id": uniqId, "force": force}, &resp); err != nil {
 				lwCliInst.Die(err)
 			}
-			fmt.Printf(pretty)
-		} else {
-			fmt.Printf("Rebooted: %s\n", resp.Rebooted)
+
+			if jsonOutput {
+				pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(resp)
+				if err != nil {
+					lwCliInst.Die(err)
+				}
+				fmt.Printf(pretty)
+			} else {
+				fmt.Printf("Rebooted: %s\n", resp.Rebooted)
+			}
 		}
 	},
 }
@@ -65,7 +70,8 @@ func init() {
 
 	cloudServerRebootCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerRebootCmd.Flags().Bool("force", false, "perform a forced reboot")
-	cloudServerRebootCmd.Flags().String("uniq-id", "", "uniq-id of server to reboot")
+	cloudServerRebootCmd.Flags().StringSliceVar(&cloudServerRebootCmdUniqIdFlag, "uniq-id", []string{},
+		"uniq-id(s) to get status of. For multiple, must be ',' separated")
 
 	if err := cloudServerRebootCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)
