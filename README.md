@@ -72,12 +72,7 @@ A plan is a pre-defined yaml with optional template variables that can be used t
 repeate specific tasks.  Fields in the yaml file match the params you would send
 to the command.
 
-Current commands supported in a `plan` file:
-
-- cloud server create
-- cloud server resize
-- cloud template restore
-- ssh
+For current commands supported via plans, take a look in the `examples/plans` directory of this repo.
 
 Example:
 
