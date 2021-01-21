@@ -33,6 +33,7 @@ Stop a server. The 'force' flag will do a hard stop of the server from the paren
 will issue a halt command to the server and shutdown normally.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		uniqIdFlag, _ := cmd.Flags().GetString("uniq-id")
+		forceFlag, _ := cmd.Flags().GetBool("force")
 		jsonFlag, _ := cmd.Flags().GetBool("json")
 
 		validateFields := map[interface{}]interface{}{
@@ -44,6 +45,12 @@ will issue a halt command to the server and shutdown normally.`,
 
 		shutdownArgs := map[string]interface{}{
 			"uniq_id": uniqIdFlag,
+			//"force":   forceFlag,
+		}
+		// conditionally adding to workaround bug in api method..
+		// TODO delete and just always add once bug addressed
+		if forceFlag {
+			shutdownArgs["force"] = forceFlag
 		}
 
 		var result apiTypes.CloudServerShutdownResponse
@@ -68,6 +75,7 @@ func init() {
 	cloudServerCmd.AddCommand(cloudServerShutdownCmd)
 	cloudServerShutdownCmd.Flags().Bool("json", false, "output in json format")
 	cloudServerShutdownCmd.Flags().String("uniq-id", "", "uniq-id of server to shutdown")
+	cloudServerShutdownCmd.Flags().Bool("force", false, "force shutdown server")
 
 	if err := cloudServerShutdownCmd.MarkFlagRequired("uniq-id"); err != nil {
 		lwCliInst.Die(err)

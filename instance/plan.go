@@ -33,6 +33,7 @@ type PlanCloud struct {
 type PlanCloudServer struct {
 	Create []CloudServerCreateParams
 	Resize []CloudServerResizeParams
+	Reboot []CloudServerRebootParams
 }
 
 type PlanCloudTemplate struct {
@@ -116,6 +117,13 @@ func (ci *Client) processPlanCloudServer(server *PlanCloudServer) error {
 			}
 		}
 	}
+	if server.Reboot != nil {
+		for _, r := range server.Reboot {
+			if err := ci.processPlanCloudServerReboot(&r); err != nil {
+				return err
+			}
+		}
+	}
 
 	return nil
 }
@@ -136,6 +144,18 @@ func (ci *Client) processPlanCloudServerCreate(params *CloudServerCreateParams) 
 func (ci *Client) processPlanCloudServerResize(params *CloudServerResizeParams) error {
 
 	result, err := ci.CloudServerResize(params)
+	if err != nil {
+		return err
+	}
+
+	fmt.Print(result)
+
+	return nil
+}
+
+func (ci *Client) processPlanCloudServerReboot(params *CloudServerRebootParams) error {
+
+	result, err := ci.CloudServerReboot(params)
 	if err != nil {
 		return err
 	}
