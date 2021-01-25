@@ -7,7 +7,7 @@ require (
 	github.com/fsnotify/fsnotify v1.4.9 // indirect
 	github.com/google/go-github/v32 v32.1.0
 	github.com/k0kubun/go-ansi v0.0.0-20180517002512-3bf9e2903213
-	github.com/liquidweb/go-lwApi v0.0.0-20190605172801-52a4864d2738
+	github.com/liquidweb/go-lwApi v0.0.5
 	github.com/magiconair/properties v1.8.4 // indirect
 	github.com/mattn/go-colorable v0.1.8 // indirect
 	github.com/mitchellh/go-homedir v1.1.0
