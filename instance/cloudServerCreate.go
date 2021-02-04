@@ -31,7 +31,9 @@ type CloudServerCreateParams struct {
 	Type          string   `yaml:"type"`
 	Hostname      string   `yaml:"hostname"`
 	Ips           int      `yaml:"ips"`
+	Ip6s          int      `yaml:"ip6s"`
 	PoolIps       []string `yaml:"pool-ips"`
+	Pool6Ips      []string `yaml:"pool6-ips"`
 	PublicSshKey  string   `yaml:"public-ssh-key"`
 	ConfigId      int      `yaml:"config-id"`
 	BackupDays    int      `yaml:"backup-days"`  // daily backup plan; how many days to keep a backup
@@ -166,11 +168,12 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 
 	// buildout args for bleed/server/create
 	createArgs := map[string]interface{}{
-		"domain":   params.Hostname,
-		"pool_ips": params.PoolIps,
-		"new_ips":  params.Ips,
-		"zone":     params.Zone,
-		"password": params.Password,
+		"domain":    params.Hostname,
+		"pool_ips":  params.PoolIps,
+		"pool6_ips": params.Pool6Ips,
+		"new_ips":   params.Ips,
+		"zone":      params.Zone,
+		"password":  params.Password,
 		"features": map[string]interface{}{
 			"Bandwidth": params.Bandwidth,
 			"ConfigId":  params.ConfigId,
@@ -180,6 +183,10 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 			},
 			"LiquidWebBackupPlan": cloudBackupPlan,
 		},
+	}
+
+	if params.Ip6s > 0 {
+		createArgs["new_ip6s"] = params.Ip6s
 	}
 
 	var isWindows bool

@@ -33,6 +33,8 @@ var ValidationFailure = errors.New("validation failed")
 type InputTypes struct {
 	UniqId                          InputTypeUniqId
 	IP                              InputTypeIP
+	CIDR                            InputTypeCIDR
+	IpOrCidr                        InputTypeIpOrCidr
 	PositiveInt64                   InputTypePositiveInt64
 	PositiveInt                     InputTypePositiveInt
 	NonEmptyString                  InputTypeNonEmptyString
@@ -85,6 +87,37 @@ func (x InputTypeIP) Validate() error {
 
 	if !utils.IpIsValid(x.IP) {
 		return fmt.Errorf("ip [%s] is not a valid IP address", x.IP)
+	}
+
+	return nil
+}
+
+// CIDR
+
+type InputTypeCIDR struct {
+	CIDR string
+}
+
+func (x InputTypeCIDR) Validate() error {
+	if valid := utils.IpRangeIsValid(x.CIDR); !valid {
+		return fmt.Errorf("cidr [%s] is not valid", x.CIDR)
+	}
+
+	return nil
+}
+
+// IpOrCidr
+
+type InputTypeIpOrCidr struct {
+	IpOrCidr string
+}
+
+func (x InputTypeIpOrCidr) Validate() error {
+	ipRangeIsValid := utils.IpRangeIsValid(x.IpOrCidr)
+	ipIsValid := utils.IpIsValid(x.IpOrCidr)
+
+	if !ipIsValid && !ipRangeIsValid {
+		return fmt.Errorf("ip [%s] is not a valid IP or CIDR", x.IpOrCidr)
 	}
 
 	return nil

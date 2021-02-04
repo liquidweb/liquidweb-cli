@@ -96,11 +96,13 @@ func (x NetworkAssignmentListEntry) String() string {
 	var slice []string
 
 	slice = append(slice, fmt.Sprintf("\tIP: %s\n", x.Ip))
+	slice = append(slice, fmt.Sprintf("\t\tNetwork: %s\n", x.Network))
 	slice = append(slice, fmt.Sprintf("\t\tId: %d\n", x.Id))
 	slice = append(slice, fmt.Sprintf("\t\tGateway: %s\n", x.Gateway))
-	slice = append(slice, fmt.Sprintf("\t\tBroadcast: %s\n", x.Broadcast))
+	if x.Broadcast != "" {
+		slice = append(slice, fmt.Sprintf("\t\tBroadcast: %s\n", x.Broadcast))
+	}
 	slice = append(slice, fmt.Sprintf("\t\tNetmask: %s\n", x.Netmask))
-	slice = append(slice, fmt.Sprintf("\t\tNetwork: %s\n", x.Netmask))
 
 	return strings.Join(slice[:], "")
 }

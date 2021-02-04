@@ -27,6 +27,7 @@ import (
 )
 
 var cloudServerCloneCmdPoolIpsFlag []string
+var cloudServerCloneCmdPool6IpsFlag []string
 
 var cloudServerCloneCmd = &cobra.Command{
 	Use:   "clone",
@@ -52,6 +53,7 @@ Server is not on a Private Parent.`,
 		passwordFlag, _ := cmd.Flags().GetString("password")
 		zoneFlag, _ := cmd.Flags().GetInt64("zone")
 		newIpsFlag, _ := cmd.Flags().GetInt64("new-ips")
+		newIp6sFlag, _ := cmd.Flags().GetInt64("new-ip6s")
 		hostnameFlag, _ := cmd.Flags().GetString("hostname")
 		privateParentFlag, _ := cmd.Flags().GetString("private-parent")
 		diskspaceFlag, _ := cmd.Flags().GetInt64("diskspace")
@@ -86,9 +88,10 @@ Server is not on a Private Parent.`,
 
 		// buildout api bleed/server/clone parameters
 		cloneArgs := map[string]interface{}{
-			"uniq_id": uniqIdFlag,
-			"domain":  hostnameFlag,
-			"new_ips": newIpsFlag,
+			"uniq_id":  uniqIdFlag,
+			"domain":   hostnameFlag,
+			"new_ips":  newIpsFlag,
+			"new_ip6s": newIp6sFlag,
 		}
 		if passwordFlag != "" {
 			cloneArgs["password"] = passwordFlag
@@ -122,6 +125,12 @@ Server is not on a Private Parent.`,
 				validateFields[ip] = "IP"
 			}
 		}
+		if len(cloudServerCloneCmdPool6IpsFlag) > 0 {
+			cloneArgs["pool6_ips"] = cloudServerCloneCmdPool6IpsFlag
+			for _, ip := range cloudServerCloneCmdPool6IpsFlag {
+				validateFields[ip] = "CIDR"
+			}
+		}
 
 		if err := validate.Validate(validateFields); err != nil {
 			lwCliInst.Die(err)
@@ -146,11 +155,14 @@ func init() {
 	cloudServerCloneCmd.Flags().String("uniq-id", "", "uniq-id of Cloud Server to clone")
 	cloudServerCloneCmd.Flags().String("password", "", "root or administrator password for new Cloud Server")
 	cloudServerCloneCmd.Flags().Int64("zone", -1, "zone for new Cloud Server")
-	cloudServerCloneCmd.Flags().Int64("new-ips", 1, "amount of IP addresses for new Cloud Server")
+	cloudServerCloneCmd.Flags().Int64("new-ips", 1, "amount of IPv4 addresses for the new Cloud Server")
+	cloudServerCloneCmd.Flags().Int64("new-ip6s", 0, "amount of new IPv6 /64's for the new Cloud Server")
 	cloudServerCloneCmd.Flags().String("hostname", fmt.Sprintf("%s.%s.io", utils.RandomString(4),
 		utils.RandomString(10)), "hostname for new Cloud Server")
 	cloudServerCloneCmd.Flags().StringSliceVar(&cloudServerCloneCmdPoolIpsFlag, "pool-ips", []string{},
-		"ips from your IP Pool separated by ',' to assign to the new Cloud Server")
+		"IPv4 ips from your IP Pool separated by ',' to assign to the new Cloud Server")
+	cloudServerCloneCmd.Flags().StringSliceVar(&cloudServerCloneCmdPool6IpsFlag, "pool6-ips", []string{},
+		"IPv6 ips from your IP Pool separated by ',' to assign to the new Cloud Server")
 
 	// Private Parent
 	cloudServerCloneCmd.Flags().String("private-parent", "",

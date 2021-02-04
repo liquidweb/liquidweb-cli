@@ -28,6 +28,7 @@ import (
 )
 
 var cloudServerCreateCmdPoolIpsFlag []string
+var cloudServerCreateCmdPool6IpsFlag []string
 
 var cloudServerCreateCmd = &cobra.Command{
 	Use:   "create",
@@ -68,6 +69,7 @@ cloud:
            zone: 40460
            hostname: "db1.dev.addictmud.org"
            ips: 1
+           ip6s: 1
            public-ssh-key: ""
            config-id: 88
            backup-days: 5
@@ -77,6 +79,8 @@ cloud:
            pool-ips:
               - "10.111.12.13"
               - "10.12.13.14"
+           pool6-ips:
+              - "2607:fad0:3714:350c::/64"
            private-parent: "my pp"
            memory: 0
            diskspace: 0
@@ -93,6 +97,7 @@ lw plan --file /tmp/cloud.server.create.yaml
 		params.Type, _ = cmd.Flags().GetString("type")
 		params.Hostname, _ = cmd.Flags().GetString("hostname")
 		params.Ips, _ = cmd.Flags().GetInt("ips")
+		params.Ip6s, _ = cmd.Flags().GetInt("ip6s")
 		pubSshKey, _ := cmd.Flags().GetString("public-ssh-key")
 		params.ConfigId, _ = cmd.Flags().GetInt("config-id")
 		params.BackupDays, _ = cmd.Flags().GetInt("backup-days")
@@ -108,6 +113,8 @@ lw plan --file /tmp/cloud.server.create.yaml
 		params.Vcpu, _ = cmd.Flags().GetInt("vcpu")
 		params.BackupId, _ = cmd.Flags().GetInt("backup-id")
 		params.ImageId, _ = cmd.Flags().GetInt("image-id")
+		params.PoolIps = cloudServerCreateCmdPoolIpsFlag
+		params.Pool6Ips = cloudServerCreateCmdPool6IpsFlag
 
 		sshPkeyContents, err := ioutil.ReadFile(filepath.Clean(pubSshKey))
 		if err == nil {
@@ -137,7 +144,8 @@ func init() {
 	cloudServerCreateCmd.Flags().String("template", cast.ToString(defaultFlag("cloud_server_create_template")), "template to use (see 'cloud server options --templates')")
 	cloudServerCreateCmd.Flags().String("type", "SS.VPS", "some examples of types; SS.VPS, SS.VPS.WIN, SS.VM, SS.VM.WIN")
 	cloudServerCreateCmd.Flags().String("hostname", "", "hostname to set")
-	cloudServerCreateCmd.Flags().Int("ips", 1, "amount of IP addresses")
+	cloudServerCreateCmd.Flags().Int("ips", 1, "amount of IPv4 addresses")
+	cloudServerCreateCmd.Flags().Int("ip6s", 0, "amount of IPv6 /64s")
 	cloudServerCreateCmd.Flags().String("public-ssh-key", sshPubKeyFile,
 		"path to file containing the public ssh key you wish to be on the new Cloud Server")
 	cloudServerCreateCmd.Flags().Int("config-id", cast.ToInt(defaultFlag("cloud_server_create_config-id", -1)), "config-id to use")
@@ -151,7 +159,10 @@ func init() {
 	cloudServerCreateCmd.Flags().Int("image-id", -1, "id of cloud image to create from (see 'cloud image list')")
 
 	cloudServerCreateCmd.Flags().StringSliceVar(&cloudServerCreateCmdPoolIpsFlag, "pool-ips", []string{},
-		"ips from your IP Pool separated by ',' to assign to the new Cloud Server")
+		"IPv4 ips from your IP Pool separated by ',' to assign to the new Cloud Server")
+
+	cloudServerCreateCmd.Flags().StringSliceVar(&cloudServerCreateCmdPool6IpsFlag, "pool6-ips", []string{},
+		"IPv6 assignments from your IP Pool separated by ',' to assign to the new Cloud Server")
 
 	// private parent specific
 	cloudServerCreateCmd.Flags().String("private-parent", "",
