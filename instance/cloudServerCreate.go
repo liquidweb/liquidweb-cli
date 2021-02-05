@@ -168,12 +168,11 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 
 	// buildout args for bleed/server/create
 	createArgs := map[string]interface{}{
-		"domain":    params.Hostname,
-		"pool_ips":  params.PoolIps,
-		"pool6_ips": params.Pool6Ips,
-		"new_ips":   params.Ips,
-		"zone":      params.Zone,
-		"password":  params.Password,
+		"domain":   params.Hostname,
+		"pool_ips": params.PoolIps,
+		"new_ips":  params.Ips,
+		"zone":     params.Zone,
+		"password": params.Password,
 		"features": map[string]interface{}{
 			"Bandwidth": params.Bandwidth,
 			"ConfigId":  params.ConfigId,
@@ -185,6 +184,9 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		},
 	}
 
+	if len(params.Pool6Ips) > 0 {
+		createArgs["pool6_ips"] = params.Pool6Ips
+	}
 	if params.Ip6s > 0 {
 		createArgs["new_ip6s"] = params.Ip6s
 	}
