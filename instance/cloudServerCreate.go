@@ -110,6 +110,7 @@ func (ci *Client) CloudServerCreate(params *CloudServerCreateParams) (string, er
 		if params.Vcpu == -1 {
 			return "", fmt.Errorf("--vcpu is required when specifying --private-parent")
 		}
+		params.ConfigId = 0
 	} else {
 		if params.ConfigId <= 0 {
 			return "", fmt.Errorf("--config-id is required when not specifying --private-parent")
