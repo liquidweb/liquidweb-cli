@@ -16,11 +16,10 @@ limitations under the License.
 package utils
 
 import (
+	"crypto/rand"
 	"fmt"
-	"math/rand"
 	"net"
 	"os"
-	"time"
 
 	"github.com/k0kubun/go-ansi"
 )
@@ -43,14 +42,18 @@ func IpRangeIsValid(cidr string) bool {
 
 func RandomString(length int) string {
 	charset := "abcdefghijklmnopqrstuvwxyz" + "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789" + "0123456789"
-	var seededRand *rand.Rand = rand.New(
-		rand.NewSource(time.Now().UnixNano()))
 
-	b := make([]byte, length)
-	for i := range b {
-		b[i] = charset[seededRand.Intn(len(charset))]
+	bytes := make([]byte, length)
+
+	if _, err := rand.Read(bytes); err != nil {
+		panic(err)
 	}
-	return string(b)
+
+	for i, b := range bytes {
+		bytes[i] = charset[b%byte(len(charset))]
+	}
+
+	return string(bytes)
 }
 
 func FileExists(file string) bool {
