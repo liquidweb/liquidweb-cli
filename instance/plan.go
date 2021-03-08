@@ -63,8 +63,8 @@ func (ci *Client) ProcessPlan(plan *Plan) error {
 		}
 	}
 
-	for _, x := range plan.Ssh {
-		if err := ci.processPlanSsh(&x); err != nil {
+	for i, _ := range plan.Ssh {
+		if err := ci.processPlanSsh(&plan.Ssh[i]); err != nil {
 			return err
 		}
 	}
@@ -104,22 +104,22 @@ func (ci *Client) processPlanSsh(params *SshParams) (err error) {
 func (ci *Client) processPlanCloudServer(server *PlanCloudServer) error {
 
 	if server.Create != nil {
-		for _, c := range server.Create {
-			if err := ci.processPlanCloudServerCreate(&c); err != nil {
+		for i, _ := range server.Create {
+			if err := ci.processPlanCloudServerCreate(&server.Create[i]); err != nil {
 				return err
 			}
 		}
 	}
 	if server.Resize != nil {
-		for _, r := range server.Resize {
-			if err := ci.processPlanCloudServerResize(&r); err != nil {
+		for i, _ := range server.Resize {
+			if err := ci.processPlanCloudServerResize(&server.Resize[i]); err != nil {
 				return err
 			}
 		}
 	}
 	if server.Reboot != nil {
-		for _, r := range server.Reboot {
-			if err := ci.processPlanCloudServerReboot(&r); err != nil {
+		for i, _ := range server.Reboot {
+			if err := ci.processPlanCloudServerReboot(&server.Reboot[i]); err != nil {
 				return err
 			}
 		}
@@ -168,8 +168,8 @@ func (ci *Client) processPlanCloudServerReboot(params *CloudServerRebootParams) 
 func (ci *Client) processPlanCloudTemplate(template *PlanCloudTemplate) error {
 
 	if template.Restore != nil {
-		for _, c := range template.Restore {
-			if err := ci.processPlanCloudTemplateRestore(&c); err != nil {
+		for i, _ := range template.Restore {
+			if err := ci.processPlanCloudTemplateRestore(&template.Restore[i]); err != nil {
 				return err
 			}
 		}
@@ -198,16 +198,16 @@ func (ci *Client) processPlanCloudNetwork(network *PlanCloudNetwork) error {
 func (ci *Client) processPlanCloudNetworkPublic(public *PlanCloudNetworkPublic) error {
 
 	if public.Add != nil {
-		for _, c := range public.Add {
-			if err := ci.processPlanCloudNetworkPublicAdd(&c); err != nil {
+		for i, _ := range public.Add {
+			if err := ci.processPlanCloudNetworkPublicAdd(&public.Add[i]); err != nil {
 				return err
 			}
 		}
 	}
 
 	if public.Remove != nil {
-		for _, c := range public.Remove {
-			if err := ci.processPlanCloudNetworkPublicRemove(&c); err != nil {
+		for i, _ := range public.Remove {
+			if err := ci.processPlanCloudNetworkPublicRemove(&public.Remove[i]); err != nil {
 				return err
 			}
 		}
@@ -219,16 +219,16 @@ func (ci *Client) processPlanCloudNetworkPublic(public *PlanCloudNetworkPublic) 
 func (ci *Client) processPlanCloudNetworkPrivate(private *PlanCloudNetworkPrivate) error {
 
 	if private.Attach != nil {
-		for _, c := range private.Attach {
-			if err := ci.processPlanCloudNetworkPrivateAttach(&c); err != nil {
+		for i, _ := range private.Attach {
+			if err := ci.processPlanCloudNetworkPrivateAttach(&private.Attach[i]); err != nil {
 				return err
 			}
 		}
 	}
 
 	if private.Detach != nil {
-		for _, c := range private.Detach {
-			if err := ci.processPlanCloudNetworkPrivateDetach(&c); err != nil {
+		for i, _ := range private.Detach {
+			if err := ci.processPlanCloudNetworkPrivateDetach(&private.Detach[i]); err != nil {
 				return err
 			}
 		}
