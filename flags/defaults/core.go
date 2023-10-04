@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 
@@ -252,7 +253,7 @@ func getFlagsFile() (file string, err error) {
 
 	if _, err = os.Stat(file); os.IsNotExist(err) {
 		err = nil
-		f, ferr := os.Create(file)
+		f, ferr := os.Create(filepath.Clean(file))
 		if ferr != nil {
 			err = ferr
 			return

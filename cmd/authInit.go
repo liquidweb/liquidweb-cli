@@ -5,7 +5,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
-    http://www.apache.org/licenses/LICENSE-2.0
+	http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ import (
 	"bytes"
 	"fmt"
 	"os"
+	"path/filepath"
 	"strings"
 	"syscall"
 
@@ -27,7 +28,7 @@ import (
 	"github.com/c-bata/go-prompt"
 	"github.com/spf13/cobra"
 
-	"github.com/liquidweb/liquidweb-cli/types/cmd"
+	cmdTypes "github.com/liquidweb/liquidweb-cli/types/cmd"
 	"github.com/liquidweb/liquidweb-cli/utils"
 	"github.com/liquidweb/liquidweb-cli/validate"
 )
@@ -256,7 +257,7 @@ WAIT:
 					if err := os.Remove(cfgFile); err != nil {
 						lwCliInst.Die(err)
 					}
-					f, err := os.Create(cfgFile)
+					f, err := os.Create(filepath.Clean(cfgFile))
 					if err != nil {
 						lwCliInst.Die(err)
 					}
@@ -325,7 +326,7 @@ func writeEmptyConfig() error {
 		return err
 	}
 
-	f, err := os.Create(cfgFile)
+	f, err := os.Create(filepath.Clean(cfgFile))
 	if err != nil {
 		return err
 	}
