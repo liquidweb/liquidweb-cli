@@ -34,9 +34,9 @@ $ source <(lw-cli completion bash)
 
 # To load completions for each session, execute once:
 Linux:
-  $ lw-cli completion bash > /etc/bash_completion.d/lw
+  $ lw-cli completion bash > /etc/bash_completion.d/lw-cli
 MacOS:
-  $ lw-cli completion bash > /usr/local/etc/bash_completion.d/lw
+  $ lw-cli completion bash > /usr/local/etc/bash_completion.d/lw-cli
 
 
 `,
