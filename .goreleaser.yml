@@ -1,5 +1,5 @@
 # Make sure to check the documentation at http://goreleaser.com
-project_name: lw
+project_name: lw-cli
 before:
   hooks:
     - go mod verify
