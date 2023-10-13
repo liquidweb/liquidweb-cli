@@ -1,4 +1,4 @@
-# lw (liquidweb-cli)
+# lw-cli (liquidweb-cli)
 Official command line interface for the LiquidWeb API
 ```
 CLI interface for LiquidWeb.
@@ -19,7 +19,7 @@ As always, consult the various subcommands for specific features and
 capabilities.
 
 Usage:
-  lw [command]
+  lw-cli [command]
 
 Available Commands:
   asset         All things assets
@@ -36,10 +36,10 @@ Available Commands:
 
 Flags:
       --config string        config file (default is $HOME/.liquidweb-cli.yaml)
-  -h, --help                 help for lw
+  -h, --help                 help for lw-cli`
       --use-context string   forces current context, without persisting the context change
 
-Use "lw [command] --help" for more information about a command.
+Use "lw-cli [command] --help" for more information about a command.
 ```
 ## Obtaining prebuilt binaries
 
@@ -47,12 +47,12 @@ Head on over to the [releases page](https://github.com/liquidweb/liquidweb-cli/r
 
 ## Building from source
 
-You can build lw from source by running `make build` from the root of this repository. The resulting program will be located at `./_exe/lw`.
-You can also build+install lw onto your system in the ordinary `go install` way. To do this, either just run `go install` from the root of this repository,
+You can build lw-cli from source by running `make build` from the root of this repository. The resulting program will be located at `./_exe/lw-cli`.
+You can also build+install lw-cli onto your system in the ordinary `go install` way. To do this, either just run `go install` from the root of this repository,
 or `make install`. If you run `make` with no arguments, this will be the default action.
 
 ## First Time Setup
-The first time you use lw, you will need to setup an auth context. An auth context holds authentication related data for a specific LiquidWeb account. You can follow a guided questionnaire to add your auth contexts if you pass arguments `auth init` to lw. By default contexts are stored in `~/.liquidweb-cli.yaml` or `%APPDATA%/.liquidweb-cli.yaml` on Windows.
+The first time you use lw-cli, you will need to setup an auth context. An auth context holds authentication related data for a specific LiquidWeb account. You can follow a guided questionnaire to add your auth contexts if you pass arguments `auth init` to lw-cli. By default contexts are stored in `~/.liquidweb-cli.yaml` or `%APPDATA%/.liquidweb-cli.yaml` on Windows.
 
 ## Adding auth contexts later
 If you end up wanting to add an auth context later on, you can do so with `auth add-context`. You can find the usage documentation in `help auth add-context`.
@@ -76,7 +76,7 @@ For current commands supported via plans, take a look in the `examples/plans` di
 
 Example:
 
-`lw plan --file plan.yaml`
+`lw-cli plan --file plan.yaml`
 
 ```
 ---
@@ -110,7 +110,7 @@ If you wanted to pass user defined variables on the command line you would use t
 (multiple `--var` flags can be passed).  For example, if you wanted to generate the hostname of
 `web3.somehost.org` you would use the following command and yaml:
 
-`lw plan --file play.yaml --var node=3 --var role=web`
+`lw-cli plan --file play.yaml --var node=3 --var role=web`
 
 ```
     hostname: "{{- .Var.role -}}{{- .Var.node -}}.somehost.org"
