@@ -11,26 +11,26 @@ builds:
     - linux
     - darwin
   ldflags: -X github.com/liquidweb/liquidweb-cli/version.Version={{ .Env.VERSION }}  -X github.com/liquidweb/liquidweb-cli/version.BuildTime={{ .Env.BUILDTIME }}  -X github.com/liquidweb/liquidweb-cli/version.GitCommit={{ .Env.GITCOMMIT }}
-archives:
-- replacements:
-    darwin: Darwin
-    linux: Linux
-    windows: Windows
-    amd64: x86_64
-checksum:
-  name_template: 'checksums.txt'
-snapshot:
-  name_template: "{{ .Tag }}"
-changelog:
-  sort: asc
-  filters:
-    exclude:
-    - '^docs:'
-    - '^test:'
+# archives:
+# - replacements:
+#     darwin: Darwin
+#     linux: Linux
+#     windows: Windows
+#     amd64: x86_64
+# checksum:
+#   name_template: 'checksums.txt'
+# snapshot:
+#   name_template: "{{ .Tag }}"
+# changelog:
+#   sort: asc
+#   filters:
+#     exclude:
+#     - '^docs:'
+#     - '^test:'
 nfpms:
-  -
-    replacements:
-      amd64: x86_64
+  - 
+    # replacements:
+    #   amd64: x86_64
     vendor: "Liquid Web LLC"
     license: "Apache 2"
     homepage: "https://liquidweb.com"
