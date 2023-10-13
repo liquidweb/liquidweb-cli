@@ -57,15 +57,15 @@ Examples:
 			ResultsPerPage: 100,
 			MethodArgs:     apiArgs,
 		}
-		results, err := lw - cliCliInst.AllPaginatedResults(&methodArgs)
+		results, err := lwCliInst.AllPaginatedResults(&methodArgs)
 		if err != nil {
-			lw - cliCliInst.Die(err)
+			lwCliInst.Die(err)
 		}
 
 		if jsonFlag {
-			pretty, err := lw - cliCliInst.JsonEncodeAndPrettyPrint(results)
+			pretty, err := lwCliInst.JsonEncodeAndPrettyPrint(results)
 			if err != nil {
-				lw - cliCliInst.Die(err)
+				lwCliInst.Die(err)
 			}
 			fmt.Print(pretty)
 		} else {
@@ -74,7 +74,7 @@ Examples:
 
 				var details apiTypes.Subaccnt
 				if err := instance.CastFieldTypes(item, &details); err != nil {
-					lw - cliCliInst.Die(err)
+					lwCliInst.Die(err)
 				}
 
 				fmt.Printf("%d.) ", cnt)

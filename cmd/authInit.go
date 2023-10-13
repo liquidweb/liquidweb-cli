@@ -100,7 +100,7 @@ func fetchAuthDataInteractively() (writeConfig bool, err error) {
 	userInputExitEarly := make(chan bool)
 	userInputContext := make(chan cmdTypes.AuthContext)
 
-	fmt.Println("\nTo exit early, type 'exit'\n")
+	fmt.Printf("\nTo exit early, type 'exit'\n\n")
 
 	go func() {
 	WHILEMOREADDS:
