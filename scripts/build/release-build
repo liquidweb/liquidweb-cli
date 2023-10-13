@@ -2,5 +2,5 @@
 
 source scripts/build/.variables
 set -e
-VERSION=${VERSION} GITCOMMIT=${GITCOMMIT} BUILDTIME=${BUILDTIME} goreleaser --clean --skip=publish
+VERSION=${VERSION} GITCOMMIT=${GITCOMMIT} BUILDTIME=${BUILDTIME} goreleaser --clean
 exit 0
