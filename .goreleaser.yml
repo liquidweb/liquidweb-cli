@@ -34,6 +34,7 @@ nfpms:
     vendor: "Liquid Web LLC"
     license: "Apache 2"
     homepage: "https://liquidweb.com"
+    maintainer: Jeff VanDellen <support-tools@liquidweb.com>
     description: "LiquidWeb command line client"
     file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     formats:
