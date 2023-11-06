@@ -10,7 +10,7 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/spf13/cast v1.5.1
-	github.com/spf13/cobra v1.7.0
+	github.com/spf13/cobra v1.8.0
 	github.com/spf13/viper v1.16.0
 	golang.org/x/crypto v0.13.0
 	gopkg.in/yaml.v2 v2.4.0
